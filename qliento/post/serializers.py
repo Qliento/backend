@@ -19,3 +19,5 @@ class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
         fields = "__all__"
+        
+#TO-DO nested serializers for images

@@ -32,13 +32,17 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'post.apps.PostConfig',
+    'research.apps.ResearchConfig',
     'rest_framework',
+    'django_simple_tags',
+    'django_horizontal_list_filter',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mptt',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +72,7 @@ TEMPLATES = [
         },
     },
 ]
-
+JET_SIDE_MENU_COMPACT = True
 WSGI_APPLICATION = 'qliento.wsgi.application'
 
 
@@ -120,8 +124,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/images/'
+MEDIA_URL = '/files/'
+
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATTIC_DIRS = [ os.path.join(BASE_DIR, 'static') ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/files')
