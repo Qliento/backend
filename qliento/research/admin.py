@@ -43,8 +43,16 @@ class CategoryAdmin(DraggableMPTTAdmin):
 
 
 class ResearchAdmin(admin.ModelAdmin):
-    filter_vertical = ('hashtag', )
+    autocomplete_fields  = ['hashtag', 'country']
+
+
+class HashtagAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+class CountryAdmin(admin.ModelAdmin):
+    search_fields = ['name']    
     
+admin.site.register(Status)
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Hashtag)
+admin.site.register(Hashtag, HashtagAdmin)
+admin.site.register(Country, CountryAdmin)

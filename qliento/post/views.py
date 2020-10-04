@@ -18,7 +18,8 @@ class InfoView(APIView):
         info = Info.objects.all()
         serializer = InfoSerializer(info, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)   
-    
+
+  
 class PostListView(APIView):
     parser_class = (FileUploadParser, )
     queryset = Post.objects.all()
@@ -35,4 +36,11 @@ class NewsListView(APIView):
     def get(self, request, format=None):
         news = News.objects.all()
         serializer = NewsSerializer(news, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)   
+        return Response(data=serializer.data, status=status.HTTP_200_OK) 
+
+class NewsDetail(generics.RetrieveAPIView):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+class PostDetail(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer

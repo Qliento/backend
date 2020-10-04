@@ -17,12 +17,26 @@ class Status(models.Model):
 	name = models.CharField(max_length = 1000)
 	def __str__(self):
 		return self.name
+	class Meta:
+		verbose_name = 'Статус'
+		verbose_name_plural = 'Статусы'
 
 class Hashtag(models.Model):
 	name = models.CharField(max_length = 255, unique=True, verbose_name = 'Ключевое слово')
 	def __str__(self):
 		return self.name
+	class Meta:
+		verbose_name = 'Ключевое слово'
+		verbose_name_plural = 'Ключевые слова'
 
+class Country(models.Model):
+	name = models.CharField(max_length = 255, unique=True, verbose_name = 'Страна')
+	def __str__(self):
+		return self.name
+	class Meta:
+		verbose_name = 'Страна'
+		verbose_name_plural = 'Страны'
+		
 class Research(models.Model):
 	name = models.CharField(max_length = 1000, verbose_name = 'Название')
 	image = models.ImageField(null = True, blank = True, upload_to='images', verbose_name = 'Изображение')
@@ -34,8 +48,10 @@ class Research(models.Model):
 	hashtag = models.ManyToManyField(Hashtag, verbose_name = 'Ключевые слова')
 	category = models.ForeignKey('Category', null=True, blank=True, on_delete = models.CASCADE, verbose_name = 'Категория')
 	demo = models.FileField(null = True, blank = True, upload_to='demos', verbose_name = 'Демоверсия')
+	country = models.ManyToManyField(Country, verbose_name = 'Страна', null = True)
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = 'Статус')
 	research = models.FileField(null = True, blank = True, verbose_name = 'Исследование')
+	
 	def __str__(self):
 		return self.name
 	class Meta:
