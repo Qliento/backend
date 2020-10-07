@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'post.apps.PostConfig',
     'research.apps.ResearchConfig',
+    'main.apps.MainConfig',
+    'question.apps.QuestionConfig',
     'rest_framework',
     'django_simple_tags',
     'django_horizontal_list_filter',
@@ -44,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mptt',
     'django_filters',
-    "taggit",
 ]
 
 MIDDLEWARE = [

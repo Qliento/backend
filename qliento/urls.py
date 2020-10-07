@@ -25,6 +25,8 @@ urlpatterns = [
     path('', include('post.urls')),
     path('', include('research.urls')),
     path('', include(router.urls)),
+    path('', include('main.urls')),
+    path('', include('question.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

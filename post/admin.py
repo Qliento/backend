@@ -14,6 +14,9 @@ class ImageInfoAdmin(admin.TabularInline):
 class InfoAdmin(admin.ModelAdmin):
 	inlines = [ImageInfoAdmin, ]
 
+class NewsAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
 admin.site.register(Info, InfoAdmin)
 admin.site.register(Post, PostAdmin)
-admin.site.register(News)
+admin.site.register(News, NewsAdmin)
