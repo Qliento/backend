@@ -16,15 +16,28 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .router import router
-
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.conf import settings
 
+
 urlpatterns = [
+    url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
+
     path('admin/', admin.site.urls),
     path('', include('post.urls')),
     path('', include('research.urls')),
     path('', include(router.urls)),
+
+    path('users/', include('registration.urls')),
+    path('purchase/', include('orders.urls')),
+
+    path('auth/', include('rest_framework_social_oauth2.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
+
+
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
