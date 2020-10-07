@@ -11,6 +11,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 # Create your views here.
 
+#class CardResearchView(generics.ListAPIView):
+
 
 class DefaultResearchView(APIView):
     parser_class = (FileUploadParser, )
@@ -63,3 +65,4 @@ class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
+

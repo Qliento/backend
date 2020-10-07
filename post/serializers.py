@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from research.serializers import CardResearchSerializer
 
 class ImagePostSerializer(serializers.ModelSerializer):
     
@@ -24,6 +25,7 @@ class InfoSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
 
     images = ImagePostSerializer(many = True)
+    research = CardResearchSerializer()
     class Meta:
         model = Post
         fields = ('header', 'description', 'date', 'images')
@@ -34,4 +36,3 @@ class NewsSerializer(serializers.ModelSerializer):
         model = News
         fields = "__all__"
         
-#TO-DO nested serializers for images

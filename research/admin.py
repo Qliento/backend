@@ -39,6 +39,7 @@ class CategoryAdmin(DraggableMPTTAdmin):
     def related_researches_cumulative_count(self, instance):
         return instance.researches_cumulative_count
     related_researches_cumulative_count.short_description = 'Related researches (in tree)'
+    search_fields = ['name']
 
 
 
@@ -49,8 +50,10 @@ class ResearchAdmin(admin.ModelAdmin):
 class HashtagAdmin(admin.ModelAdmin):
     search_fields = ['name']
 class CountryAdmin(admin.ModelAdmin):
-    search_fields = ['name']    
-    
+    search_fields = ['name']
+
+
+
 admin.site.register(Status)
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)

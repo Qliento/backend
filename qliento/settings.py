@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'post.apps.PostConfig',
     'research.apps.ResearchConfig',
 
+    'main.apps.MainConfig',
+    'question.apps.QuestionConfig',
     'rest_framework',
     'django_simple_tags',
     'django_horizontal_list_filter',
@@ -68,6 +70,7 @@ INSTALLED_APPS = [
     'rest_framework_recaptcha',
     'registration',
     'orders',
+
 ]
 
 MIDDLEWARE = [
