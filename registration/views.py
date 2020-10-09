@@ -59,7 +59,7 @@ class QAdminRegistration(GenericAPIView):
 
 class VerifyEmail(views.APIView):
     serializer_class = EmailVerificationSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         token = request.GET.get('token')
@@ -214,6 +214,7 @@ def send_email(request):
 
 class PasswordReset(UpdateAPIView):
     serializer_class = UpdatePassword
+    permission_classes = (IsAuthenticated,)
 
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import *
 from itertools import chain
+from research.models import Research
+from orders.models import Orders
 # Register your models here.
 
 
@@ -18,8 +20,16 @@ def to_dict(instance):
     return data
 
 
+class ResearchInline(admin.TabularInline):
+    model = Research
+    fk_name = "author"
+    extra = 1
+
+
 class QAdminsAdmin(admin.ModelAdmin):
     list_display = ['admin_status']
+    inlines = [ResearchInline]
+    search_fields = ['admin_status__email', 'admin_status__name']
 
     class Meta:
         model = QAdmins
@@ -35,13 +45,22 @@ class QAdminsAdmin(admin.ModelAdmin):
 
 class ClientsAdmin(admin.ModelAdmin):
     list_display = ['client_status']
+    search_fields = ['client_status__email', 'client_status__name']
 
     class Meta:
         model = Clients
 
 
+class OrdersInline(admin.TabularInline):
+    model = Orders
+    fk_name = "customer"
+    extra = 0
+
+
 class UsersAdmin(admin.ModelAdmin):
     list_display = ['email', 'primary_reference', 'initial_reference']
+    inlines = [OrdersInline]
+    search_fields = ['email', 'name']
 
     class Meta:
         model = Users

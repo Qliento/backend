@@ -1,6 +1,6 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-
+from registration.models import QAdmins
 
 # Create your models here.
 
@@ -18,14 +18,11 @@ class Category(MPTTModel):
 	class Meta:
 		verbose_name = 'Категория'
 		verbose_name_plural = 'Категории'
-<<<<<<< HEAD
 
-
-=======
 	def get_recursive_product_count(self):
 		return Research.objects.filter(category__in=self.get_descendants(include_self=True)).count()
-	
->>>>>>> dfc6c994a5d55bfc329e0233ad1e7a1ea05e8267
+
+
 class Status(models.Model):
 	name = models.CharField(max_length=1000)
 
@@ -73,13 +70,11 @@ class Research(models.Model):
 	country = models.ManyToManyField(Country, verbose_name = 'Страна', null = True)
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = 'Статус')
 	research = models.FileField(null = True, blank = True, verbose_name = 'Исследование')
-<<<<<<< HEAD
-=======
 	similars = models.ManyToManyField('self', verbose_name = 'Похожие исследования', null = True, blank = True)
+	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', default=1, null=True, blank=True)
 
 	def similar_researches(self):
 		return type(self).objects.prefetch_related('hashtag').filter(status=2).exclude(id=self.id)
->>>>>>> dfc6c994a5d55bfc329e0233ad1e7a1ea05e8267
 
 	def __str__(self):
 		return self.name

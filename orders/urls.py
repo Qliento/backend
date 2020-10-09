@@ -6,6 +6,6 @@ from .views import *
 urlpatterns = [
     path('order-form/', OrderFormCreateView.as_view()),
     path('orders/', OrderCreateView.as_view()),
-
+    path('my-orders/', MyOrdersView.as_view())
 
 ]

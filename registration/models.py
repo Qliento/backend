@@ -32,7 +32,9 @@ class UserManager(BaseUserManager):
         user.is_superuser = True
         user.is_staff = True
         user.is_admin = True
+        user.is_active = True
         user.save(using=self._db)
+
         return user
 
 
@@ -63,6 +65,9 @@ class Clients(models.Model):
         verbose_name = _("Заказчик")
         verbose_name_plural = _('Заказчики')
 
+    def __str__(self):
+        return self.client_status.name
+
 
 class QAdmins(models.Model):
     admin_status = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="initial_reference")
@@ -71,3 +76,6 @@ class QAdmins(models.Model):
     class Meta:
         verbose_name = _("Поставщик")
         verbose_name_plural = _('Поставщики')
+
+    def __str__(self):
+        return self.admin_status.name

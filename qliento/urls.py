@@ -29,7 +29,6 @@ urlpatterns = [
     path('', include('post.urls')),
     path('', include('research.urls')),
     path('', include(router.urls)),
-<<<<<<< HEAD
 
     path('users/', include('registration.urls')),
     path('purchase/', include('orders.urls')),
@@ -39,10 +38,9 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
 
 
-=======
+
     path('', include('main.urls')),
     path('', include('question.urls')),
->>>>>>> dfc6c994a5d55bfc329e0233ad1e7a1ea05e8267
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
