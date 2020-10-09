@@ -26,7 +26,7 @@ SECRET_KEY = 'ay@g8$$0c!$+c9h1xt^f6sk5!12zp^pmnc1%xmj8_2fh$#_$42'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['207.154.250.71']
 
 
 # Application definition
@@ -113,17 +113,28 @@ WSGI_APPLICATION = 'qliento.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'qliento',
-        'USER': 'postgres',
-        'PASSWORD': '3WYe^n;s5>GA',
-        'HOST': 'localhost',
-        'PORT': ''
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'qliento',
+            'USER': 'postgres',
+            'PASSWORD': '3WYe^n;s5>GA',
+            'HOST': 'localhost',
+            'PORT': ''
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'qliento',
+            'USER': 'admin',
+            'PASSWORD': '78sf45sf47asf@',
+            'HOST': 'localhost',
+            'PORT': ''
+        }
+    }
 AUTH_USER_MODEL = 'registration.Users'
 
 # Password validation
@@ -188,7 +199,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/files/'
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static/')
 
 STATTIC_DIRS = [ os.path.join(BASE_DIR, 'static') ]
 
