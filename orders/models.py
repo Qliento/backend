@@ -32,7 +32,8 @@ class Orders(models.Model):
 
 
 class OrderForm(models.Model):
-    name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="ФИО")
+    name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="Имя")
+    surname = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="Фамилия")
     logo = models.CharField(blank=True, null=True, verbose_name="Название организации", max_length=100)
     email = models.EmailField(max_length=120, verbose_name="Электронная почта")
     phone_number = models.CharField(default=0000, verbose_name='Номер телефона', max_length=20)

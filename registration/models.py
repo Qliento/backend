@@ -39,7 +39,8 @@ class UserManager(BaseUserManager):
 
 
 class Users(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="ФИО")
+    name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Имя")
+    surname = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Фамилия")
     email = models.EmailField(max_length=120, unique=True, verbose_name="Электронная почта")
     phone_number = models.CharField(default=0000, verbose_name='Номер телефона', max_length=20)
     REQUIRED_FIELDS = ['password']

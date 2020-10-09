@@ -12,6 +12,7 @@ class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ["name",
+                  "surname",
                   "password",
                   "password_check",
                   "email",
@@ -37,6 +38,7 @@ class UsersSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.password = validated_data.get('password', instance.password)
         instance.name = validated_data.get('name', instance.name)
+        instance.surname = validated_data.get('surname', instance.surname)
         instance.phone_number = validated_data.get('phone_number', instance.phone_number)
         instance.save()
         return instance
@@ -47,6 +49,7 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ["name",
+                  "surname",
                   "email",
                   "phone_number",
                   ]
@@ -59,6 +62,7 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
+        instance.surname = validated_data.get('surname', instance.surname)
         instance.email = validated_data.get('email', instance.email)
         instance.phone_number = validated_data.get('phone_number', instance.phone_number)
         instance.save()
@@ -72,6 +76,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
         model = Users
         fields = [
                   "name",
+                  "surname",
                   "password",
                   "password_check",
                   "email",
