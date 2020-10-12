@@ -28,7 +28,7 @@ class PostSerializer(serializers.ModelSerializer):
     research = CardResearchSerializer()
     class Meta:
         model = Post
-        fields = ('header', 'description', 'date', 'images')
+        fields = ('header', 'description', 'date', 'images', 'research')
 
 class NewsSerializer(serializers.ModelSerializer):
 

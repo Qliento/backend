@@ -1,18 +1,25 @@
 from django.db import models
-from post.models import *
-from research.models import *
 from django.db.models import Count
 # Create your models here.
 
 class ContactInfo(models.Model):
-	number = models.CharField(max_length = 15, verbose_name = 'Номер')
-	email = models.CharField(max_length = 30, verbose_name = 'Почта')
 
 	def __str__(self):
 		return "Контактная информация"
 	class Meta:
 		verbose_name = 'Контактная информация'
 		verbose_name_plural = 'Контактная информация'
+
+class Contact(models.Model):
+	name = models.CharField(max_length=255, verbose_name = 'Тип контактных данных')
+	info = models.CharField(max_length=255, verbose_name = 'Данные')
+
+	contactInfo = models.ForeignKey(ContactInfo, on_delete=models.CASCADE, related_name = 'contacts')
+
+
+	class Meta:
+		verbose_name = 'Контактные данные'
+		verbose_name_plural = 'Контактные данные'
 
 class MobApp(models.Model):
 	description = models.CharField(max_length = 1000, verbose_name = 'Описание')
@@ -25,10 +32,6 @@ class MobApp(models.Model):
 		verbose_name_plural = 'Раздел о моб. приложении'
 
 class MainPage(models.Model):
-	categories = models.ManyToManyField(Category, verbose_name = 'Категории')
-	about_us = models.ForeignKey(Info, on_delete = models.CASCADE, verbose_name = 'О нас') 
-	news = models.ManyToManyField(News, verbose_name = 'Новости') 
-	analytic = models.ForeignKey(Post, on_delete = models.CASCADE, verbose_name = 'Информация об аналитике') 
 	mob_app = models.ForeignKey(MobApp, on_delete = models.CASCADE, verbose_name = 'Информация о мобильном приложении') 
 	сontacts = models.ForeignKey(ContactInfo, on_delete = models.CASCADE, verbose_name = 'Контакты') 
 
