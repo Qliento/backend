@@ -35,14 +35,14 @@ class CardResearchSerializer(serializers.ModelSerializer):
 class ResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(read_only=True, many=True)
     country = CountrySerializer(read_only=True, many=True)
-    category = serializers.CharField(source = 'category.name')
-    similars = CardResearchSerializer(source = 'similar_researches', many = True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    similars = CardResearchSerializer(source='similar_researches', many=True, read_only=True)
     author = serializers.PrimaryKeyRelatedField(read_only=True, source='author.name')
 
     class Meta:
         model = Research
         fields = "__all__"
-        read_only_fields = ('date', 'status', 'hashtag', 'similars')
+        read_only_fields = ('date', 'status', 'hashtag', 'similars', 'category')
 
     def create(self, validated_data):
         research = Research.objects.create(author=self.context['request'].user, **validated_data)

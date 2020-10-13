@@ -8,15 +8,17 @@ from .serializers import *
 from .models import *
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
+from rest_framework.permissions import AllowAny
 # Create your views here.
 
 #class CardResearchView(generics.ListAPIView):
 
 
 class DefaultResearchView(APIView):
-    parser_class = (FileUploadParser, )
+    parser_classes = [MultiPartParser, FormParser]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
     permission_classes = (AllowAny,)
@@ -27,15 +29,15 @@ class DefaultResearchView(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-    def post(self, request, format=None):
-       serializer = ResearchSerializer(data=request.DATA, files=request.FILES)
-       if serializer.is_valid():
-           serializer.save()
-           return Response(serializer.data, status=status.HTTP_201_CREATED)
-       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        file_serializer = ResearchSerializer(data=request.data)
+        if file_serializer.is_valid():
+            file_serializer.save()
+            return Response(file_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ResearchViewFromOldest(APIView):
-    parser_class = (FileUploadParser, )
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
     permission_classes = (AllowAny,)
@@ -46,7 +48,6 @@ class ResearchViewFromOldest(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 class ResearchViewFromCheapest(APIView):
-    parser_class = (FileUploadParser, )
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
     permission_classes = (AllowAny,)
@@ -57,7 +58,6 @@ class ResearchViewFromCheapest(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 class ResearchViewToCheapest(APIView):
-    parser_class = (FileUploadParser, )
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
     permission_classes = (AllowAny,)
@@ -69,7 +69,5 @@ class ResearchViewToCheapest(APIView):
 
 class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (AllowAny,)
-
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
-

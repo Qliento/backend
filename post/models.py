@@ -45,14 +45,14 @@ class ImageInfo(models.Model):
 
 
 class News(models.Model):
-	header = models.CharField(max_length = 255, verbose_name = 'Заголовок')
+	name = models.CharField(max_length = 255, verbose_name = 'Заголовок')
 	image = models.ImageField(null = True, blank = True, verbose_name = 'Изображение')
 	description = models.CharField(max_length = 2000, verbose_name = 'Описание')
 	date = models.DateField(auto_now_add=True, verbose_name = 'Дата публикации')
 	source = models.CharField(max_length=200, verbose_name = 'Источник')
 
 	def __str__(self):
-		return self.header
+		return self.name
 	class Meta:
 		verbose_name = 'Новость'
 		verbose_name_plural = 'Новости'

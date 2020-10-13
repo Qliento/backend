@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django_filters  import rest_framework as filters
+from rest_framework.permissions import AllowAny
+
 
 
 class ResearchFilter(filters.FilterSet):
@@ -22,6 +24,8 @@ class ResearchFilter(filters.FilterSet):
 class ResearchViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2)
     serializer_class = ResearchSerializer
+    permission_classes = [AllowAny, ]
+
     filter_fields=('country', 'category', 'hashtag')
     filterset_class = ResearchFilter
 
