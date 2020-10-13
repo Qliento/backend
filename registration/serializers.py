@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import QAdmins, Users, Clients
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import password_validation
+from PIL import Image
 from rest_framework_recaptcha.fields import ReCaptchaField
 
 
@@ -45,10 +46,12 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class UsersUpdateSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField()
 
     class Meta:
         model = Users
-        fields = ["name",
+        fields = ["photo",
+                  "name",
                   "surname",
                   "email",
                   "phone_number",
@@ -61,6 +64,7 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
         return respondents_data
 
     def update(self, instance, validated_data):
+        instance.photo = validated_data.get('photo', instance.photo)
         instance.name = validated_data.get('name', instance.name)
         instance.surname = validated_data.get('surname', instance.surname)
         instance.email = validated_data.get('email', instance.email)

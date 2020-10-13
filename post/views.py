@@ -7,13 +7,15 @@ from rest_framework import generics
 from .serializers import *
 from .models import *
 from rest_framework.parsers import FileUploadParser
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 
 class InfoView(APIView):
     parser_class = (FileUploadParser, )
     queryset = Info.objects.all()
-    
+    permission_classes = (AllowAny,)
+
     def get(self, request, format=None):
         info = Info.objects.all()
         serializer = InfoSerializer(info, many=True)
@@ -23,6 +25,7 @@ class InfoView(APIView):
 class PostListView(APIView):
     parser_class = (FileUploadParser, )
     queryset = Post.objects.all()
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None):
         posts = Post.objects.all()
@@ -32,6 +35,7 @@ class PostListView(APIView):
 class NewsListView(APIView):
     parser_class = (FileUploadParser, )
     queryset = News.objects.all()
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None):
         news = News.objects.all()
@@ -41,7 +45,9 @@ class NewsListView(APIView):
 class NewsDetail(generics.RetrieveAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
-    
+    permission_classes = (AllowAny,)
+
 class PostDetail(generics.RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (AllowAny,)

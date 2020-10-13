@@ -262,10 +262,13 @@ SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1032556798687-6427pbbpse1jm5ho5is64cja01bad94u.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'tNKrBMOuSdxkoQTOknLeTyLm'
-LOGIN_URL = '/auth/login/google-oauth2/'
-
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# LOGIN_URL = '/auth/login/google-oauth2/'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
 
 # HTTPS configuration
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True

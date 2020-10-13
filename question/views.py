@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from .models import *
+from rest_framework.permissions import AllowAny
 from rest_framework.parsers import FileUploadParser
 
 
@@ -13,10 +14,14 @@ from rest_framework.parsers import FileUploadParser
 class QuestionView(generics.ListAPIView):
 	queryset = Question.objects.all()
 	serializer_class = QuestionSerializer
+	permission_classes = (AllowAny,)
+
 
 class PartnershipView(generics.ListAPIView):
 	queryset = Partnership.objects.all()
 	serializer_class = PartnershipSerializer
+	permission_classes = (AllowAny,)
+
 
 class FeedbackView(APIView):
 	def post(self, request, format=None):

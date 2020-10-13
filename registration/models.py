@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
+from django.utils.html import mark_safe
 from django.utils.translation import ugettext_lazy as _
 import datetime
 
@@ -39,6 +40,7 @@ class UserManager(BaseUserManager):
 
 
 class Users(AbstractBaseUser, PermissionsMixin):
+    photo = models.ImageField(null=True, blank=True, upload_to='images', verbose_name='Изображение')
     name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Имя")
     surname = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Фамилия")
     email = models.EmailField(max_length=120, unique=True, verbose_name="Электронная почта")

@@ -62,6 +62,15 @@ class UsersAdmin(admin.ModelAdmin):
     inlines = [OrdersInline]
     search_fields = ['email', 'name']
 
+    def photo_show(self, obj):
+        return mark_safe('<img src="{url}"/>'.format(
+            url=obj.photo.url,
+            # width=obj.photo.width,
+            # height=obj.headshot.height,
+        )
+        )
+    photo_show.allow_tags = True
+
     class Meta:
         model = Users
 
