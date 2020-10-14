@@ -11,7 +11,6 @@ class ContactInfo(models.Model):
 		verbose_name_plural = 'Контактная информация'
 
 class Contact(models.Model):
-	name = models.CharField(max_length=255, verbose_name = 'Тип контактных данных')
 	info = models.CharField(max_length=255, verbose_name = 'Данные')
 
 	contactInfo = models.ForeignKey(ContactInfo, on_delete=models.CASCADE, related_name = 'contacts')

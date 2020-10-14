@@ -12,7 +12,7 @@ class MobAppSerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        fields = ('name', 'info')
+        fields = ( 'info', )
 
 class ContactInfoSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(many=True)
