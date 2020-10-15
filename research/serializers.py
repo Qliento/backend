@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-
+from django.utils.translation import ugettext_lazy as _
 class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -34,9 +34,18 @@ class CardResearchSerializer(serializers.ModelSerializer):
 class ResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(read_only=True, many=True)
     country = CountrySerializer(read_only=True, many=True)
+    name_ = serializers.ReadOnlyField(source='get_name')
+    description_ = serializers.ReadOnlyField(source='get_description')
     category = serializers.PrimaryKeyRelatedField(
-        queryset = Category.objects.all()
-    )
+            queryset = Category.objects.all()
+        )
+
+    def get_name(self):
+        return _(self.name)
+
+    def get_description(self):
+        return _(self.name)
+    
     similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
     class Meta:
         model = Research

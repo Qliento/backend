@@ -1,0 +1,226 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-15 19:13+0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\main\models.py:11 .\main\models.py:12
+msgid "Контактная информация"
+msgstr "Байланыш маалымат"
+
+#: .\main\models.py:15
+msgid "Данные"
+msgstr "Маалымат"
+
+#: .\main\models.py:21 .\main\models.py:22
+msgid "Контактные данные"
+msgstr "Байланыш маалымат"
+
+#: .\main\models.py:25 .\post\models.py:19 .\post\models.py:50
+#: .\research\models.py:51
+msgid "Описание"
+msgstr "Сүрөттөмө"
+
+#: .\main\models.py:26 .\post\models.py:49 .\research\models.py:46
+msgid "Изображение"
+msgstr "Сүрөт"
+
+#: .\main\models.py:27
+msgid "Ссылка"
+msgstr "Шилтеме"
+
+#: .\main\models.py:31 .\main\models.py:32
+msgid "Раздел о моб. приложении"
+msgstr "Мобилдик тиркеме бөлүмү"
+
+#: .\main\models.py:35
+msgid "Информация о мобильном приложении"
+msgstr "Мобилдик тиркеме жөнүндө маалымат"
+
+#: .\main\models.py:36
+msgid "Контакты"
+msgstr "Байланыштар"
+
+#: .\main\models.py:41 .\main\models.py:42
+msgid "Главная страница"
+msgstr "Башкы бет"
+
+#: .\post\models.py:6 .\post\models.py:18 .\post\models.py:48
+#: .\question\models.py:15
+msgid "Заголовок"
+msgstr "Баш аты"
+
+#: .\post\models.py:12 .\post\models.py:13
+msgid "О нас"
+msgstr "Биз жөнүндө"
+
+#: .\post\models.py:20 .\post\models.py:51 .\research\models.py:47
+msgid "Дата публикации"
+msgstr "Жарыяланган күнү"
+
+#: .\post\models.py:21 .\research\models.py:57 .\research\models.py:66
+#, fuzzy
+#| msgid "Название"
+msgid "Исследование"
+msgstr "Аты"
+
+#: .\post\models.py:26 .\post\models.py:27
+msgid "Аналитика"
+msgstr "Аналитика"
+
+#: .\post\models.py:34
+msgid "Изображение для окна аналитики"
+msgstr ""
+
+#: .\post\models.py:35
+msgid "Изображения для окна аналитики"
+msgstr "Аналитика бети үчүн сүрөт"
+
+#: .\post\models.py:42
+msgid "Изображение для окна о нас"
+msgstr "Биз жөнүндө бети үчүн сүрөт"
+
+#: .\post\models.py:43
+msgid "Изображения для окна о нас"
+msgstr "Биз жөнүндө бети үчүн сүрөт"
+
+#: .\post\models.py:52
+msgid "Источник"
+msgstr "Булак"
+
+#: .\post\models.py:57
+msgid "Новость"
+msgstr "Жаңылыктар"
+
+#: .\post\models.py:58
+msgid "Новости"
+msgstr "Жаңылыктар"
+
+#: .\question\models.py:11 .\question\models.py:12 .\question\models.py:16
+msgid "Информация о партнерстве"
+msgstr "Өнөктөштүк жөнүндө маалымат"
+
+#: .\question\models.py:22 .\question\models.py:23
+msgid "Партнерство"
+msgstr "Өнөктөштүк"
+
+#: .\question\models.py:26
+msgid "Вопрос"
+msgstr "Суроо"
+
+#: .\question\models.py:27
+msgid "Ответ"
+msgstr "Жооп"
+
+#: .\question\models.py:31 .\question\models.py:32
+msgid "ЧАВО"
+msgstr "Көп берилүүчү суроолор"
+
+#: .\question\models.py:35 .\question\models.py:49
+msgid "ФИО"
+msgstr "ФИО"
+
+#: .\question\models.py:36 .\question\models.py:50
+msgid "Название организации"
+msgstr "Уюмдун аталышы"
+
+#: .\question\models.py:37
+msgid "Должность"
+msgstr "Кызмат"
+
+#: .\question\models.py:38 .\question\models.py:51
+msgid "Почта"
+msgstr "Почта"
+
+#: .\question\models.py:39 .\question\models.py:52
+msgid "Номер телефона"
+msgstr "Телефон номуру"
+
+#: .\question\models.py:40
+msgid "Дополнительно"
+msgstr "Кошумча"
+
+#: .\question\models.py:45 .\question\models.py:46
+msgid "Обратная связь(партнерство)"
+msgstr "Кайра байланыш(Өнөктөштүк)"
+
+#: .\question\models.py:53
+msgid "Ваш вопрос"
+msgstr "Сиздин сурооңуз"
+
+#: .\question\models.py:58 .\question\models.py:59
+msgid "Обратная связь(вопросы)"
+msgstr "Кайра байланыш(суроолор)"
+
+#: .\research\models.py:8 .\research\models.py:45
+msgid "Название"
+msgstr "Аты"
+
+#: .\research\models.py:9 .\research\models.py:15 .\research\models.py:53
+msgid "Категория"
+msgstr "Категория"
+
+#: .\research\models.py:16
+msgid "Категории"
+msgstr "Категориялар"
+
+#: .\research\models.py:21 .\research\models.py:25 .\research\models.py:56
+msgid "Статус"
+msgstr "Статус"
+
+#: .\research\models.py:26
+msgid "Статусы"
+msgstr "Статустар"
+
+#: .\research\models.py:29 .\research\models.py:33
+msgid "Ключевое слово"
+msgstr "Ачкыч сөз"
+
+#: .\research\models.py:34 .\research\models.py:52
+msgid "Ключевые слова"
+msgstr "Ачкыч сөздөр"
+
+#: .\research\models.py:37 .\research\models.py:41 .\research\models.py:55
+msgid "Страна"
+msgstr "Өлкө"
+
+#: .\research\models.py:42
+msgid "Страны"
+msgstr "Өлкөлөр"
+
+#: .\research\models.py:48
+msgid "Количество страниц"
+msgstr "Барактардын саны"
+
+#: .\research\models.py:49
+msgid "Старая цена"
+msgstr "Эски баа"
+
+#: .\research\models.py:50
+msgid "Новая цена"
+msgstr "Жаңы баа"
+
+#: .\research\models.py:54
+msgid "Демоверсия"
+msgstr "Демоверсия"
+
+#: .\research\models.py:58
+msgid "Похожие исследования"
+msgstr "Окшош изилдөөлөр"
+
+#: .\research\models.py:67
+msgid "Исследования"
+msgstr "Изилдөөлөр"

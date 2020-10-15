@@ -1,13 +1,13 @@
 from django.contrib import admin
 from .models import *
-
+from modeltranslation.admin import TranslationAdmin
 # Register your models here.
 
 from mptt.admin import DraggableMPTTAdmin
 
 
 
-class CategoryAdmin(DraggableMPTTAdmin):
+class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
     mptt_indent_field = "name"
     list_display = ('tree_actions', 'indented_title',
                     'related_researches_count', 'related_researches_cumulative_count')
@@ -46,10 +46,12 @@ class CategoryAdmin(DraggableMPTTAdmin):
 class ResearchAdmin(admin.ModelAdmin):
     autocomplete_fields  = ['hashtag', 'country']
 
+    
 
-class HashtagAdmin(admin.ModelAdmin):
+
+class HashtagAdmin(TranslationAdmin):
     search_fields = ['name']
-class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(TranslationAdmin):
     search_fields = ['name']
 
 

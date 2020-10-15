@@ -1,0 +1,227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-15 19:13+0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: .\main\models.py:11 .\main\models.py:12
+msgid "Контактная информация"
+msgstr "Контактная информация"
+
+#: .\main\models.py:15
+msgid "Данные"
+msgstr "Данные"
+
+#: .\main\models.py:21 .\main\models.py:22
+msgid "Контактные данные"
+msgstr "Контактные данные"
+
+#: .\main\models.py:25 .\post\models.py:19 .\post\models.py:50
+#: .\research\models.py:51
+msgid "Описание"
+msgstr "Описание"
+
+#: .\main\models.py:26 .\post\models.py:49 .\research\models.py:46
+msgid "Изображение"
+msgstr "Изображение"
+
+#: .\main\models.py:27
+msgid "Ссылка"
+msgstr "Ссылка"
+
+#: .\main\models.py:31 .\main\models.py:32
+msgid "Раздел о моб. приложении"
+msgstr "Раздел о моб. приложении"
+
+#: .\main\models.py:35
+msgid "Информация о мобильном приложении"
+msgstr "Информация о мобильном приложении"
+
+#: .\main\models.py:36
+msgid "Контакты"
+msgstr "Контакты"
+
+#: .\main\models.py:41 .\main\models.py:42
+msgid "Главная страница"
+msgstr "Главная страница"
+
+#: .\post\models.py:6 .\post\models.py:18 .\post\models.py:48
+#: .\question\models.py:15
+msgid "Заголовок"
+msgstr "Заголовок"
+
+#: .\post\models.py:12 .\post\models.py:13
+msgid "О нас"
+msgstr "О нас"
+
+#: .\post\models.py:20 .\post\models.py:51 .\research\models.py:47
+msgid "Дата публикации"
+msgstr "Дата публикации"
+
+#: .\post\models.py:21 .\research\models.py:57 .\research\models.py:66
+msgid "Исследование"
+msgstr "Исследование"
+
+#: .\post\models.py:26 .\post\models.py:27
+msgid "Аналитика"
+msgstr "Аналитика"
+
+#: .\post\models.py:34
+msgid "Изображение для окна аналитики"
+msgstr "Изображение для окна аналитики"
+
+#: .\post\models.py:35
+msgid "Изображения для окна аналитики"
+msgstr "Изображения для окна аналитики"
+
+#: .\post\models.py:42
+msgid "Изображение для окна о нас"
+msgstr "Изображение для окна о нас"
+
+#: .\post\models.py:43
+msgid "Изображения для окна о нас"
+msgstr "Изображения для окна о нас"
+
+#: .\post\models.py:52
+msgid "Источник"
+msgstr "Источник"
+
+#: .\post\models.py:57
+msgid "Новость"
+msgstr "Новость"
+
+#: .\post\models.py:58
+msgid "Новости"
+msgstr "Новости"
+
+#: .\question\models.py:11 .\question\models.py:12 .\question\models.py:16
+msgid "Информация о партнерстве"
+msgstr "Информация о партнерстве"
+
+#: .\question\models.py:22 .\question\models.py:23
+msgid "Партнерство"
+msgstr "Партнерство"
+
+#: .\question\models.py:26
+msgid "Вопрос"
+msgstr "Вопрос"
+
+#: .\question\models.py:27
+msgid "Ответ"
+msgstr "Ответ"
+
+#: .\question\models.py:31 .\question\models.py:32
+msgid "ЧАВО"
+msgstr "ЧАВО"
+
+#: .\question\models.py:35 .\question\models.py:49
+msgid "ФИО"
+msgstr "ФИО"
+
+#: .\question\models.py:36 .\question\models.py:50
+msgid "Название организации"
+msgstr "Название организации"
+
+#: .\question\models.py:37
+msgid "Должность"
+msgstr "Должность"
+
+#: .\question\models.py:38 .\question\models.py:51
+msgid "Почта"
+msgstr "Почта"
+
+#: .\question\models.py:39 .\question\models.py:52
+msgid "Номер телефона"
+msgstr "Номер телефона"
+
+#: .\question\models.py:40
+msgid "Дополнительно"
+msgstr "Дополнительно"
+
+#: .\question\models.py:45 .\question\models.py:46
+msgid "Обратная связь(партнерство)"
+msgstr "Обратная связь(партнерство)"
+
+#: .\question\models.py:53
+msgid "Ваш вопрос"
+msgstr "Ваш вопрос"
+
+#: .\question\models.py:58 .\question\models.py:59
+msgid "Обратная связь(вопросы)"
+msgstr "Обратная связь(вопросы)"
+
+#: .\research\models.py:8 .\research\models.py:45
+msgid "Название"
+msgstr "Название"
+
+#: .\research\models.py:9 .\research\models.py:15 .\research\models.py:53
+msgid "Категория"
+msgstr "Категория"
+
+#: .\research\models.py:16
+msgid "Категории"
+msgstr "Категории"
+
+#: .\research\models.py:21 .\research\models.py:25 .\research\models.py:56
+msgid "Статус"
+msgstr "Статус"
+
+#: .\research\models.py:26
+msgid "Статусы"
+msgstr "Статусы"
+
+#: .\research\models.py:29 .\research\models.py:33
+msgid "Ключевое слово"
+msgstr "Ключевое слово"
+
+#: .\research\models.py:34 .\research\models.py:52
+msgid "Ключевые слова"
+msgstr  "Ключевые слова"""
+
+#: .\research\models.py:37 .\research\models.py:41 .\research\models.py:55
+msgid "Страна"
+msgstr "Страна"
+
+#: .\research\models.py:42
+msgid "Страны"
+msgstr "Страны"
+
+#: .\research\models.py:48
+msgid "Количество страниц"
+msgstr "Количество страниц"
+
+#: .\research\models.py:49
+msgid "Старая цена"
+msgstr "Старая цена"
+
+#: .\research\models.py:50
+msgid "Новая цена"
+msgstr "Новая цена"
+
+#: .\research\models.py:54
+msgid "Демоверсия"
+msgstr "Демоверсия"
+
+#: .\research\models.py:58
+msgid "Похожие исследования"
+msgstr "Похожие исследования"
+
+#: .\research\models.py:67
+msgid "Исследования"
+msgstr "Исследования"
