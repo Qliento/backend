@@ -27,9 +27,7 @@ SECRET_KEY = 'ay@g8$$0c!$+c9h1xt^f6sk5!12zp^pmnc1%xmj8_2fh$#_$42'
 DEBUG = False
 
 ALLOWED_HOSTS = ['207.154.250.71', '127.0.0.1', "localhost:3002", "localhost:3001", "localhost:3000",]
-CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_WHITELIST = ('http://localhost:3002',)
 
 # Application definition
@@ -305,3 +303,4 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
+CORS_ORIGIN_ALLOW_ALL = True
