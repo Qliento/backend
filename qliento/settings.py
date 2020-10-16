@@ -26,7 +26,8 @@ SECRET_KEY = 'ay@g8$$0c!$+c9h1xt^f6sk5!12zp^pmnc1%xmj8_2fh$#_$42'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['207.154.250.71', '127.0.0.1']
+ALLOWED_HOSTS = ['207.154.250.71', '127.0.0.1', "http://localhost:3002", "http://localhost:3001", "http://localhost:3000",]
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -80,6 +81,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -87,7 +89,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qliento.utils.ActivateTranslationMiddleware',
     'qliento.utils.AdminLocaleURLMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    
 
 ]
 
