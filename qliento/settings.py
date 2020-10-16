@@ -30,11 +30,7 @@ ALLOWED_HOSTS = ['207.154.250.71', '127.0.0.1', "localhost:3002", "localhost:300
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
-    '207.154.250.71',
-    '127.0.0.1',
-)
+
 
 # Application definition
 
