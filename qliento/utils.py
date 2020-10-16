@@ -18,7 +18,7 @@ class AdminLocaleURLMiddleware(MiddlewareMixin):
             request.LANG = getattr(settings, 'ADMIN_LANGUAGE_CODE', settings.LANGUAGE_CODE)
             translation.activate(request.LANG)
             request.LANGUAGE_CODE = request.LANG
-class corsMiddleware(object):
+class corsMiddleware(MiddlewareMixin):
     def process_response(self, req, resp):
         resp["Access-Control-Allow-Origin"] = "*"
         return resp
