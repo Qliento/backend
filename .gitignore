@@ -7,7 +7,7 @@ static
 /static
 .DS_Store
 <<<<<<< HEAD
-/migrations
+migrations
 =======
 .idea
 qlient

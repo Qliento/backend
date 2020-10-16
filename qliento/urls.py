@@ -19,10 +19,18 @@ from .router import router
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.conf import settings
-
+from django.conf.urls import url
 
 urlpatterns = [
+    url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('admin/', admin.site.urls),
+    path('users/', include('registration.urls')),
+    path('purchase/', include('orders.urls')),
+
+    path('auth/', include('rest_framework_social_oauth2.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
     path('', include('post.urls')),
     path('', include('research.urls')),
     path('', include(router.urls)),

@@ -1,6 +1,7 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext_lazy as _
+from registration.models import QAdmins
 
 
 # Create your models here.
@@ -56,6 +57,7 @@ class Research(models.Model):
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	research = models.FileField(null = True, blank = True, verbose_name = _('Исследование'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
+	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True)
 
 	def similar_researches(self):
 		return type(self).objects.prefetch_related('hashtag').filter(status=2).exclude(id=self.id)

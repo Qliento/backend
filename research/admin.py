@@ -43,7 +43,7 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
 
 
 
-class ResearchAdmin(admin.ModelAdmin):
+class ResearchAdmin(TranslationAdmin):
     autocomplete_fields  = ['hashtag', 'country']
 
     
