@@ -29,7 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['207.154.250.71', '127.0.0.1', "http://localhost:3002", "http://localhost:3001", "http://localhost:3000",]
 
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
