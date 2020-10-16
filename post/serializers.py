@@ -19,7 +19,7 @@ class InfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Info
-        fields = "__all__"
+        fields = ('header', 'description', 'images')
 
 
 class PostSerializer(serializers.ModelSerializer):
