@@ -37,20 +37,24 @@ INSTALLED_APPS = [
     'modeltranslation',
     'jet.dashboard',
     'jet',
+
     'corsheaders',
     'post.apps.PostConfig',
     'research.apps.ResearchConfig',
     'main.apps.MainConfig',
     'question.apps.QuestionConfig',
+
     'rest_framework',
     'django_simple_tags',
     'django_horizontal_list_filter',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'mptt',
     'django_filters',
     'jwt',
@@ -69,7 +73,6 @@ INSTALLED_APPS = [
     'registration',
     'orders',
 
-    
 ]
 
 
@@ -113,12 +116,28 @@ WSGI_APPLICATION = 'qliento.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3"))
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'qliento',
+            'USER': 'postgres',
+            'PASSWORD': '3WYe^n;s5>GA',
+            'HOST': 'localhost',
+            'PORT': ''
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'qliento',
+            'USER': 'admin',
+            'PASSWORD': '78sf45sf47asf@',
+            'HOST': 'localhost',
+            'PORT': ''
+        }
+    }
 
 AUTH_USER_MODEL = 'registration.Users'
 # Password validation
@@ -197,9 +216,6 @@ USE_L10N = True
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 LOCALE_PATHS = (
