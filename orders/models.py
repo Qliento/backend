@@ -8,6 +8,31 @@ from random import randint
 from django.db.models import F
 # Create your models here.
 
+#
+# class Cart(models.Model):
+#     ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items')
+#     amount_of_items = models.IntegerField(blank=True, null=True)
+#     cost_of_one = models.IntegerField(blank=True, null=True)
+#     discount = models.IntegerField(blank=True, null=True)
+#     total_of_all = models.IntegerField(blank=True, null=True)
+#     buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer")
+#
+#     @property
+#     def count_items(self):
+#         return Research.objects.count(ordered_item=self.pk)
+#
+#     @property
+#     def get_cost_of_1(self):
+#         return self.ordered_item.new_price
+#
+#     @property
+#     def get_discount(self):
+#         return self.ordered_item.old_price - self.ordered_item.new_price
+#
+#     @property
+#     def get_general_sum(self):
+#         return Research.objects.filter(ordered_item=self.pk).annotate(sum())
+
 
 class Orders(models.Model):
     ordered_researches = models.ForeignKey(Research, on_delete=models.CASCADE, default=1, related_name='researches')
