@@ -86,6 +86,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qliento.utils.ActivateTranslationMiddleware',
     'qliento.utils.AdminLocaleURLMiddleware',
+    'qliento.utils.corsMiddleware',
     
 
 ]
