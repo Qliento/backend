@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, GenericAPIView, ListAPIView
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, GenericAPIView, ListAPIView, RetrieveDestroyAPIView
 from rest_framework.response import Response
 
-from .serializers import OrderFormSerailizer, OrdersCreateSerializer, MyOrdersSerializer
-from .models import OrderForm, Orders
+from .serializers import OrderFormSerailizer, OrdersCreateSerializer, MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer
+from .models import OrderForm, Orders, Cart, ItemsInCart
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 # Create your views here.
@@ -31,4 +33,30 @@ class MyOrdersView(ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class ItemInCartView(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CartedItemsSerializer
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        print(request.user)
+        self.queryset = Cart.objects.filter(buyer=request.user.id)
+        return self.list(request, *args, **kwargs)
+
+
+class ItemCartDeleteView(RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CartedItemsSerializer
+    queryset = None
+
+    def destroy(self, request, *args, **kwargs):
+        instance = Cart.objects.filter(buyer=request.user.id, id=self.kwargs['pk'])
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AddToCartView(CreateAPIView):
+    queryset = Cart.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AddToCartSerializer
 

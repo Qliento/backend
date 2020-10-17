@@ -51,15 +51,15 @@ class ClientsAdmin(admin.ModelAdmin):
         model = Clients
 
 
-class OrdersInline(admin.TabularInline):
-    model = Orders
-    fk_name = "customer"
-    extra = 0
+# class OrdersInline(admin.TabularInline):
+#     model = Orders
+#     fk_name = "customer"
+#     extra = 0
 
 
 class UsersAdmin(admin.ModelAdmin):
     list_display = ['email', 'primary_reference', 'initial_reference']
-    inlines = [OrdersInline]
+    # inlines = [OrdersInline]
     search_fields = ['email', 'name']
 
     def photo_show(self, obj):

@@ -4,49 +4,47 @@ from registration.models import Users
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from registration.utils import Util
+from django.db.models import Avg, Count, Min, Sum
 from random import randint
 from django.db.models import F
 # Create your models here.
 
-#
-# class Cart(models.Model):
-#     ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items')
-#     amount_of_items = models.IntegerField(blank=True, null=True)
-#     cost_of_one = models.IntegerField(blank=True, null=True)
-#     discount = models.IntegerField(blank=True, null=True)
-#     total_of_all = models.IntegerField(blank=True, null=True)
-#     buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer")
-#
-#     @property
-#     def count_items(self):
-#         return Research.objects.count(ordered_item=self.pk)
-#
-#     @property
-#     def get_cost_of_1(self):
-#         return self.ordered_item.new_price
-#
-#     @property
-#     def get_discount(self):
-#         return self.ordered_item.old_price - self.ordered_item.new_price
-#
-#     @property
-#     def get_general_sum(self):
-#         return Research.objects.filter(ordered_item=self.pk).annotate(sum())
+
+class Cart(models.Model):
+    ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items', default=1)
+    amount_of_items = models.IntegerField(blank=True, null=True)
+    discount = models.IntegerField(blank=True, null=True)
+    total_of_all = models.IntegerField(blank=True, null=True)
+    buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer")
+
+    @property
+    def count_items(self):
+        return Research.objects.filter(ordered_items=self.pk).count()
+
+    @property
+    def get_cost_of_1(self):
+        return self.ordered_item.new_price
+
+    @property
+    def get_discount(self):
+        return self.ordered_item.old_price - self.ordered_item.new_price
+
+    @property
+    def get_general_sum(self):
+        return Research.objects.filter(ordered_items=self.pk).aggregate(Sum('new_price'))
+
+    def save(self, *args, **kwargs):
+        super(Cart, self).save(*args, **kwargs)
+
+
+class ItemsInCart(models.Model):
+    items_in_cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items_for_sell')
 
 
 class Orders(models.Model):
-    ordered_researches = models.ForeignKey(Research, on_delete=models.CASCADE, default=1, related_name='researches')
     date_added = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(null=True, blank=True, default=False)
-    customer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='buyer')
-    total = models.IntegerField(blank=True, null=True)
-
-    @property
-    def get_total(self):
-        return self.ordered_researches.new_price
-
-    def save(self, *args, **kwargs):
-        super(Orders, self).save(*args, **kwargs)
+    items_ordered = models.ForeignKey(ItemsInCart, on_delete=models.CASCADE, related_name="items_to_pay")
 
     class Meta:
         verbose_name = _("Заказ")
