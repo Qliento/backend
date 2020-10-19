@@ -22,7 +22,7 @@ class Contact(models.Model):
 		verbose_name_plural = _('Контактные данные')
 
 class MobApp(models.Model):
-	description = models.CharField(max_length = 1000, verbose_name = _('Описание'))
+	description = models.TextField(verbose_name = _('Описание'))
 	image = models.ImageField(null = True, blank = True, upload_to='images', verbose_name = _('Изображение'))
 	url = models.URLField(max_length=250, verbose_name = _('Ссылка'))
 	def __str__(self):

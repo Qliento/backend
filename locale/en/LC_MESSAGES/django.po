@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-19 21:29+0600\n"
+"POT-Creation-Date: 2020-10-19 22:17+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,8 +30,8 @@ msgstr "Data"
 msgid "Контактные данные"
 msgstr "Contact Data"
 
-#: .\main\models.py:25 .\post\models.py:16 .\post\models.py:47
-#: .\research\models.py:52
+#: .\main\models.py:25 .\post\models.py:7 .\post\models.py:16
+#: .\post\models.py:47 .\research\models.py:52
 msgid "Описание"
 msgstr "Description"
 
@@ -88,7 +88,7 @@ msgstr "About us"
 msgid "Дата публикации"
 msgstr "Date of publishing"
 
-#: .\post\models.py:18 .\research\models.py:58 .\research\models.py:68
+#: .\post\models.py:18 .\research\models.py:59 .\research\models.py:70
 #, fuzzy
 #| msgid "Название"
 msgid "Исследование"
@@ -232,7 +232,7 @@ msgstr ""
 msgid "Название"
 msgstr "Name"
 
-#: .\research\models.py:10 .\research\models.py:16 .\research\models.py:54
+#: .\research\models.py:10 .\research\models.py:16 .\research\models.py:55
 msgid "Категория"
 msgstr "Category"
 
@@ -240,7 +240,7 @@ msgstr "Category"
 msgid "Категории"
 msgstr "Categories"
 
-#: .\research\models.py:22 .\research\models.py:26 .\research\models.py:57
+#: .\research\models.py:22 .\research\models.py:26 .\research\models.py:58
 msgid "Статус"
 msgstr "Status"
 
@@ -252,11 +252,11 @@ msgstr "Statuses"
 msgid "Ключевое слово"
 msgstr "Hashtag"
 
-#: .\research\models.py:35 .\research\models.py:53
+#: .\research\models.py:35 .\research\models.py:54
 msgid "Ключевые слова"
 msgstr "Hashtags"
 
-#: .\research\models.py:38 .\research\models.py:42 .\research\models.py:56
+#: .\research\models.py:38 .\research\models.py:42 .\research\models.py:57
 msgid "Страна"
 msgstr "Country"
 
@@ -276,15 +276,21 @@ msgstr "Old price"
 msgid "Новая цена"
 msgstr "New price"
 
-#: .\research\models.py:55
+#: .\research\models.py:53
+#, fuzzy
+#| msgid "Описание"
+msgid "Содержание"
+msgstr "Content"
+
+#: .\research\models.py:56
 msgid "Демоверсия"
 msgstr "Demoversion"
 
-#: .\research\models.py:59
+#: .\research\models.py:60
 msgid "Похожие исследования"
 msgstr "Similar researches"
 
-#: .\research\models.py:69
+#: .\research\models.py:71
 msgid "Исследования"
 msgstr "Researches"
 

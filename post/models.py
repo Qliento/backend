@@ -4,7 +4,7 @@ from research.models import Research
 from django.utils.translation import ugettext_lazy as _
 class Info(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _("Заголовок"))
-	description = models.CharField(max_length = 1000)
+	description = models.TextField(verbose_name = _('Описание'))
 	def __str__(self):
 		return self.header
 	class Meta:
@@ -13,7 +13,7 @@ class Info(models.Model):
 
 class Post(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _('Заголовок'))
-	description = models.CharField(max_length = 1000, verbose_name = _('Описание'))
+	description = models.TextField(verbose_name = _('Описание'))
 	date = models.DateField(auto_now_add=True, verbose_name = _('Дата публикации'))
 	research = models.ForeignKey(Research, on_delete=models.CASCADE, verbose_name = _('Исследование'))
 
@@ -44,7 +44,7 @@ class ImageInfo(models.Model):
 class News(models.Model):
 	name = models.CharField(max_length = 255, verbose_name = _('Заголовок'))
 	image = models.ImageField(null = True, blank = True, verbose_name = _('Изображение'))
-	description = models.CharField(max_length = 2000, verbose_name = _('Описание'))
+	description = models.TextField(verbose_name = _('Описание'))
 	date = models.DateField(auto_now_add=True, verbose_name = _('Дата публикации'))
 	source = models.CharField(max_length=200, verbose_name = _('Источник'), null = True, blank = True,)
 

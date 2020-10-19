@@ -13,7 +13,7 @@ class PartnershipInfo(models.Model):
 
 class Partnership(models.Model):
 	header = models.CharField(max_length = 1000, verbose_name = _('Заголовок'))
-	description = models.CharField(max_length = 1000, verbose_name = _('Информация о партнерстве'))
+	description = models.TextField( verbose_name = _('Информация о партнерстве'))
 	partnership = models.ForeignKey(PartnershipInfo, on_delete=models.CASCADE, related_name='partnership')
 
 	def __str__(self):

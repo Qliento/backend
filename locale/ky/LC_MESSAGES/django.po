@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-19 21:29+0600\n"
+"POT-Creation-Date: 2020-10-19 22:17+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,8 +29,8 @@ msgstr "Маалымат"
 msgid "Контактные данные"
 msgstr "Байланыш маалымат"
 
-#: .\main\models.py:25 .\post\models.py:16 .\post\models.py:47
-#: .\research\models.py:52
+#: .\main\models.py:25 .\post\models.py:7 .\post\models.py:16
+#: .\post\models.py:47 .\research\models.py:52
 msgid "Описание"
 msgstr "Сүрөттөмө"
 
@@ -87,7 +87,7 @@ msgstr "Биз жөнүндө"
 msgid "Дата публикации"
 msgstr "Жарыяланган күнү"
 
-#: .\post\models.py:18 .\research\models.py:58 .\research\models.py:68
+#: .\post\models.py:18 .\research\models.py:59 .\research\models.py:70
 #, fuzzy
 #| msgid "Название"
 msgid "Исследование"
@@ -231,7 +231,7 @@ msgstr ""
 msgid "Название"
 msgstr "Аты"
 
-#: .\research\models.py:10 .\research\models.py:16 .\research\models.py:54
+#: .\research\models.py:10 .\research\models.py:16 .\research\models.py:55
 msgid "Категория"
 msgstr "Категория"
 
@@ -239,7 +239,7 @@ msgstr "Категория"
 msgid "Категории"
 msgstr "Категориялар"
 
-#: .\research\models.py:22 .\research\models.py:26 .\research\models.py:57
+#: .\research\models.py:22 .\research\models.py:26 .\research\models.py:58
 msgid "Статус"
 msgstr "Статус"
 
@@ -251,11 +251,11 @@ msgstr "Статустар"
 msgid "Ключевое слово"
 msgstr "Ачкыч сөз"
 
-#: .\research\models.py:35 .\research\models.py:53
+#: .\research\models.py:35 .\research\models.py:54
 msgid "Ключевые слова"
 msgstr "Ачкыч сөздөр"
 
-#: .\research\models.py:38 .\research\models.py:42 .\research\models.py:56
+#: .\research\models.py:38 .\research\models.py:42 .\research\models.py:57
 msgid "Страна"
 msgstr "Өлкө"
 
@@ -275,15 +275,21 @@ msgstr "Эски баа"
 msgid "Новая цена"
 msgstr "Жаңы баа"
 
-#: .\research\models.py:55
+#: .\research\models.py:53
+#, fuzzy
+#| msgid "Описание"
+msgid "Содержание"
+msgstr "Мазмуну"
+
+#: .\research\models.py:56
 msgid "Демоверсия"
 msgstr "Демоверсия"
 
-#: .\research\models.py:59
+#: .\research\models.py:60
 msgid "Похожие исследования"
 msgstr "Окшош изилдөөлөр"
 
-#: .\research\models.py:69
+#: .\research\models.py:71
 msgid "Исследования"
 msgstr "Изилдөөлөр"
 
