@@ -1,7 +1,9 @@
 from django.db import models
-from django.db.models import Count
+from research.models import Category
+from post.models import Post
 # Create your models here.
 from django.utils.translation import ugettext_lazy as _
+
 
 class ContactInfo(models.Model):
 
@@ -32,6 +34,8 @@ class MobApp(models.Model):
 		verbose_name_plural = _('Раздел о моб. приложении')
 
 class MainPage(models.Model):
+	post = models.ForeignKey(Post, on_delete=models.CASCADE)
+	category = models.ManyToManyField(Category, verbose_name="Категории")
 	mob_app = models.ForeignKey(MobApp, on_delete = models.CASCADE, verbose_name = _('Информация о мобильном приложении')) 
 	сontacts = models.ForeignKey(ContactInfo, on_delete = models.CASCADE, verbose_name = _('Контакты')) 
 

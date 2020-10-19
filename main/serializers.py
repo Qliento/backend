@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from .models import *
 
+from research.serializers import CategoryCountSerializer
 
 
-
+from post.models import Post
 class MobAppSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobApp
@@ -20,13 +21,19 @@ class ContactInfoSerializer(serializers.ModelSerializer):
         model = ContactInfo
         fields = ("contacts", )
 
+class PostForMainPageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ("header", "description",)
 class MainPageSerializer(serializers.ModelSerializer):
     mob_app = MobAppSerializer()
     сontacts = ContactInfoSerializer()
+    category = CategoryCountSerializer(many=True)
+    post = PostForMainPageSerializer()
 
     class Meta:
         model = MainPage
-        fields = ("mob_app", "сontacts", )
+        fields = ("post", "category", "mob_app", "сontacts", )
         
 
 
