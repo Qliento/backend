@@ -5,14 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 class Info(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _("Заголовок"))
 	description = models.CharField(max_length = 1000)
-
 	def __str__(self):
 		return self.header
 	class Meta:
 		verbose_name = _('О нас')
 		verbose_name_plural = _('О нас')
-
-
 
 class Post(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _('Заголовок'))
@@ -23,16 +20,16 @@ class Post(models.Model):
 	def __str__(self):
 		return self.header
 	class Meta:
-		verbose_name = _('Аналитика')
-		verbose_name_plural = _('Аналитика')
+		verbose_name = _('Блог')
+		verbose_name_plural = _('Блог')
 
 class ImagePost(models.Model):
 	url = models.ImageField(null = True, blank = True, upload_to='images')
 	post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name='images')
 
 	class Meta:
-		verbose_name = _('Изображение для окна аналитики')
-		verbose_name_plural = _('Изображения для окна аналитики')
+		verbose_name = _('Изображение для окна блога')
+		verbose_name_plural = _('Изображения для окна блога')
 
 
 class ImageInfo(models.Model):
