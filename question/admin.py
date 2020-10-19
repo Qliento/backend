@@ -12,3 +12,4 @@ class PartnershipInfoAdmin(admin.ModelAdmin):
 admin.site.register(Question)
 admin.site.register(PartnershipInfo, PartnershipInfoAdmin)
 admin.site.register(HaveQuestion)
+admin.site.register(Feedback)

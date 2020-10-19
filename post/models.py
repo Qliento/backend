@@ -49,7 +49,7 @@ class News(models.Model):
 	image = models.ImageField(null = True, blank = True, verbose_name = _('Изображение'))
 	description = models.CharField(max_length = 2000, verbose_name = _('Описание'))
 	date = models.DateField(auto_now_add=True, verbose_name = _('Дата публикации'))
-	source = models.CharField(max_length=200, verbose_name = _('Источник'))
+	source = models.CharField(max_length=200, verbose_name = _('Источник'), null = True, blank = True,)
 
 	def __str__(self):
 		return self.name
