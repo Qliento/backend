@@ -22,6 +22,7 @@ class InfoSerializer(serializers.ModelSerializer):
         fields = ('id', 'header', 'description', 'images')
 
 
+
 class PostSerializer(serializers.ModelSerializer):
 
     images = ImagePostSerializer(many = True)
@@ -34,5 +35,5 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields = "__all__"
+        fields = ('id', 'name', 'description', 'date', 'source')
         

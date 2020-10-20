@@ -4,7 +4,7 @@ from .models import *
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = "__all__"
+        fields = ('id', 'question', 'answer')
 
 
 class PartnershipSerializer(serializers.ModelSerializer):

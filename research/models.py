@@ -49,7 +49,8 @@ class Research(models.Model):
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
 	new_price = models.IntegerField(verbose_name = _('Новая цена'))
-	description = models.CharField(max_length = 1000, verbose_name = _('Описание'))
+	description = models.TextField(verbose_name = _('Описание'))
+	content = models.TextField( verbose_name = _('Содержание'))
 	hashtag = models.ManyToManyField(Hashtag, verbose_name = _('Ключевые слова'))
 	category = models.ForeignKey('Category', null=True, blank=True, on_delete = models.CASCADE, verbose_name = _('Категория'))
 	demo = models.FileField(null = True, blank = True, upload_to='demos', verbose_name = _('Демоверсия'))
@@ -57,6 +58,7 @@ class Research(models.Model):
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	research = models.FileField(null = True, blank = True, verbose_name = _('Исследование'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
+
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True)
 
 	def similar_researches(self):
