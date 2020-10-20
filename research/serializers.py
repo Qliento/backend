@@ -19,6 +19,13 @@ class CountrySerializer(serializers.ModelSerializer):
         model = Country
         fields = ('id', 'name')
 
+class CategoryCountSerializer(serializers.ModelSerializer): 
+    count = serializers.IntegerField(source='get_recursive_product_count')
+    
+    class Meta:    
+        model = Category 
+        fields = ('name', 'count',)
+
 class CardResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
