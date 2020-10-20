@@ -24,7 +24,7 @@ from datetime import timedelta
 SECRET_KEY = 'ay@g8$$0c!$+c9h1xt^f6sk5!12zp^pmnc1%xmj8_2fh$#_$42'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -95,7 +95,7 @@ ROOT_URLCONF = 'qliento.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

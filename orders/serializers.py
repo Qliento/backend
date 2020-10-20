@@ -1,8 +1,19 @@
+from itertools import chain
 from rest_framework import serializers
 from research.models import Research
-from .models import Orders, OrderForm, Cart, ItemsInCart
+from .models import Orders, OrderForm, Cart, ItemsInCart, DemoVersionForm
 from collections import OrderedDict
 from rest_framework import request
+
+
+def to_dict(instance):
+    opts = instance._meta
+    data = {}
+    for f in chain(opts.concrete_fields, opts.private_fields, opts.many_to_many):
+        data[f.name] = f.value_from_object(instance)
+    for f in opts.many_to_many:
+        data[f.name] = [i.email for i in f.value_from_object(instance)]
+    return data
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -27,7 +38,6 @@ class AddToCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = "__all__"
-        depth = 1
 
     def create(self, validated_data):
         ordered_thin = validated_data.pop('ordered_items')
@@ -61,17 +71,13 @@ class OrderFormSerailizer(serializers.ModelSerializer):
 
 
 class OrdersCreateSerializer(serializers.ModelSerializer):
-    # get_total = serializers.IntegerField(read_only=True)
+    get_total_from_cart = serializers.IntegerField(read_only=True)
+    items_ordered = serializers.PrimaryKeyRelatedField(many=True, queryset=Cart.objects.all())
 
     class Meta:
         model = Orders
-        fields = ['customer', 'ordered_researches']
-
-    # def create(self, validated_data):
-    #     special_total = Orders.objects.create(**validated_data)
-    #     special_total.total = special_total.get_total
-    #     special_total.save(update_fields=['total'])
-    #     return special_total
+        fields = "__all__"
+        depth = 2
 
 
 class BoughtByUser(serializers.ModelSerializer):
@@ -85,8 +91,7 @@ class MyOrdersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Orders
-        fields = ['ordered_researches', 'date_added', 'completed']
-        depth = 2
+        fields = ['items_ordered', 'date_added', 'completed']
 
     def to_representation(self, instance):
         data = super(MyOrdersSerializer, self).to_representation(instance)
@@ -99,3 +104,12 @@ class MyOrdersSerializer(serializers.ModelSerializer):
             if i[0] not in unnecessary_values:
                 removed_fields.append(i)
         return OrderedDict(removed_fields)
+
+
+class EmailDemoSerializer(serializers.ModelSerializer):
+    desired_research = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
+
+    class Meta:
+        fields = "__all__"
+        model = DemoVersionForm
+

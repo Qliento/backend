@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, GenericAPIView, ListAPIView, RetrieveDestroyAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, GenericAPIView
 from rest_framework.response import Response
-
-from .serializers import OrderFormSerailizer, OrdersCreateSerializer, MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer
-from .models import OrderForm, Orders, Cart, ItemsInCart
+from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
+    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer
+from .models import OrderForm, Orders, Cart, ItemsInCart, DemoVersionForm
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.views import APIView
 # Create your views here.
 
 
@@ -29,7 +28,7 @@ class MyOrdersView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Orders.objects.filter(customer=request.user.id)
+        self.queryset = Orders.objects.filter(items_ordered=request.user.id)
         return self.list(request, *args, **kwargs)
 
 
@@ -60,3 +59,8 @@ class AddToCartView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = AddToCartSerializer
 
+
+class SendDemoView(CreateAPIView):
+    queryset = DemoVersionForm.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = EmailDemoSerializer
