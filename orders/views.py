@@ -28,7 +28,7 @@ class MyOrdersView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Orders.objects.filter(items_ordered=request.user.id)
+        self.queryset = Orders.objects.filter(items_ordered__buyer=request.user)
         return self.list(request, *args, **kwargs)
 
 

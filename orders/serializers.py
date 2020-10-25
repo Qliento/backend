@@ -66,7 +66,6 @@ class OrderFormSerailizer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         order = OrderForm.objects.create(**validated_data)
-        order.save()
         return order
 
 
@@ -95,15 +94,16 @@ class MyOrdersSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(MyOrdersSerializer, self).to_representation(instance)
-        removed_fields = []
+        necessary_fields = []
         retrieved_values = dict(data)
-        ordered_researches_data = retrieved_values['ordered_researches']
-        retrieved_orders = dict(ordered_researches_data)
-        unnecessary_values = ['category', 'old_price', 'demo', 'status', 'research', 'similars']
-        for i in retrieved_orders.items():
+        ordered_researches_ids = retrieved_values['items_ordered']
+        retrieved_orders = Research.objects.filter(id=ordered_researches_ids[0])
+        research_fields = list(retrieved_orders.values())[0]
+        unnecessary_values = ['category_id', 'old_price', 'demo', 'status_id', 'research', 'similars', 'content']
+        for i in research_fields.items():
             if i[0] not in unnecessary_values:
-                removed_fields.append(i)
-        return OrderedDict(removed_fields)
+                necessary_fields.append(i)
+        return OrderedDict(necessary_fields)
 
 
 class EmailDemoSerializer(serializers.ModelSerializer):
