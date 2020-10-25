@@ -41,7 +41,7 @@ class NewsListView(APIView):
 
 
     def get(self, request, format=None):
-        news = News.objects.all()
+        news = News.objects.order_by('-id')
         serializer = NewsSerializer(news, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK) 
 

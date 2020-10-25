@@ -2,6 +2,10 @@ from django.db import models
 from research.models import Research
 # Create your models here.
 from django.utils.translation import ugettext_lazy as _
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
 class Info(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _("Заголовок"))
 	description = models.TextField(verbose_name = _('Описание'))
@@ -38,6 +42,7 @@ class ImageInfo(models.Model):
 	class Meta:
 		verbose_name = _('Изображение для окна о нас')
 		verbose_name_plural = _('Изображения для окна о нас')
+
 	
 
 
@@ -50,9 +55,25 @@ class News(models.Model):
 
 	def __str__(self):
 		return self.name
+
+	def save(self, *args, **kwargs):
+		if not self.id:
+			self.image = self.compressImage(self.image)
+		super(News, self).save(*args, **kwargs)
+
+	def compressImage(self,image):
+		imageTemproary = Image.open(image)
+		outputIoStream = BytesIO()
+		imageTemproaryResized = imageTemproary.resize( (1020,573) ) 
+		imageTemproary.save(outputIoStream , format='JPEG', quality=70)
+		outputIoStream.seek(0)
+		image = InMemoryUploadedFile(outputIoStream,'ImageField', "%s.jpg" % image.name.split('.')[0], 'image/jpeg', sys.getsizeof(outputIoStream), None)
+		return image
+
 	class Meta:
 		verbose_name = _('Новость')
 		verbose_name_plural = _('Новости')
+
 
 
 
