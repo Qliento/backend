@@ -9,5 +9,6 @@ urlpatterns = [
     path('research/by-date-asc', ResearchViewFromOldest.as_view()),
     path('research/by-price-desc', ResearchViewFromCheapest.as_view()),
     path('research/by-price-asc', ResearchViewToCheapest.as_view()),
-    path('research-upload/', UploadResearchView.as_view())
+    path('research-upload/', UploadResearchView.as_view()),
+    path('research-update/<int:pk>/', UpdateResearchView.as_view())
 ]

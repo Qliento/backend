@@ -10,7 +10,8 @@ urlpatterns = [
     path('login/researchers/', login_qadmins),
     path('login/clients/', login_respondents),
 
-    path('update/users/<int:pk>/', UsersUpdate.as_view()),
+    path('update/users/', UsersUpdate.as_view()),
+    path('update/partners/', PartnersUpdate.as_view()),
 
     path('send-email/', send_email),
     path('password-update/', PasswordReset.as_view()),

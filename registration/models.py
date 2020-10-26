@@ -75,7 +75,7 @@ class Clients(models.Model):
 class QAdmins(models.Model):
     admin_status = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="initial_reference")
     logo = models.CharField(blank=True, null=True, verbose_name="Название организации", max_length=100)
-    # about_me = models.TextField(max_length=2000)
+    about_me = models.TextField(max_length=2000)
 
     class Meta:
         verbose_name = _("Поставщик")

@@ -2,7 +2,11 @@ from django.contrib import admin
 from .models import *
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 # Register your models here.
-
+from django.http import HttpResponseRedirect
+from orders.serializers import to_dict
+from django.core.mail import EmailMessage
+from research.models import Research
+from django.conf import settings
 from mptt.admin import DraggableMPTTAdmin
 
 
@@ -42,7 +46,42 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
 
 
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
+
+        change_form_template = "admin/acceptordeny.html"
+
+        def response_change(self, request, obj):
+            if "_approve" in request.POST:
+                mail = EmailMessage(' Ваше исследование было одобрено',
+                                    'Доброго времени суток, {}. \n'
+                                    'Поздравляем! По вашему запросу, ваше исследование, детали которого описаны ниже, было одобрено.\n'
+                                    'Название: "{}" \n'
+                                    'Идентификатор: {} \n'
+                                    '\n'
+                                    'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                                    settings.EMAIL_HOST_USER,
+                                    [obj.author.admin_status.email])
+
+                mail.send()
+
+                return HttpResponseRedirect(".")
+
+            return super().response_change(request, obj)
+
+        def delete_model(self, request, obj):
+
+            mail = EmailMessage(' Ваше исследование было отклонено',
+                                'Доброго времени суток, {}. \n'
+                                'К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n'
+                                'Название: "{}" \n'
+                                'Идентификатор: {} \n'
+                                '\n'
+                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                                settings.EMAIL_HOST_USER,
+                                [obj.author.admin_status.email])
+
+            mail.send()
+
+            return super().delete_model(request, obj)
 
 
 class HashtagAdmin(TranslationAdmin):

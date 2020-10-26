@@ -48,7 +48,7 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class UsersUpdateSerializer(serializers.ModelSerializer):
-    photo = serializers.ImageField()
+    photo = serializers.ImageField(required=False)
 
     class Meta:
         model = Users
@@ -100,7 +100,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
 
 
 class QAdminSerializer(serializers.ModelSerializer):
-    admin_status = UsersInfoSerializer(required=True, many=False)
+    admin_status = UsersUpdateSerializer(required=True, many=False)
 
     class Meta:
         fields = ["logo", "admin_status", "about_me"]
@@ -178,20 +178,3 @@ class CleanedFileOnly(serializers.ModelSerializer):
         model = Research
         fields = ['research']
 
-
-class UploadResearchSerializer(serializers.ModelSerializer):
-    hashtag = HashtagSerializer(many=True, read_only=True)
-    country = CountrySerializer(many=True, read_only=True)
-    about_author = serializers.ReadOnlyField(source='author__about_me')
-
-    class Meta:
-        model = Research
-        fields = ['image', 'about_author', 'name', 'date', 'pages',
-                  'hashtag', 'country', 'new_price', 'old_price', 'id', 'status',
-                  'category', 'demo', 'country', 'status', 'research']
-        read_only_fields = ('date', 'status', 'hashtag', 'category')
-
-    def update(self, instance, validated_data):
-        instance.new_price = validated_data.get('new_price', instance.new_price)
-        instance.save()
-        return instance

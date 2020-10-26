@@ -53,11 +53,6 @@ class QAdminRegistration(GenericAPIView):
 
         data = {'email_body': email_body, 'to_email': str(admin_as_user), 'email_subject': 'Verify your email'}
         Util.send_email(data)
-        # send_mail('Активация аккаунта',
-        #           'Доброго времени суток, пользователь. Пройдите по этой ссылке ниже, чтобы войти на сайт. Ваша ссылка для активации: %s' % abs_url,
-        #           settings.EMAIL_HOST_USER,
-        #           [str(admin_as_user)],
-        #           fail_silently=False)
 
         return Response(user_data, status=status.HTTP_201_CREATED)
 
@@ -98,10 +93,7 @@ class ClientsRegistration(GenericAPIView):
         current_site = get_current_site(request).domain
         relative_link = reverse('email-verify')
         abs_url = 'http://' + current_site + relative_link + "?token=" + str(token)
-        email_body = 'Hi. ' + ' Use the link below to verify your email \n' + abs_url
 
-        # data = {'email_body': email_body, 'to_email': str(client_as_user), 'email_subject': 'Verify your email'}
-        # Util.send_email(data)
         send_mail('Активация аккаунта',
                   'Доброго времени суток, пользователь. Пройдите по этой ссылке ниже в течение 24 часов, чтобы войти на сайт. Ваша ссылка для активации: %s' % abs_url,
                   settings.EMAIL_HOST_USER,
@@ -175,6 +167,23 @@ class UsersUpdate(RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PartnersUpdate(RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = QAdminSerializer
+
+    def get(self, request, *args, **kwargs):
+        get_data_from = QAdmins.objects.get(admin_status=request.user)
+        serializer = self.serializer_class(get_data_from)
+        print(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.serializer_class(QAdmins.objects.get(admin_status=request.user), data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
