@@ -9,7 +9,7 @@ from .models import *
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 # Create your views here.
 
 #class CardResearchView(generics.ListAPIView):
@@ -27,13 +27,19 @@ class DefaultResearchView(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+class UploadResearchView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    queryset = Research.objects.all()
+    serializer_class = ResearchSerializer
+
     def post(self, request, *args, **kwargs):
-        file_serializer = ResearchSerializer(data=request.data)
+        file_serializer = self.get_serializer(data=request.data)
         if file_serializer.is_valid():
             file_serializer.save()
             return Response(file_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ResearchViewFromOldest(APIView):
     permission_classes = [AllowAny, ]
@@ -45,6 +51,7 @@ class ResearchViewFromOldest(APIView):
         serializer = ResearchSerializer(research, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+
 class ResearchViewFromCheapest(APIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.all()
@@ -54,6 +61,7 @@ class ResearchViewFromCheapest(APIView):
         research = Research.objects.order_by('-old_price').filter(status = 2)
         serializer = ResearchSerializer(research, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 class ResearchViewToCheapest(APIView):
     permission_classes = [AllowAny, ]
@@ -65,6 +73,8 @@ class ResearchViewToCheapest(APIView):
         research = Research.objects.order_by('old_price').filter(status = 2)
         serializer = ResearchSerializer(research, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
 class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.all()

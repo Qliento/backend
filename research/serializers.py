@@ -54,6 +54,6 @@ class ResearchSerializer(serializers.ModelSerializer):
         fields = ( 'name_','name','description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status','research', 'similars', 'author')
         read_only_fields = ('date', 'status', 'hashtag', 'similars', 'category')
     def create(self, validated_data):
-        research = Research.objects.create(author=self.context['request'].user, **validated_data)
+        research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
         return research
 
