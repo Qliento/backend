@@ -1,6 +1,6 @@
 from django.db import models
 from research.models import Research
-from registration.models import Users
+from registration.models import Users, QAdmins
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from registration.utils import Util
@@ -151,19 +151,22 @@ class ShortDescriptions(models.Model):
         verbose_name = _("Краткое описание")
         verbose_name_plural = _('Краткие описания')
 
-# class Statistics(models.Model):
-#
-#     @property
-#     def get_volume_of_goods(self):
-#         volume = Orders.objects.filter(items_to_pay=self.pk).aggregate(Count('completed'))
-#         return volume.get('completed__count')
-#
-#     @property
-#     def get_amount_of_views(self):
-#         views_number = Orders.objects.filter(items_to_pay=self.pk).aggregate(Sum('total_of_all'))
-#         return views_number.get('total_of_all__sum')
-#
-#     @property
-#     def get_amount_of_downloaded_demos(self):
-#         price = Research.objects.filter(items_to_pay=self.pk).aggregate(Count('total_of_all'))
-#         return price.get('total_of_all__sum')
+
+class Statistics(models.Model):
+    partner_admin = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='partner_admin')
+    demo_downloaded = models.IntegerField()
+    watches = models.IntegerField()
+    bought = models.IntegerField()
+
+    @property
+    def add_demo_downloaded(self):
+        return self.demo_downloaded + 1
+
+    @property
+    def add_more_watches(self):
+        return self.watches + 1
+
+    @property
+    def add_bought_number(self):
+        return self.bought + 1
+

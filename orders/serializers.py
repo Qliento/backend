@@ -1,9 +1,10 @@
 from itertools import chain
 from rest_framework import serializers
 from research.models import Research
-from .models import Orders, OrderForm, Cart, DemoVersionForm, ShortDescriptions
+from .models import Orders, OrderForm, Cart, DemoVersionForm, ShortDescriptions, Statistics
 from collections import OrderedDict
 from rest_framework import request
+from registration.models import QAdmins
 from research.serializers import Country, Hashtag
 
 
@@ -137,3 +138,14 @@ class ShortDescriptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShortDescriptions
         fields = ['picture1', 'text1', 'picture2', 'text2']
+
+
+class StatisticsSerializer(serializers.ModelSerializer):
+    add_demo_downloaded = serializers.CharField(read_only=True)
+    add_more_watches = serializers.CharField(read_only=True)
+    add_bought_number = serializers.CharField(read_only=True)
+    partner_admin = serializers.PrimaryKeyRelatedField(queryset=QAdmins.objects.all())
+
+    class Meta:
+        model = Statistics
+        fields = ['__all__']
