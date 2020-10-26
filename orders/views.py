@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, GenericAPIView
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
-    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer
-from .models import OrderForm, Orders, Cart, ItemsInCart, DemoVersionForm
+    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, ShortDescriptionsSerializer
+from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm
 from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
 # Create your views here.
@@ -64,3 +64,9 @@ class SendDemoView(CreateAPIView):
     queryset = DemoVersionForm.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = EmailDemoSerializer
+
+
+class ShortDescriptionView(ListAPIView):
+    queryset = ShortDescriptions.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = ShortDescriptionsSerializer

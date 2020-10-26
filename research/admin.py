@@ -3,6 +3,7 @@ from .models import *
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 # Register your models here.
 from django.http import HttpResponseRedirect
+from .models import Status
 from orders.serializers import to_dict
 from django.core.mail import EmailMessage
 from research.models import Research
@@ -46,11 +47,13 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
 
 
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
-
         change_form_template = "admin/acceptordeny.html"
 
         def response_change(self, request, obj):
             if "_approve" in request.POST:
+                get_some_status_2 = Status.objects.get(id=2)
+                obj.status = get_some_status_2
+
                 mail = EmailMessage(' Ваше исследование было одобрено',
                                     'Доброго времени суток, {}. \n'
                                     'Поздравляем! По вашему запросу, ваше исследование, детали которого описаны ниже, было одобрено.\n'

@@ -141,6 +141,16 @@ class DemoVersionForm(models.Model):
         return super(DemoVersionForm, self).save(*args, **kwargs)
 
 
+class ShortDescriptions(models.Model):
+    picture1 = models.ImageField()
+    text1 = models.TextField()
+    picture2 = models.ImageField()
+    text2 = models.TextField()
+
+    class Meta:
+        verbose_name = _("Краткое описание")
+        verbose_name_plural = _('Краткие описания')
+
 # class Statistics(models.Model):
 #
 #     @property

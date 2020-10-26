@@ -1,7 +1,7 @@
 from itertools import chain
 from rest_framework import serializers
 from research.models import Research
-from .models import Orders, OrderForm, Cart, DemoVersionForm
+from .models import Orders, OrderForm, Cart, DemoVersionForm, ShortDescriptions
 from collections import OrderedDict
 from rest_framework import request
 from research.serializers import Country, Hashtag
@@ -133,5 +133,7 @@ class MyOrdersSerializer(serializers.ModelSerializer):
         return OrderedDict(research_details)
 
 
-
-
+class ShortDescriptionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShortDescriptions
+        fields = ['picture1', 'text1', 'picture2', 'text2']
