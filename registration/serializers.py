@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import QAdmins, Users, Clients
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import password_validation
+from research.models import Research
+from research.serializers import CountrySerializer, HashtagSerializer
 from PIL import Image
 from rest_framework_recaptcha.fields import ReCaptchaField
 
@@ -67,7 +69,6 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
         instance.photo = validated_data.get('photo', instance.photo)
         instance.name = validated_data.get('name', instance.name)
         instance.surname = validated_data.get('surname', instance.surname)
-        instance.email = validated_data.get('email', instance.email)
         instance.phone_number = validated_data.get('phone_number', instance.phone_number)
         instance.save()
         return instance
@@ -102,7 +103,7 @@ class QAdminSerializer(serializers.ModelSerializer):
     admin_status = UsersInfoSerializer(required=True, many=False)
 
     class Meta:
-        fields = ["logo", "admin_status"]
+        fields = ["logo", "admin_status", "about_me"]
         model = QAdmins
 
     def create(self, validated_data):
@@ -159,3 +160,38 @@ class UpdatePassword(serializers.Serializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class CleanedResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(many=True, read_only=True)
+    country = CountrySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Research
+        fields = ['image', 'author_id', 'name', 'date', 'pages',
+                  'hashtag', 'country', 'new_price', 'old_price', 'id', 'status']
+
+
+class CleanedFileOnly(serializers.ModelSerializer):
+
+    class Meta:
+        model = Research
+        fields = ['research']
+
+
+class UploadResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(many=True, read_only=True)
+    country = CountrySerializer(many=True, read_only=True)
+    about_author = serializers.ReadOnlyField(source='author__about_me')
+
+    class Meta:
+        model = Research
+        fields = ['image', 'about_author', 'name', 'date', 'pages',
+                  'hashtag', 'country', 'new_price', 'old_price', 'id', 'status',
+                  'category', 'demo', 'country', 'status', 'research']
+        read_only_fields = ('date', 'status', 'hashtag', 'category')
+
+    def update(self, instance, validated_data):
+        instance.new_price = validated_data.get('new_price', instance.new_price)
+        instance.save()
+        return instance

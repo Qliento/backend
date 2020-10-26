@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer
 from .models import OrderForm, Orders, Cart, ItemsInCart, DemoVersionForm
+from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
 # Create your views here.
 
@@ -38,7 +39,6 @@ class ItemInCartView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        print(request.user)
         self.queryset = Cart.objects.filter(buyer=request.user.id)
         return self.list(request, *args, **kwargs)
 
