@@ -1,10 +1,10 @@
 from django.contrib import admin
 from .models import *
-from modeltranslation.admin import TranslationAdmin
+
 # Register your models here.
 
 from mptt.admin import DraggableMPTTAdmin
-
+from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 
 
 class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
@@ -42,21 +42,33 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
     search_fields = ['name']
 
 
-
+    
 class ResearchAdmin(TranslationAdmin):
     autocomplete_fields  = ['hashtag', 'country']
 
-    
-
+class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
 
 class HashtagAdmin(TranslationAdmin):
     search_fields = ['name']
+
 class CountryAdmin(TranslationAdmin):
     search_fields = ['name']
 
+class CategoryAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
+
+class HashtagAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
+
+class CountryAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
+
+class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
 
 
-admin.site.register(Status)
+admin.site.register(Status, StatusAdmin)
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Hashtag, HashtagAdmin)

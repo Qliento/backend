@@ -1,8 +1,8 @@
 from django.contrib import admin
 from .models import *
 from django.forms import TextInput, Textarea
+from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 
-from modeltranslation.admin import TranslationAdmin
 
 
 # Register your models here.
@@ -24,6 +24,12 @@ class NewsAdmin(TranslationAdmin):
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'rows': '50', 'columns': '50'})},
     }
+class InfoAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
+class PostAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
+class NewsAdmin(TabbedDjangoJqueryTranslationAdmin):
+    pass
 
 admin.site.register(Info, InfoAdmin)
 admin.site.register(Post, PostAdmin)
