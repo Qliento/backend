@@ -10,7 +10,7 @@ from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslati
 class ImagePostAdmin(admin.TabularInline):
 	model = ImagePost
 
-class PostAdmin(ModelAdmin):
+class PostAdmin(TranslationAdmin):
     inlines = [ImagePostAdmin, ]
 
 class ImageInfoAdmin(admin.TabularInline):
