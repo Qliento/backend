@@ -10,7 +10,7 @@ from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslati
 class ImagePostAdmin(admin.TabularInline):
 	model = ImagePost
 
-class PostAdmin(TranslationAdmin):
+class PostAdmin(ModelAdmin):
     inlines = [ImagePostAdmin, ]
 
 class ImageInfoAdmin(admin.TabularInline):
@@ -24,12 +24,6 @@ class NewsAdmin(TranslationAdmin):
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'rows': '50', 'columns': '50'})},
     }
-class InfoAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
-class PostAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
-class NewsAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
 
 admin.site.register(Info, InfoAdmin)
 admin.site.register(Post, PostAdmin)
