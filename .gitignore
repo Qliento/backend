@@ -8,6 +8,5 @@ static
 .DS_Store
 .idea
 qlient
-**/migrations/**
-
+main.migrations/
 
