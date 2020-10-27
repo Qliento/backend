@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 
 from research.serializers import CategoryCountSerializer
-
+from post.serializers import InfoForMainPageSerializer, PostForMainPageSerializer
 
 from post.models import Post
 class MobAppSerializer(serializers.ModelSerializer):
@@ -20,15 +20,6 @@ class ContactInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactInfo
         fields = ("contacts", )
-
-class PostForMainPageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ("header", "description",)
-class InfoForMainPageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Info
-        fields = ("header", "description")
         
         
 class MainPageSerializer(serializers.ModelSerializer):
