@@ -14,5 +14,5 @@ post/migrations
 question/migrations
 registration/migrations
 research/migrations
-"**/migrations/*"
+**/migrations/*
 
