@@ -230,7 +230,7 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATTIC_DIRS = [ os.path.join(BASE_DIR, 'static') ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/files')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
 PREFIX_DEFAULT_LOCALE = ''
 
 EMAIL_HOST = 'smtp.sendgrid.net'
