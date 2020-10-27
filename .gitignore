@@ -9,5 +9,3 @@ static
 .idea
 qlient
 !**/migrations
-
-orders/migrations
