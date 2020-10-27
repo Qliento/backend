@@ -8,11 +8,6 @@ static
 .DS_Store
 .idea
 qlient
-main/migrations
-orders/migrations
-post/migrations
-question/migrations
-registration/migrations
-research/migrations
+
 
 
