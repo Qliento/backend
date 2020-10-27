@@ -25,6 +25,7 @@ class PostForMainPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("header", "description",)
+        
 class MainPageSerializer(serializers.ModelSerializer):
     mob_app = MobAppSerializer()
     сontacts = ContactInfoSerializer()
@@ -33,7 +34,7 @@ class MainPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MainPage
-        fields = ("post", "category", "mob_app", "сontacts", )
+        fields = ("post", "category", "post", "mob_app", "сontacts", )
         
 
 

@@ -18,14 +18,16 @@ class ResearchFilter(filters.FilterSet):
             'country__name': ['icontains'],
             'category__name': ['iexact'],
             'hashtag__name': ['icontains'],
+            'author__logo': ['icontains'],
+            'name': ['icontains'],
         }
 
 
 class ResearchViewSet(viewsets.ModelViewSet):
-    queryset = Research.objects.filter(status = 2)
+    queryset = Research.objects.filter(status = 2).order_by('-id')
     serializer_class = ResearchSerializer
     permission_classes = [AllowAny, ]
 
-    filter_fields=('country', 'category', 'hashtag')
+    filter_fields=('country', 'category', 'hashtag', 'author', 'name')
     filterset_class = ResearchFilter
 

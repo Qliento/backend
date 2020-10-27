@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
-from modeltranslation.admin import TranslationAdmin
+
+
 
 # Register your models here.
 
@@ -9,6 +10,9 @@ class ContactAdmin(admin.TabularInline):
 	model = Contact
 class ContactInfoAdmin(admin.ModelAdmin):
     inlines = [ContactAdmin, ]
+
+
+
 
 admin.site.register(MainPage)
 admin.site.register(MobApp)

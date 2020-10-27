@@ -36,6 +36,7 @@ class MobApp(models.Model):
 class MainPage(models.Model):
 	post = models.ForeignKey(Post, on_delete=models.CASCADE)
 	category = models.ManyToManyField(Category, verbose_name="Категории")
+	post = models.ForeignKey(Post, verbose_name = "Блог", on_delete = models.CASCADE)
 	mob_app = models.ForeignKey(MobApp, on_delete = models.CASCADE, verbose_name = _('Информация о мобильном приложении')) 
 	сontacts = models.ForeignKey(ContactInfo, on_delete = models.CASCADE, verbose_name = _('Контакты')) 
 
