@@ -1,10 +1,6 @@
 from django.contrib import admin
 from .models import *
-<<<<<<< HEAD
-
-=======
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
->>>>>>> 4cc45f13e9c421443e6324ce9c00e3923ddba590
 # Register your models here.
 from django.http import HttpResponseRedirect
 from .models import Status
@@ -14,6 +10,7 @@ from research.models import Research
 from django.conf import settings
 from mptt.admin import DraggableMPTTAdmin
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
+
 
 class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
     mptt_indent_field = "name"
@@ -50,14 +47,6 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
     search_fields = ['name']
 
 
-<<<<<<< HEAD
-    
-class ResearchAdmin(TranslationAdmin):
-    autocomplete_fields  = ['hashtag', 'country']
-
-class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
-=======
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
         change_form_template = "admin/acceptordeny.html"
 
@@ -98,36 +87,20 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
 
             return super().delete_model(request, obj)
 
->>>>>>> 4cc45f13e9c421443e6324ce9c00e3923ddba590
-
-class HashtagAdmin(TranslationAdmin):
-    search_fields = ['name']
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 4cc45f13e9c421443e6324ce9c00e3923ddba590
-class CountryAdmin(TranslationAdmin):
-    search_fields = ['name']
-
-class CategoryAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
 
 class HashtagAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
+
 class CountryAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
+
 
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
-<<<<<<< HEAD
 
 admin.site.register(Status, StatusAdmin)
-=======
-admin.site.register(Status)
->>>>>>> 4cc45f13e9c421443e6324ce9c00e3923ddba590
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Hashtag, HashtagAdmin)
