@@ -25,16 +25,22 @@ class PostForMainPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("header", "description",)
+class InfoForMainPageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Info
+        fields = ("header", "description")
+        
         
 class MainPageSerializer(serializers.ModelSerializer):
     mob_app = MobAppSerializer()
     сontacts = ContactInfoSerializer()
     category = CategoryCountSerializer(many=True)
     post = PostForMainPageSerializer()
+    info = InfoForMainPageSerializer()
 
     class Meta:
         model = MainPage
-        fields = ("post", "category", "post", "mob_app", "сontacts", )
+        fields = ("info", "category", "post", "mob_app", "сontacts", )
         
 
 

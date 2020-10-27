@@ -122,12 +122,11 @@ class CountryAdmin(TabbedDjangoJqueryTranslationAdmin):
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
-<<<<<<< HEAD
 
 admin.site.register(Status, StatusAdmin)
-=======
+
 admin.site.register(Status)
->>>>>>> 4cc45f13e9c421443e6324ce9c00e3923ddba590
+
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Hashtag, HashtagAdmin)

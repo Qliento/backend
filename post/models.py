@@ -19,7 +19,7 @@ class Post(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _('Заголовок'))
 	description = models.TextField(verbose_name = _('Описание'))
 	date = models.DateField(auto_now_add=True, verbose_name = _('Дата публикации'))
-	research = models.ForeignKey(Research, on_delete=models.CASCADE, verbose_name = _('Исследование'))
+	research = models.ForeignKey(Research, on_delete=models.CASCADE, verbose_name = _('Исследование'), null = True, blank = True)
 
 	def __str__(self):
 		return self.header
