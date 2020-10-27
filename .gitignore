@@ -6,9 +6,5 @@ db.sqlite3
 static
 /static
 .DS_Store
-<<<<<<< HEAD
-migrations
-=======
 .idea
 qlient
->>>>>>> 26e83fee3255b3f942bcd9a256a5d751453d7317

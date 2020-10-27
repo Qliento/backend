@@ -19,7 +19,8 @@ class InfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Info
-        fields = ('header', 'description', 'images')
+        fields = ('id', 'header', 'description', 'images')
+
 
 
 class PostSerializer(serializers.ModelSerializer):

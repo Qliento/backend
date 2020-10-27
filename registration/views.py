@@ -4,9 +4,12 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_404_NOT_FOUND
-from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, EmailVerificationSerializer, UsersUpdateSerializer
+from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, \
+    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly
 from .models import QAdmins, Users, Clients
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, GenericAPIView, UpdateAPIView
+from research.models import Research
+from orders.models import Orders
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, GenericAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 import string
@@ -17,8 +20,10 @@ from django.urls import reverse
 from .utils import Util
 import jwt
 from django.core.mail import send_mail
+from django.http import FileResponse
 from django.shortcuts import redirect
 from rest_framework import generics, permissions, status, views
+from rest_framework.parsers import JSONParser, MultiPartParser
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy, load_backend, psa
 from social_core.backends.oauth import BaseOAuth2
@@ -48,18 +53,13 @@ class QAdminRegistration(GenericAPIView):
 
         data = {'email_body': email_body, 'to_email': str(admin_as_user), 'email_subject': 'Verify your email'}
         Util.send_email(data)
-        # send_mail('Активация аккаунта',
-        #           'Доброго времени суток, пользователь. Пройдите по этой ссылке ниже, чтобы войти на сайт. Ваша ссылка для активации: %s' % abs_url,
-        #           settings.EMAIL_HOST_USER,
-        #           [str(admin_as_user)],
-        #           fail_silently=False)
 
         return Response(user_data, status=status.HTTP_201_CREATED)
 
 
 class VerifyEmail(views.APIView):
     serializer_class = EmailVerificationSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request):
         token = request.GET.get('token')
@@ -93,10 +93,7 @@ class ClientsRegistration(GenericAPIView):
         current_site = get_current_site(request).domain
         relative_link = reverse('email-verify')
         abs_url = 'http://' + current_site + relative_link + "?token=" + str(token)
-        email_body = 'Hi. ' + ' Use the link below to verify your email \n' + abs_url
 
-        # data = {'email_body': email_body, 'to_email': str(client_as_user), 'email_subject': 'Verify your email'}
-        # Util.send_email(data)
         send_mail('Активация аккаунта',
                   'Доброго времени суток, пользователь. Пройдите по этой ссылке ниже в течение 24 часов, чтобы войти на сайт. Ваша ссылка для активации: %s' % abs_url,
                   settings.EMAIL_HOST_USER,
@@ -175,6 +172,23 @@ class UsersUpdate(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class PartnersUpdate(RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = QAdminSerializer
+
+    def get(self, request, *args, **kwargs):
+        get_data_from = QAdmins.objects.get(admin_status=request.user)
+        serializer = self.serializer_class(get_data_from)
+        print(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.serializer_class(QAdmins.objects.get(admin_status=request.user), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -225,3 +239,32 @@ class PasswordReset(UpdateAPIView):
             user.auth_token.delete()
         token, created = Token.objects.get_or_create(user=user)
         return Response(status=status.HTTP_200_OK)
+
+
+class MyUploadedResearches(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CleanedResearchSerializer
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        self.queryset = Research.objects.filter(author__admin_status=request.user)
+        return self.list(request, *args, **kwargs)
+
+
+class DownloadFileView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CleanedFileOnly
+    parser_classes = [MultiPartParser, JSONParser]
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.queryset = Research.objects.filter(id=self.kwargs['pk'], ordered_items__buyer=request.user, ordered_items__items_to_pay__completed=True)
+            file_itself = self.queryset.values('research')
+            path_of_file = list(file_itself)[0].get('research')
+            return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
+
+        except IndexError:
+            content = {'message': 'Данное ислледование не имеет файлов'}
+            return Response(content, status=400)
+
