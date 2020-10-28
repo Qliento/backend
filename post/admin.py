@@ -3,6 +3,8 @@ from .models import *
 from django.forms import TextInput, Textarea
 from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin,TabbedDjangoJqueryTranslationAdmin
 
+
+
 # Register your models here.
 
 class ImagePostAdmin(admin.TabularInline):
@@ -25,6 +27,8 @@ class NewsAdmin(TabbedTranslationAdmin):
         models.CharField: {'widget': TextInput(attrs={'rows': '50', 'columns': '50'})},
     }
     pass
+
+
 
 admin.site.register(Info, InfoAdmin)
 admin.site.register(Post, PostAdmin)
