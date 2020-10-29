@@ -78,3 +78,4 @@ class UsersAdmin(admin.ModelAdmin):
 admin.site.register(Users, UsersAdmin)
 admin.site.register(QAdmins, QAdminsAdmin)
 admin.site.register(Clients, ClientsAdmin)
+admin.site.register(UsersConsentQliento)

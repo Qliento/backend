@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import QAdmins, Users, Clients
+from .models import QAdmins, Users, Clients, UsersConsentQliento
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import password_validation
 from research.models import Research
@@ -178,3 +178,9 @@ class CleanedFileOnly(serializers.ModelSerializer):
         model = Research
         fields = ['research']
 
+
+class UserConsentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UsersConsentQliento
+        fields = '__all__'

@@ -223,7 +223,8 @@ LOCALE_PATHS = (
 
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/static/files/'
+# MEDIA_URL = '/files/'
+MEDIA_URL = '/static/files'
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
