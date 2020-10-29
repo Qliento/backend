@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
+from django.db.models.signals import post_save
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext_lazy as _
 import datetime
+from orders.models import Statistics
 
 
 class UserManager(BaseUserManager):
@@ -91,3 +93,11 @@ class UsersConsentQliento(models.Model):
     class Meta:
         verbose_name = _("Пользовательское соглашение")
         verbose_name_plural = _('Пользовательское соглашение')
+
+
+def create_stat_for_qadmin(sender, **kwargs):
+    details_for_stat = kwargs['instance']
+    Statistics.objects.create(partner_admin=details_for_stat.id)
+
+
+post_save.connect(create_stat_for_qadmin, sender=QAdmins)

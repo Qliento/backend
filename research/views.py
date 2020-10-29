@@ -6,15 +6,15 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from .models import *
+from orders.models import Statistics
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from collections import OrderedDict
+from django.core.signals import request_finished
 from rest_framework.permissions import AllowAny, IsAuthenticated
-# Create your views here.
-
-#class CardResearchView(generics.ListAPIView):
+from django.db.models import Avg, Count, Min, Sum, F
 
 
 class DefaultResearchView(APIView):
@@ -110,3 +110,9 @@ class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
+
+    def get(self, request, *args, **kwargs):
+        researches = Research.objects.filter(status=2, id=self.kwargs['pk'])
+        Statistics.objects.filter(partner_admin=list(researches.values('author')).pop()['author']).update(watches=F('watches')+1)
+        return Response(data=list(researches.values()), status=status.HTTP_200_OK)
+
