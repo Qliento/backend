@@ -14,6 +14,8 @@ urlpatterns = [
 
     path('send-demo/', SendDemoView.as_view()),
 
-    path('short-descriptions/', ShortDescriptionView.as_view())
+    path('short-descriptions/', ShortDescriptionView.as_view()),
+
+    path('statistics/<int:exact_research>/', StatViewForResearch.as_view())
 
 ]

@@ -6,6 +6,8 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
+
+
 class Info(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _("Заголовок"))
 	description = models.TextField(verbose_name = _('Описание'))

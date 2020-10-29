@@ -141,11 +141,9 @@ class ShortDescriptionsSerializer(serializers.ModelSerializer):
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
-    add_demo_downloaded = serializers.CharField(read_only=True)
-    add_more_watches = serializers.CharField(read_only=True)
-    add_bought_number = serializers.CharField(read_only=True)
     partner_admin = serializers.PrimaryKeyRelatedField(queryset=QAdmins.objects.all())
 
     class Meta:
         model = Statistics
-        fields = ['__all__']
+        fields = '__all__'
+

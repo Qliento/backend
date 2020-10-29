@@ -157,3 +157,12 @@ class Statistics(models.Model):
     demo_downloaded = models.IntegerField()
     watches = models.IntegerField()
     bought = models.IntegerField()
+
+
+def create_stat_for_qadmin(sender, **kwargs):
+    details_for_stat = kwargs['instance']
+    print(details_for_stat.id)
+    Statistics.objects.create(partner_admin=details_for_stat, demo_downloaded=0, watches=0, bought=0)
+
+
+post_save.connect(create_stat_for_qadmin, sender=QAdmins)
