@@ -19,7 +19,7 @@ class InfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Info
-        fields = ('header', 'description', 'images')
+        fields = ('id','header', 'description', 'images')
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -28,18 +28,18 @@ class PostSerializer(serializers.ModelSerializer):
     research = CardResearchSerializer()
     class Meta:
         model = Post
-        fields = ('header', 'description', 'date', 'images', 'research')
+        fields = ('id', 'header', 'description', 'date', 'images', 'research')
 
 class PostForMainPageSerializer(serializers.ModelSerializer):
     images = ImagePostSerializer(many = True)
     class Meta:
         model = Post
-        fields = ("header", "description", 'images')
+        fields = ('id',"header", "description", 'images')
 class InfoForMainPageSerializer(serializers.ModelSerializer):
     images = ImageInfoSerializer(many = True)
     class Meta:
         model = Info
-        fields = ("header", "description", 'images')
+        fields = ('id',"header", "description", 'images')
 
 class NewsSerializer(serializers.ModelSerializer):
 

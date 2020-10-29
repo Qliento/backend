@@ -11,44 +11,27 @@ from rest_framework.permissions import AllowAny
 
 # Create your views here.
 
-class InfoView(APIView):
+class InfoView(generics.ListAPIView):
     parser_class = (FileUploadParser, )
     permission_classes = [AllowAny, ]
-
+    serializer_class = InfoSerializer
     queryset = Info.objects.all()
-    
-    def get(self, request, format=None):
-        info = Info.objects.all()
-        serializer = InfoSerializer(info, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)   
+      
 
   
-class PostListView(APIView):
+class PostListView(generics.ListAPIView):
     parser_class = (FileUploadParser, )
     permission_classes = [AllowAny, ]
-
+    serializer_class = PostSerializer
     queryset = Post.objects.all()
-
-    def get(self, request, format=None):
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)   
+   
         
-class NewsListView(APIView):
+class NewsListView(generics.ListAPIView):
     parser_class = (FileUploadParser, )
-    queryset = News.objects.all()
-    permission_classes = [AllowAny, ]
-
-
-    def get(self, request, format=None):
-        news = News.objects.order_by('-id')
-        serializer = NewsSerializer(news, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK) 
-
-class NewsDetail(generics.RetrieveAPIView):
-    queryset = News.objects.all()
     serializer_class = NewsSerializer
+    queryset = News.objects.all()
     permission_classes = [AllowAny, ]
+
 
     
 class PostDetail(generics.RetrieveAPIView):

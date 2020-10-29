@@ -8,7 +8,7 @@ from post.models import Post
 class MobAppSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobApp
-        fields = ('description', "image", "url") 
+        fields = ('header','description', "image", "url") 
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
