@@ -161,7 +161,6 @@ class Statistics(models.Model):
 
 def create_stat_for_qadmin(sender, **kwargs):
     details_for_stat = kwargs['instance']
-    print(details_for_stat.id)
     Statistics.objects.create(partner_admin=details_for_stat, demo_downloaded=0, watches=0, bought=0)
 
 
