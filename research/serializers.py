@@ -30,7 +30,7 @@ class CategoryCountSerializer(serializers.ModelSerializer):
     
     class Meta:    
         model = Category 
-        fields = ('name', 'count',)
+        fields = ('id', 'name', 'count',)
 
 
 class CardResearchSerializer(serializers.ModelSerializer):
@@ -66,7 +66,7 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ('name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status','research',
+        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status','research',
                   'similars', 'author', 'author')
         read_only_fields = ('date', 'status', 'hashtag', 'similars', 'category')
 

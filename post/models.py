@@ -6,6 +6,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
+from django_resized import ResizedImageField
 
 
 class Info(models.Model):
@@ -50,27 +51,13 @@ class ImageInfo(models.Model):
 
 class News(models.Model):
 	name = models.CharField(max_length = 255, verbose_name = _('Заголовок'))
-	image = models.ImageField(null = True, blank = True, verbose_name = _('Изображение'))
+	image = ResizedImageField(size=[350, 245],  crop=['middle', 'center'],quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images')
 	description = models.TextField(verbose_name = _('Описание'))
 	date = models.DateField(auto_now_add=True, verbose_name = _('Дата публикации'))
 	source = models.CharField(max_length=200, verbose_name = _('Источник'), null = True, blank = True,)
 
 	def __str__(self):
 		return self.name
-
-	def save(self, *args, **kwargs):
-		if not self.id:
-			self.image = self.compressImage(self.image)
-		super(News, self).save(*args, **kwargs)
-
-	def compressImage(self,image):
-		imageTemproary = Image.open(image)
-		outputIoStream = BytesIO()
-		imageTemproaryResized = imageTemproary.resize( (1020,573) ) 
-		imageTemproary.save(outputIoStream , format='JPEG', quality=70)
-		outputIoStream.seek(0)
-		image = InMemoryUploadedFile(outputIoStream,'ImageField', "%s.jpg" % image.name.split('.')[0], 'image/jpeg', sys.getsizeof(outputIoStream), None)
-		return image
 
 	class Meta:
 		verbose_name = _('Новость')

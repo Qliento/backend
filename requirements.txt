@@ -22,6 +22,7 @@ django-modeltranslation==0.16
 django-mptt==0.11.0
 django-oauth-toolkit==1.3.2
 django-rest-framework-social-oauth2==1.1.0
+django-resized==0.3.11
 django-simple-tags==0.6.0
 django-sortedm2m==3.0.2
 django-sortedm2m-filter-horizontal-widget==1.3.2

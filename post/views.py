@@ -29,7 +29,7 @@ class PostListView(generics.ListAPIView):
 class NewsListView(generics.ListAPIView):
     parser_class = (FileUploadParser, )
     serializer_class = NewsSerializer
-    queryset = News.objects.all()
+    queryset = News.objects.all().order_by('-id')
     permission_classes = [AllowAny, ]
 
 
