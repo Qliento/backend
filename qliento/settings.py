@@ -23,7 +23,7 @@ from datetime import timedelta
 SECRET_KEY = 'ay@g8$$0c!$+c9h1xt^f6sk5!12zp^pmnc1%xmj8_2fh$#_$42'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -223,8 +223,8 @@ LOCALE_PATHS = (
 
 
 STATIC_URL = '/static/'
-# MEDIA_URL = '/files/'
-MEDIA_URL = '/static/files/'
+MEDIA_URL = '/files/'
+# MEDIA_URL = '/static/files/'
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
