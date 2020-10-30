@@ -9,4 +9,4 @@ static
 .idea
 qlient
 **migrations/
-
+.env
