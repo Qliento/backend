@@ -238,7 +238,8 @@ class PasswordReset(UpdateAPIView):
         if hasattr(user, 'auth_token'):
             user.auth_token.delete()
         token, created = Token.objects.get_or_create(user=user)
-        return Response(status=status.HTTP_200_OK)
+        content = {'Ваш пароль был изменен'}
+        return Response(content, status=status.HTTP_200_OK)
 
 
 class MyUploadedResearches(ListAPIView):

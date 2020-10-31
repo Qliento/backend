@@ -7,7 +7,6 @@ urlpatterns = [
     path('email-verification/', VerifyEmail.as_view(), name='email-verify'),
     path('registration/clients/', ClientsRegistration.as_view()),
 
-    path('login/researchers/', login_qadmins),
     path('login/clients/', login_respondents),
 
     path('update/users/', UsersUpdate.as_view()),

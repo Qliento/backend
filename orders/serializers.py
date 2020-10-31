@@ -32,7 +32,7 @@ class AddToCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = "__all__"
+        fields = ['id', 'count_items', 'get_discount', 'get_general_sum', 'ordered_items']
 
     def create(self, validated_data):
         ordered_thin = validated_data.pop('ordered_items')

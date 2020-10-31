@@ -49,6 +49,7 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
 
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
         change_form_template = "admin/acceptordeny.html"
+        list_display = ['id']
 
         def response_change(self, request, obj):
             if "_approve" in request.POST:
