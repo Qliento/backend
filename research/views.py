@@ -18,7 +18,6 @@ from django_filters import rest_framework as filters
 from collections import OrderedDict
 from django.core.signals import request_finished
 from rest_framework.permissions import AllowAny, IsAuthenticated
-<<<<<<< HEAD
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 
 class FiltersAPIView(ObjectMultipleModelAPIView):
@@ -30,10 +29,9 @@ class FiltersAPIView(ObjectMultipleModelAPIView):
         {'queryset': Hashtag.objects.all(), 'serializer_class': HashtagSerializer},
         {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
     ]
-=======
+
 from django.db.models import Avg, Count, Min, Sum, F
 
->>>>>>> 75eaee09e13a7b641b043ae14fcfa61d7b95006a
 
 class DefaultResearchView(APIView):
     permission_classes = [AllowAny, ]
