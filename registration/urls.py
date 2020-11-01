@@ -7,7 +7,6 @@ urlpatterns = [
     path('email-verification/', VerifyEmail.as_view(), name='email-verify'),
     path('registration/clients/', ClientsRegistration.as_view()),
 
-    path('login/researchers/', login_qadmins),
     path('login/clients/', login_respondents),
 
     path('update/users/', UsersUpdate.as_view()),
@@ -17,6 +16,7 @@ urlpatterns = [
     path('password-update/', PasswordReset.as_view()),
 
     path('my-researches/', MyUploadedResearches.as_view()),
-    path('download-file/<int:pk>/', DownloadFileView.as_view())
+    path('download-file/<int:pk>/', DownloadFileView.as_view()),
+    path('qliento-consent/', UserConsentView.as_view())
 
 ]

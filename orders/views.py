@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
-    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, ShortDescriptionsSerializer
-from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm
+    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, ShortDescriptionsSerializer, StatisticsSerializer
+from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics
 from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
 # Create your views here.
@@ -70,3 +71,13 @@ class ShortDescriptionView(ListAPIView):
     queryset = ShortDescriptions.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = ShortDescriptionsSerializer
+
+
+class StatViewForResearch(RetrieveAPIView):
+    queryset = None
+    permission_classes = (IsAuthenticated,)
+    serializer_class = StatisticsSerializer
+
+    def get(self, request, *args, **kwargs):
+        self.queryset = Statistics.objects.filter(Q(partner_admin=request.user.initial_reference, partner_admin__creator__id=self.kwargs['exact_research']))
+        return Response(list(self.queryset.values())[0], status=status.HTTP_200_OK)

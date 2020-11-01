@@ -32,7 +32,7 @@ class AddToCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = "__all__"
+        fields = ['id', 'count_items', 'get_discount', 'get_general_sum', 'ordered_items']
 
     def create(self, validated_data):
         ordered_thin = validated_data.pop('ordered_items')
@@ -141,11 +141,9 @@ class ShortDescriptionsSerializer(serializers.ModelSerializer):
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
-    add_demo_downloaded = serializers.CharField(read_only=True)
-    add_more_watches = serializers.CharField(read_only=True)
-    add_bought_number = serializers.CharField(read_only=True)
     partner_admin = serializers.PrimaryKeyRelatedField(queryset=QAdmins.objects.all())
 
     class Meta:
         model = Statistics
-        fields = ['__all__']
+        fields = '__all__'
+

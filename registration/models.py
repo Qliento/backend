@@ -83,3 +83,11 @@ class QAdmins(models.Model):
 
     def __str__(self):
         return self.admin_status.name
+
+
+class UsersConsentQliento(models.Model):
+    text = models.TextField(max_length=2000)
+
+    class Meta:
+        verbose_name = _("Пользовательское соглашение")
+        verbose_name_plural = _('Пользовательское соглашение')

@@ -1,5 +1,4 @@
 from django.db import models
-from research.models import Research
 from registration.models import Users, QAdmins
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
@@ -117,7 +116,6 @@ class DemoVersionForm(models.Model):
              update_fields=None, *args, **kwargs):
 
         research_demo = self.desired_research.id
-        print(research_demo)
         email_of_recipient = self.email
 
         get_pdf_demo = Research.objects.filter(id=research_demo).values()
@@ -138,6 +136,8 @@ class DemoVersionForm(models.Model):
 
         mail.attach_file('static/files/{}'.format(name_of_file))
         mail.send()
+
+        Statistics.objects.filter(partner_admin=normalized_data.get('author_id')).update(demo_downloaded=F('demo_downloaded') + 1)
         return super(DemoVersionForm, self).save(*args, **kwargs)
 
 
@@ -158,15 +158,10 @@ class Statistics(models.Model):
     watches = models.IntegerField()
     bought = models.IntegerField()
 
-    @property
-    def add_demo_downloaded(self):
-        return self.demo_downloaded + 1
 
-    @property
-    def add_more_watches(self):
-        return self.watches + 1
+def create_stat_for_qadmin(sender, **kwargs):
+    details_for_stat = kwargs['instance']
+    Statistics.objects.create(partner_admin=details_for_stat, demo_downloaded=0, watches=0, bought=0)
 
-    @property
-    def add_bought_number(self):
-        return self.bought + 1
 
+post_save.connect(create_stat_for_qadmin, sender=QAdmins)

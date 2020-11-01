@@ -5,8 +5,8 @@ from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_404_NOT_FOUND
 from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, \
-    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly
-from .models import QAdmins, Users, Clients
+    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly, UserConsentSerializer
+from .models import QAdmins, Users, Clients, UsersConsentQliento
 from research.models import Research
 from orders.models import Orders
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, GenericAPIView, UpdateAPIView
@@ -238,7 +238,8 @@ class PasswordReset(UpdateAPIView):
         if hasattr(user, 'auth_token'):
             user.auth_token.delete()
         token, created = Token.objects.get_or_create(user=user)
-        return Response(status=status.HTTP_200_OK)
+        content = {'Ваш пароль был изменен'}
+        return Response(content, status=status.HTTP_200_OK)
 
 
 class MyUploadedResearches(ListAPIView):
@@ -268,3 +269,8 @@ class DownloadFileView(GenericAPIView):
             content = {'message': 'Данное ислледование не имеет файлов'}
             return Response(content, status=400)
 
+
+class UserConsentView(generics.ListAPIView):
+    permission_classes = [AllowAny, ]
+    queryset = UsersConsentQliento.objects.all()
+    serializer_class = UserConsentSerializer
