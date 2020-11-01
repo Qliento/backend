@@ -6,11 +6,8 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from .models import *
-<<<<<<< HEAD
 from registration.models import QAdmins
-=======
 from orders.models import Statistics
->>>>>>> 75eaee09e13a7b641b043ae14fcfa61d7b95006a
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
