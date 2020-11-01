@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     'registration',
     'orders',
 
+    'drf_multiple_model',
+
 ]
 
 

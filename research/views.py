@@ -6,16 +6,24 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from .models import *
+from registration.models import QAdmins
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from collections import OrderedDict
 from rest_framework.permissions import AllowAny, IsAuthenticated
-# Create your views here.
+from drf_multiple_model.views import ObjectMultipleModelAPIView
 
-#class CardResearchView(generics.ListAPIView):
-
+class FiltersAPIView(ObjectMultipleModelAPIView):
+    permission_classes = (AllowAny,)
+    pagination_class = None
+    querylist = [
+        {'queryset': Category.objects.all(), 'serializer_class': CategorySubCategory},
+        {'queryset': Country.objects.all(), 'serializer_class': CountrySerializer},
+        {'queryset': Hashtag.objects.all(), 'serializer_class': HashtagSerializer},
+        {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
+    ]
 
 class DefaultResearchView(APIView):
     permission_classes = [AllowAny, ]
