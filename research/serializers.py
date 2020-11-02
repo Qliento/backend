@@ -31,8 +31,11 @@ class CategoryCountSerializer(serializers.ModelSerializer):
     class Meta:    
         model = Category 
         fields = ('id', 'name', 'count',)
+
+
 class CategorySubCategory(serializers.ModelSerializer):
     subcategories = CategoryCountSerializer(source = 'get_categories', many = True)
+
     class Meta:
         model = Category
         fields = ('id', 'name', 'subcategories', )
@@ -49,6 +52,8 @@ class AboutMeSection(serializers.ModelSerializer):
     class Meta:
         model = QAdmins
         fields = ['about_me', 'logo', 'id']
+
+
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = QAdmins
