@@ -12,5 +12,6 @@ urlpatterns = [
     path('research/by-price-asc', ResearchViewToCheapest.as_view()),
     path('research-upload/', UploadResearchView.as_view()),
     path('research-update/<int:pk>/', UpdateResearchView.as_view()),
-    path('download-demo/<int:pk>/', DownloadDemoView.as_view())
+    path('download-demo/<int:pk>/', DownloadDemoView.as_view()),
+    path('filters/', FiltersAPIView.as_view()),
 ]

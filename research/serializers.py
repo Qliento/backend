@@ -31,6 +31,11 @@ class CategoryCountSerializer(serializers.ModelSerializer):
     class Meta:    
         model = Category 
         fields = ('id', 'name', 'count',)
+class CategorySubCategory(serializers.ModelSerializer):
+    subcategories = CategoryCountSerializer(source = 'get_categories', many = True)
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'subcategories', )
 
 
 class CardResearchSerializer(serializers.ModelSerializer):
@@ -44,6 +49,10 @@ class AboutMeSection(serializers.ModelSerializer):
     class Meta:
         model = QAdmins
         fields = ['about_me', 'logo', 'id']
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QAdmins
+        fields = ('logo', )
 
 
 class ResearchSerializer(serializers.ModelSerializer):
@@ -93,5 +102,4 @@ class ResearchUpdateSerializer(serializers.ModelSerializer):
             'date', 'status', 'hashtag', 'similars', 'category']
 
         fields = ['new_price', 'hashtag', 'country', 'description_', 'name_', 'category', 'similars']
-
 

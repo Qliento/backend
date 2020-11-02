@@ -6,7 +6,11 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from .models import *
+<<<<<<< HEAD
+from registration.models import QAdmins
+=======
 from orders.models import Statistics
+>>>>>>> 75eaee09e13a7b641b043ae14fcfa61d7b95006a
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,6 +18,18 @@ from django_filters import rest_framework as filters
 from collections import OrderedDict
 from django.core.signals import request_finished
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from drf_multiple_model.views import ObjectMultipleModelAPIView
+
+class FiltersAPIView(ObjectMultipleModelAPIView):
+    permission_classes = (AllowAny,)
+    pagination_class = None
+    querylist = [
+        {'queryset': Category.objects.all(), 'serializer_class': CategorySubCategory},
+        {'queryset': Country.objects.all(), 'serializer_class': CountrySerializer},
+        {'queryset': Hashtag.objects.all(), 'serializer_class': HashtagSerializer},
+        {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
+    ]
+
 from django.db.models import Avg, Count, Min, Sum, F
 
 

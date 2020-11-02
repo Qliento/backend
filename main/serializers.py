@@ -8,18 +8,18 @@ from post.models import Post
 class MobAppSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobApp
-        fields = ('header','description', "image", "url") 
+        fields = ('id', 'header','description', "image", "url") 
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        fields = ( 'info', )
+        fields = ('info', )
 
 class ContactInfoSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(many=True)
     class Meta:
         model = ContactInfo
-        fields = ("contacts", )
+        fields = ('id', "contacts", )
         
         
 class MainPageSerializer(serializers.ModelSerializer):
@@ -31,7 +31,7 @@ class MainPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MainPage
-        fields = ("info", "category", "post", "mob_app", "сontacts", )
+        fields = ('id', "info", "category", "post", "mob_app", "сontacts", )
         
 
 
