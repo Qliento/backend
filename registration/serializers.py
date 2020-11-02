@@ -190,6 +190,13 @@ class CleanedFileOnly(serializers.ModelSerializer):
         fields = ['research']
 
 
+class CleanedDemoOnly(serializers.ModelSerializer):
+
+    class Meta:
+        model = Research
+        fields = ['demo']
+
+
 class UserConsentSerializer(serializers.ModelSerializer):
 
     class Meta:

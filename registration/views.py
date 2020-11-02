@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_404_NOT_FOUND
 from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, \
-    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly, UserConsentSerializer
+    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly
 from .models import QAdmins, Users, Clients, UsersConsentQliento
 from research.models import Research
 from orders.models import Orders
@@ -266,7 +266,25 @@ class DownloadFileView(GenericAPIView):
             return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
 
         except IndexError:
-            content = {'message': 'Данное ислледование не имеет файлов'}
+            content = {'message': 'Данное исследование не имеет файлов'}
+            return Response(content, status=400)
+
+
+class DownloadDemoView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CleanedDemoOnly
+    parser_classes = [MultiPartParser, JSONParser]
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.queryset = Research.objects.filter(id=self.kwargs['pk'], status=2)
+            file_itself = self.queryset.values('demo')
+            path_of_file = list(file_itself)[0].get('demo')
+            return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
+
+        except IndexError:
+            content = {'message': 'Данное исследование не имеет файлов'}
             return Response(content, status=400)
 
 

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import *
+from registration.views import DownloadDemoView
 
 app_name = 'research'
 urlpatterns = [
@@ -10,5 +11,6 @@ urlpatterns = [
     path('research/by-price-desc', ResearchViewFromCheapest.as_view()),
     path('research/by-price-asc', ResearchViewToCheapest.as_view()),
     path('research-upload/', UploadResearchView.as_view()),
-    path('research-update/<int:pk>/', UpdateResearchView.as_view())
+    path('research-update/<int:pk>/', UpdateResearchView.as_view()),
+    path('download-demo/<int:pk>/', DownloadDemoView.as_view())
 ]
