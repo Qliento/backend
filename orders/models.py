@@ -146,7 +146,7 @@ class DemoVersionForm(models.Model):
 
 
 class Instructions(models.Model):
-    name = models.CharField(verbose_name='Заголовок', max_length=100)
+    name = models.CharField(verbose_name='Заголовок', max_length=100, blank=True, null=True)
 
     class Meta:
         verbose_name = _("Краткие инструкции")
@@ -157,8 +157,8 @@ class Instructions(models.Model):
 
 
 class ShortDescriptions(models.Model):
-    picture1 = models.ImageField()
-    text1 = models.TextField()
+    picture1 = models.ImageField(blank=True, null=True)
+    text1 = models.TextField(blank=True, null=True)
     data_needed = models.ForeignKey(Instructions, on_delete=models.CASCADE, related_name='data_for_instructions')
 
     class Meta:
