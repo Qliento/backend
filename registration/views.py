@@ -179,11 +179,10 @@ class PartnersUpdate(RetrieveUpdateAPIView):
     def get(self, request, *args, **kwargs):
         get_data_from = QAdmins.objects.get(admin_status=request.user)
         serializer = self.serializer_class(get_data_from)
-        print(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        serializer = self.serializer_class(QAdmins.objects.get(admin_status=request.user), data=request.data, partial=True)
+        serializer = self.serializer_class(QAdmins.objects.get(admin_status=request.user), data=request.data, context=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
