@@ -21,7 +21,6 @@ class FiltersAPIView(ObjectMultipleModelAPIView):
     querylist = [
         {'queryset': Category.objects.filter(parent = None), 'serializer_class': CategorySubCategory},
         {'queryset': Country.objects.all(), 'serializer_class': CountrySerializer},
-        {'queryset': Hashtag.objects.all(), 'serializer_class': HashtagSerializer},
         {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
     ]
 
