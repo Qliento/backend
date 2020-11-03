@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import *
 from itertools import chain
 from research.models import Research
+from django.contrib.auth.models import Group
+
 from orders.models import Orders
 # Register your models here.
 
@@ -79,3 +81,4 @@ admin.site.register(Users, UsersAdmin)
 admin.site.register(QAdmins, QAdminsAdmin)
 admin.site.register(Clients, ClientsAdmin)
 admin.site.register(UsersConsentQliento)
+admin.site.unregister(Group)

@@ -14,6 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from collections import OrderedDict
 from django.core.signals import request_finished
+from django.db.models import Avg, Count, Min, Sum, F
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 
@@ -28,8 +29,6 @@ class FiltersAPIView(ObjectMultipleModelAPIView):
         {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
     ]
 
-from django.db.models import Avg, Count, Min, Sum, F
-
 
 class DefaultResearchView(APIView):
     permission_classes = [AllowAny, ]
@@ -40,11 +39,12 @@ class DefaultResearchView(APIView):
     def get(self, request, format=None):
         research = Research.objects.order_by('-id').filter(status=2)
         serializer = ResearchSerializer(research, many=True)
+        del serializer.data[0]['research_data']
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class UploadResearchView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [AllowAny, ]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
 
@@ -94,6 +94,7 @@ class ResearchViewFromOldest(APIView):
     def get(self, request, format=None):
         research = Research.objects.order_by('id').filter(status = 2)
         serializer = ResearchSerializer(research, many=True)
+        del serializer.data[0]['research_data']
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -105,6 +106,7 @@ class ResearchViewFromCheapest(APIView):
     def get(self, request, format=None):
         research = Research.objects.order_by('-old_price').filter(status = 2)
         serializer = ResearchSerializer(research, many=True)
+        del serializer.data[0]['research_data']
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -117,11 +119,12 @@ class ResearchViewToCheapest(APIView):
     def get(self, request, format=None):
         research = Research.objects.order_by('old_price').filter(status = 2)
         serializer = ResearchSerializer(research, many=True)
+        del serializer.data[0]['research_data']
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [AllowAny, ]
+class ResearchDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated, ]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
 

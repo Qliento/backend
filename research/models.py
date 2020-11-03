@@ -79,7 +79,6 @@ class Research(models.Model):
 	demo = models.FileField(null = True, blank = True, upload_to='demos', verbose_name = _('Демоверсия'))
 	country = models.ManyToManyField(Country, verbose_name = _('Страна'), null = True)
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
-	research = models.FileField(null = True, blank = True, verbose_name = _('Исследование'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
 
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True)
@@ -93,5 +92,15 @@ class Research(models.Model):
 	class Meta:
 		verbose_name = _('Исследование')
 		verbose_name_plural = _('Исследования')
-	
 
+
+class ResearchFiles(models.Model):
+	name = models.FileField(null=True, blank=True, verbose_name=_('Файл'), default='1')
+	research = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='research_data', default='1', null=True, blank=True, verbose_name=_('Исследование'))
+
+	def __str__(self):
+		return '{}'.format(self.name)
+
+	class Meta:
+		verbose_name = _('Файл')
+		verbose_name_plural = _('Файлы')

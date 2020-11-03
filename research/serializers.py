@@ -60,6 +60,13 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('logo', )
 
 
+class ResearchFilePathSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ResearchFiles
+        fields = ['id', 'name']
+
+
 class ResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(read_only=True, many=True)
     country = CountrySerializer(read_only=True, many=True)
@@ -69,6 +76,7 @@ class ResearchSerializer(serializers.ModelSerializer):
             queryset=Category.objects.all()
         )
     author = AboutMeSection(read_only=True)
+    research_data = ResearchFilePathSerializer(many=True)
 
     def get_name(self):
         return _(self.name)
@@ -81,11 +89,16 @@ class ResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status',
-                  'similars', 'author', 'author')
+                  'similars', 'author', 'research_data')
         read_only_fields = ('date', 'status', 'hashtag', 'similars', 'category')
 
     def create(self, validated_data):
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
+
+        files_of_research = validated_data.pop('research_data')
+        for file_of_research in files_of_research:
+            ResearchFiles.objects.create(research=research, **file_of_research)
+
         return research
 
 
@@ -103,7 +116,7 @@ class ResearchUpdateSerializer(serializers.ModelSerializer):
         model = Research
         read_only_fields = [
             'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research', 'similars', 'author',
+            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
             'date', 'status', 'hashtag', 'similars', 'category']
 
         fields = ['new_price', 'hashtag', 'country', 'description_', 'name_', 'category', 'similars']

@@ -47,36 +47,22 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
     search_fields = ['name']
 
 
+class ResearchFileAdmin(admin.TabularInline):
+    model = ResearchFiles
+
+
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
-        change_form_template = "admin/acceptordeny.html"
-        list_display = ['id']
+    inlines = [ResearchFileAdmin, ]
+    change_form_template = "admin/acceptordeny.html"
 
-        def response_change(self, request, obj):
-            if "_approve" in request.POST:
-                get_some_status_2 = Status.objects.get(id=2)
-                obj.status = get_some_status_2
+    def response_change(self, request, obj):
+        if "_approve" in request.POST:
+            get_some_status_2 = Status.objects.get(id=2)
+            obj.status = get_some_status_2
 
-                mail = EmailMessage(' Ваше исследование было одобрено',
-                                    'Доброго времени суток, {}. \n'
-                                    'Поздравляем! По вашему запросу, ваше исследование, детали которого описаны ниже, было одобрено.\n'
-                                    'Название: "{}" \n'
-                                    'Идентификатор: {} \n'
-                                    '\n'
-                                    'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
-                                    settings.EMAIL_HOST_USER,
-                                    [obj.author.admin_status.email])
-
-                mail.send()
-
-                return HttpResponseRedirect(".")
-
-            return super().response_change(request, obj)
-
-        def delete_model(self, request, obj):
-
-            mail = EmailMessage(' Ваше исследование было отклонено',
+            mail = EmailMessage(' Ваше исследование было одобрено',
                                 'Доброго времени суток, {}. \n'
-                                'К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n'
+                                'Поздравляем! По вашему запросу, ваше исследование, детали которого описаны ниже, было одобрено.\n'
                                 'Название: "{}" \n'
                                 'Идентификатор: {} \n'
                                 '\n'
@@ -86,7 +72,25 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
 
             mail.send()
 
-            return super().delete_model(request, obj)
+            return HttpResponseRedirect(".")
+
+        return super().response_change(request, obj)
+
+    def delete_model(self, request, obj):
+
+        mail = EmailMessage(' Ваше исследование было отклонено',
+                            'Доброго времени суток, {}. \n'
+                            'К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n'
+                            'Название: "{}" \n'
+                            'Идентификатор: {} \n'
+                            '\n'
+                            'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                            settings.EMAIL_HOST_USER,
+                            [obj.author.admin_status.email])
+
+        mail.send()
+
+        return super().delete_model(request, obj)
 
 
 class HashtagAdmin(TabbedDjangoJqueryTranslationAdmin):
@@ -101,6 +105,7 @@ class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
 
+admin.site.register(ResearchFiles)
 admin.site.register(Status, StatusAdmin)
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)

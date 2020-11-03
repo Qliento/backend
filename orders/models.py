@@ -41,6 +41,10 @@ class Cart(models.Model):
     def __str__(self):
         return '{}'.format(self.ordered_item)
 
+    class Meta:
+        verbose_name = _("Корзина покупателя")
+        verbose_name_plural = _('Корзины покупателей')
+
 
 class ItemsInCart(models.Model):
     items_in_cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items_for_sell')
@@ -52,8 +56,8 @@ class Orders(models.Model):
     items_ordered = models.ManyToManyField(Cart, related_name="items_to_pay")
 
     class Meta:
-        verbose_name = _("Заказ")
-        verbose_name_plural = _('Заказы')
+        verbose_name = _("Покупки клиентов")
+        verbose_name_plural = _('Покупки клиентов')
 
     def __str__(self):
         return '{}{}'.format('ID', self.pk)
@@ -76,8 +80,8 @@ class OrderForm(models.Model):
     description = models.TextField()
 
     class Meta:
-        verbose_name = _("Форма заказа")
-        verbose_name_plural = _('Формы заказов')
+        verbose_name = _("Заявка на исследование")
+        verbose_name_plural = _('Заявки на исследования')
 
 
 def send_to_admin(sender, **kwargs):
@@ -106,8 +110,8 @@ class DemoVersionForm(models.Model):
     desired_research = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='wanted_research')
 
     class Meta:
-        verbose_name = _("Форма демоверсии")
-        verbose_name_plural = _('Формы демоверсий')
+        verbose_name = _("Заявка на демоверсию")
+        verbose_name_plural = _('Заявки демоверсий')
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -141,15 +145,25 @@ class DemoVersionForm(models.Model):
         return super(DemoVersionForm, self).save(*args, **kwargs)
 
 
+class Instructions(models.Model):
+    name = models.CharField(verbose_name='Заголовок', max_length=100)
+
+    class Meta:
+        verbose_name = _("Краткие инструкции")
+        verbose_name_plural = _('Краткие инструкции')
+
+    def __str__(self):
+        return self.name
+
+
 class ShortDescriptions(models.Model):
     picture1 = models.ImageField()
     text1 = models.TextField()
-    picture2 = models.ImageField()
-    text2 = models.TextField()
+    data_needed = models.ForeignKey(Instructions, on_delete=models.CASCADE, related_name='data_for_instructions')
 
     class Meta:
-        verbose_name = _("Краткое описание")
-        verbose_name_plural = _('Краткие описания')
+        verbose_name = _("Данные для краткого описания")
+        verbose_name_plural = _('Данные для краткого описания')
 
 
 class Statistics(models.Model):
@@ -157,6 +171,10 @@ class Statistics(models.Model):
     demo_downloaded = models.IntegerField()
     watches = models.IntegerField()
     bought = models.IntegerField()
+
+    class Meta:
+        verbose_name = _("Статистика")
+        verbose_name_plural = _('Статистика')
 
 
 def create_stat_for_qadmin(sender, **kwargs):

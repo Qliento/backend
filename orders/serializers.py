@@ -1,7 +1,7 @@
 from itertools import chain
 from rest_framework import serializers
 from research.models import Research
-from .models import Orders, OrderForm, Cart, DemoVersionForm, ShortDescriptions, Statistics
+from .models import Orders, OrderForm, Cart, DemoVersionForm, Instructions, Statistics, ShortDescriptions
 from collections import OrderedDict
 from rest_framework import request
 from registration.models import QAdmins
@@ -134,10 +134,19 @@ class MyOrdersSerializer(serializers.ModelSerializer):
         return OrderedDict(research_details)
 
 
-class ShortDescriptionsSerializer(serializers.ModelSerializer):
+class InstructionSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ShortDescriptions
-        fields = ['picture1', 'text1', 'picture2', 'text2']
+        fields = "__all__"
+
+
+class ShortDescriptionsSerializer(serializers.ModelSerializer):
+    data_for_instructions = InstructionSerializer(many=True)
+
+    class Meta:
+        model = ShortDescriptions
+        fields = '__all__'
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
