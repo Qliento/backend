@@ -1,5 +1,5 @@
 from .models import Research
-from .serializers import ResearchSerializer
+from .serializers import CardResearchSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -25,7 +25,7 @@ class ResearchFilter(filters.FilterSet):
 
 class ResearchViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2).order_by('-id')
-    serializer_class = ResearchSerializer
+    serializer_class = CardResearchSerializer
     permission_classes = [AllowAny, ]
 
     filter_fields=('country', 'category', 'hashtag', 'author', 'name')
@@ -40,7 +40,7 @@ class ResearchViewSet(viewsets.ModelViewSet):
 
 class  ResearchAscViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2).order_by('id')
-    serializer_class = ResearchSerializer
+    serializer_class = CardResearchSerializer
     permission_classes = [AllowAny, ]
 
     filter_fields=('country', 'category', 'hashtag', 'author', 'name')
@@ -55,7 +55,7 @@ class  ResearchAscViewSet(viewsets.ModelViewSet):
 
 class  ResearchPriceDescViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2).order_by('-old_price')
-    serializer_class = ResearchSerializer
+    serializer_class = CardResearchSerializer
     permission_classes = [AllowAny, ]
 
     filter_fields=('country', 'category', 'hashtag', 'author', 'name')
@@ -67,10 +67,10 @@ class  ResearchPriceDescViewSet(viewsets.ModelViewSet):
         if category is not None and subcategory is None:
             queryset = queryset.filter(category__parent=category)
         return queryset
-        
+
 class  ResearchPriceAscViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2).order_by('old_price')
-    serializer_class = ResearchSerializer
+    serializer_class = CardResearchSerializer
     permission_classes = [AllowAny, ]
 
     filter_fields=('country', 'category', 'hashtag', 'author', 'name')

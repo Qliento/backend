@@ -28,7 +28,7 @@ class DefaultResearchView(APIView):
     permission_classes = [AllowAny, ]
     parser_classes = [MultiPartParser, FormParser]
     queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
+    serializer_class = CardResearchSerializer
     
     def get(self, request, format=None):
         research = Research.objects.order_by('-id').filter(status=2)
@@ -77,41 +77,6 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
         except ValueError:
             content = {'message': 'Убедитесь в том, что вы ввели целые числа'}
             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
-
-
-class ResearchViewFromOldest(APIView):
-    permission_classes = [AllowAny, ]
-    queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
-
-    def get(self, request, format=None):
-        research = Research.objects.order_by('id').filter(status = 2)
-        serializer = ResearchSerializer(research, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
-class ResearchViewFromCheapest(APIView):
-    permission_classes = [AllowAny, ]
-    queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
-
-    def get(self, request, format=None):
-        research = Research.objects.order_by('-old_price').filter(status = 2)
-        serializer = ResearchSerializer(research, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
-class ResearchViewToCheapest(APIView):
-    permission_classes = [AllowAny, ]
-
-    queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
-
-    def get(self, request, format=None):
-        research = Research.objects.order_by('old_price').filter(status = 2)
-        serializer = ResearchSerializer(research, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
 
 class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny, ]
