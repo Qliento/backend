@@ -47,6 +47,7 @@ class UploadResearchView(generics.GenericAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
+    parser_classes = (JSONRenderer, MultiPartParser)
 
     def post(self, request, *args, **kwargs):
         file_serializer = self.get_serializer(data=request.data)

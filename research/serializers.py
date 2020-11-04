@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.utils.translation import ugettext_lazy as _
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -76,9 +77,9 @@ class ResearchSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True, many=True)
     name_ = serializers.ReadOnlyField(source='get_name')
     description_ = serializers.ReadOnlyField(source='get_description')
-    category = CategorySerializer()
+    category = CategorySerializer(read_only=True, many=True)
     author = AboutMeSection(read_only=True)
-    research_data = ResearchFilePathSerializer(many=True)
+    research_data = ResearchFilePathSerializer(read_only=True, many=True)
 
     def get_name(self):
         return _(self.name)
@@ -90,16 +91,21 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status','research_data',
-                  'similars', 'author', 'author', 'content', )
+        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status',
+                  'similars', 'author', 'author', 'content',
+                  'research_data'
+                  )
         read_only_fields = ('date', 'status', 'hashtag', 'similars', 'category')
 
     def create(self, validated_data):
+
+        files_of_research = self.context.get('request').FILES
+        files_of_research.pop('demo')
+
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
 
-        files_of_research = validated_data.pop('research_data')
-        for file_of_research in files_of_research:
-            ResearchFiles.objects.create(research=research, **file_of_research)
+        for file in files_of_research.values():
+            a = ResearchFiles.objects.create(research=research, name=file)
 
         return research
 
