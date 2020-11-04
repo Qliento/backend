@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import *
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.exceptions import ValidationError
+import os
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -105,7 +107,13 @@ class ResearchSerializer(serializers.ModelSerializer):
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
 
         for file in files_of_research.values():
-            a = ResearchFiles.objects.create(research=research, name=file)
+            ext = os.path.splitext(file.name)[1]
+            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv']:
+
+                raise serializers.ValidationError("Неподдерживаемый тип данных")
+
+            else:
+                a = ResearchFiles.objects.create(research=research, name=file)
 
         return research
 
