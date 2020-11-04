@@ -4,11 +4,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    count = serializers.IntegerField(source='get_recursive_product_count')
+    parent = serializers.CharField()
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'parent', 'count')
+        fields = ('id', 'name', 'parent',)
 
 
 class HashtagSerializer(serializers.ModelSerializer):
@@ -34,18 +34,12 @@ class CategoryCountSerializer(serializers.ModelSerializer):
 
 
 class CategorySubCategory(serializers.ModelSerializer):
-    subcategories = CategoryCountSerializer(source = 'get_categories', many = True)
+
+    subcategories = CategoryCountSerializer(source = 'get_subcategories', many = True)
 
     class Meta:
         model = Category
         fields = ('id', 'name', 'subcategories', )
-
-
-class CardResearchSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Research
-        fields = ("id", "name", "image", "old_price", "pages")
 
 
 class AboutMeSection(serializers.ModelSerializer):
@@ -60,6 +54,16 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('logo', )
 
 
+class CardResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(read_only=True, many=True)
+    country = CountrySerializer(read_only=True, many=True)
+    author = AuthorSerializer()
+
+    class Meta:
+        model = Research
+        fields = ("id", "name", "image", "old_price", "pages", 'demo', 'new_price', 'hashtag', 'date', 'country', 'author')
+
+
 class ResearchFilePathSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -72,9 +76,7 @@ class ResearchSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True, many=True)
     name_ = serializers.ReadOnlyField(source='get_name')
     description_ = serializers.ReadOnlyField(source='get_description')
-    category = serializers.PrimaryKeyRelatedField(
-            queryset=Category.objects.all()
-        )
+    category = CategorySerializer()
     author = AboutMeSection(read_only=True)
     research_data = ResearchFilePathSerializer(many=True)
 
@@ -88,8 +90,8 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status',
-                  'similars', 'author', 'research_data')
+        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price', 'description_', 'hashtag', 'category', 'demo', 'country', 'status','research_data',
+                  'similars', 'author', 'author', 'content', )
         read_only_fields = ('date', 'status', 'hashtag', 'similars', 'category')
 
     def create(self, validated_data):

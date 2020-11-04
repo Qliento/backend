@@ -5,30 +5,28 @@ from registration.models import QAdmins
 
 
 # Create your models here.
-class Category(MPTTModel):
+class Category(models.Model):
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
-	parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))
-
-	def __str__(self):
-		return self.name
+	parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))
 
 	def get_parent(self):
 		return self.parent
 
-	class MPTTMeta:
-
-		order_insertion_by = ['name']
+	def __str__(self):
+		return self.name
 
 	class Meta:
 		verbose_name = _('Категория')
 		verbose_name_plural = _('Категории')
 
 	def get_recursive_product_count(self):
+		return Research.objects.filter(status = 2).select_related('category.parent').count()
 
-		return Research.objects.filter(category__in=self.get_descendants(include_self=True)).count()
+	def get_subcategories(self):
+		return Category.objects.filter(parent__isnull=False, parent = self)
 
 	def get_categories(self):
-		return self.get_descendants(include_self=True)
+		return Category.objects.filter(parent = None)
 
 
 class Status(models.Model):

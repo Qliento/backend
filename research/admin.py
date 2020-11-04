@@ -11,39 +11,12 @@ from django.conf import settings
 from mptt.admin import DraggableMPTTAdmin
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 
+    
+# class ResearchAdmin(TranslationAdmin):
+#     autocomplete_fields  = ['hashtag', 'country']
 
-class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
-    mptt_indent_field = "name"
-    list_display = ('tree_actions', 'indented_title',
-                    'related_researches_count', 'related_researches_cumulative_count')
-    list_display_links = ('indented_title',)
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-
-        # Add cumulative product count
-        qs = Category.objects.add_related_count(
-                qs,
-                Research,
-                'category',
-                'researches_cumulative_count',
-                cumulative=True)
-
-        # Add non cumulative product count
-        qs = Category.objects.add_related_count(qs,
-                 Research,
-                 'category',
-                 'researches_count',
-                 cumulative=False)
-        return qs
-
-    def related_researches_count(self, instance):
-        return instance.researches_count
-    related_researches_count.short_description = 'Related researches (for this specific category)'
-
-    def related_researches_cumulative_count(self, instance):
-        return instance.researches_cumulative_count
-    related_researches_cumulative_count.short_description = 'Related researches (in tree)'
+class HashtagAdmin(TranslationAdmin):
     search_fields = ['name']
 
 
@@ -54,6 +27,7 @@ class ResearchFileAdmin(admin.TabularInline):
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
     inlines = [ResearchFileAdmin, ]
     change_form_template = "admin/acceptordeny.html"
+    autocomplete_fields = ['hashtag', 'country']
 
     def response_change(self, request, obj):
         if "_approve" in request.POST:
@@ -69,8 +43,6 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
                                 settings.EMAIL_HOST_USER,
                                 [obj.author.admin_status.email])
-
-            mail.send()
 
             return HttpResponseRedirect(".")
 
@@ -93,11 +65,11 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
         return super().delete_model(request, obj)
 
 
-class HashtagAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
+class CountryAdmin(TranslationAdmin):
+    search_fields = ['name']
 
 
-class CountryAdmin(TabbedDjangoJqueryTranslationAdmin):
+class CategoryAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
 
@@ -108,6 +80,6 @@ class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
 admin.site.register(ResearchFiles)
 admin.site.register(Status, StatusAdmin)
 admin.site.register(Research, ResearchAdmin)
-admin.site.register(Category, CategoryAdmin)
+admin.site.register(Category)
 admin.site.register(Hashtag, HashtagAdmin)
 admin.site.register(Country, CountryAdmin)
