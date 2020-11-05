@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters  import rest_framework as filters
 from rest_framework.permissions import AllowAny
 from django.db.models import Q
-
+from .models import Category
 
 
 class ResearchFilter(filters.FilterSet):
@@ -33,9 +33,10 @@ class ResearchViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         category = self.request.query_params.get('category', None)
+        category_name_only = Category.objects.get(name=category)
         subcategory = self.request.query_params.get('subcategory', None)
         if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category)
+            queryset = queryset.filter(category__parent=category_name_only.id)
         return queryset
 
 class  ResearchAscViewSet(viewsets.ModelViewSet):
@@ -48,9 +49,10 @@ class  ResearchAscViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         category = self.request.query_params.get('category', None)
+        category_name_only = Category.objects.get(name=category)
         subcategory = self.request.query_params.get('subcategory', None)
         if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category)
+            queryset = queryset.filter(category__parent=category_name_only.id)
         return queryset
 
 class  ResearchPriceDescViewSet(viewsets.ModelViewSet):
@@ -63,9 +65,10 @@ class  ResearchPriceDescViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         category = self.request.query_params.get('category', None)
+        category_name_only = Category.objects.get(name=category)
         subcategory = self.request.query_params.get('subcategory', None)
         if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category)
+            queryset = queryset.filter(category__parent=category_name_only.id)
         return queryset
 
 class  ResearchPriceAscViewSet(viewsets.ModelViewSet):
@@ -78,7 +81,8 @@ class  ResearchPriceAscViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         category = self.request.query_params.get('category', None)
+        category_name_only = Category.objects.get(name=category)
         subcategory = self.request.query_params.get('subcategory', None)
         if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category)
+            queryset = queryset.filter(category__parent=category_name_only.id)
         return queryset
