@@ -35,11 +35,16 @@ class ResearchViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
+        category = self.request.query_params.get('category', None)
 
-        category = self.request.query_params.get(None, 'category')
-        if category is None or category.isdigit() == False:
-            return Research.objects.all().order_by('-id')
-        else:
-            return queryset.filter(category__parent=category).order_by('-id')
+        try:
+            category_name_only = Category.objects.get(name=category)
+            return queryset.filter(Q(category__parent=category_name_only) | Q(category=category_name_only)).order_by('-id')
 
+        except ObjectDoesNotExist:
 
+            if category:
+                return Research.objects.filter(id=0)
+
+            else:
+                return Research.objects.filter(status=2).order_by('-id')
