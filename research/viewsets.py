@@ -9,6 +9,7 @@ from django_filters  import rest_framework as filters
 from rest_framework.permissions import AllowAny
 from django.db.models import Q
 from .models import Category
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class ResearchFilter(filters.FilterSet):
@@ -30,14 +31,20 @@ class ResearchViewSet(viewsets.ModelViewSet):
 
     filter_fields=('country', 'category', 'hashtag', 'author', 'name')
     filterset_class = ResearchFilter
+
     def get_queryset(self):
         queryset = self.queryset
         category = self.request.query_params.get('category', None)
         category_name_only = Category.objects.get(name=category)
         subcategory = self.request.query_params.get('subcategory', None)
+
+        if category_name_only is None:
+            return {'Таких исследований нет'}
+    
         if category is not None and subcategory is None:
             queryset = queryset.filter(category__parent=category_name_only.id)
-        return queryset
+            return queryset
+
 
 class  ResearchAscViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2).order_by('id')
