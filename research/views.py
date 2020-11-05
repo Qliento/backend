@@ -87,43 +87,6 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
 
 
-class ResearchViewFromOldest(APIView):
-    permission_classes = [AllowAny, ]
-    queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
-
-    def get(self, request, format=None):
-        research = Research.objects.order_by('id').filter(status = 2)
-        serializer = ResearchSerializer(research, many=True)
-        del serializer.data[0]['research_data']
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
-class ResearchViewFromCheapest(APIView):
-    permission_classes = [AllowAny, ]
-    queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
-
-    def get(self, request, format=None):
-        research = Research.objects.order_by('-old_price').filter(status = 2)
-        serializer = ResearchSerializer(research, many=True)
-        del serializer.data[0]['research_data']
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
-class ResearchViewToCheapest(APIView):
-    permission_classes = [AllowAny, ]
-
-    queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
-
-    def get(self, request, format=None):
-        research = Research.objects.order_by('old_price').filter(status = 2)
-        serializer = ResearchSerializer(research, many=True)
-        del serializer.data[0]['research_data']
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
 class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.all()

@@ -13,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class ResearchFilter(filters.FilterSet):
+
     class Meta:
         model = Research
         fields = {
@@ -34,62 +35,11 @@ class ResearchViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        category = self.request.query_params.get('category', None)
-        category_name_only = Category.objects.get(name=category)
-        subcategory = self.request.query_params.get('subcategory', None)
 
-        if category_name_only is None:
-            return {'Таких исследований нет'}
-    
-        if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category_name_only.id)
-            return queryset
+        category = self.request.query_params.get(None, 'category')
+        if category is None or category.isdigit() == False:
+            return Research.objects.all().order_by('-id')
+        else:
+            return queryset.filter(category__parent=category).order_by('-id')
 
 
-class  ResearchAscViewSet(viewsets.ModelViewSet):
-    queryset = Research.objects.filter(status = 2).order_by('id')
-    serializer_class = CardResearchSerializer
-    permission_classes = [AllowAny, ]
-
-    filter_fields=('country', 'category', 'hashtag', 'author', 'name')
-    filterset_class = ResearchFilter
-    def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category', None)
-        category_name_only = Category.objects.get(name=category)
-        subcategory = self.request.query_params.get('subcategory', None)
-        if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category_name_only.id)
-        return queryset
-
-class  ResearchPriceDescViewSet(viewsets.ModelViewSet):
-    queryset = Research.objects.filter(status = 2).order_by('-old_price')
-    serializer_class = CardResearchSerializer
-    permission_classes = [AllowAny, ]
-
-    filter_fields=('country', 'category', 'hashtag', 'author', 'name')
-    filterset_class = ResearchFilter
-    def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category', None)
-        category_name_only = Category.objects.get(name=category)
-        subcategory = self.request.query_params.get('subcategory', None)
-        if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category_name_only.id)
-        return queryset
-
-class  ResearchPriceAscViewSet(viewsets.ModelViewSet):
-    queryset = Research.objects.filter(status = 2).order_by('old_price')
-    serializer_class = CardResearchSerializer
-    permission_classes = [AllowAny, ]
-
-    filter_fields=('country', 'category', 'hashtag', 'author', 'name')
-    filterset_class = ResearchFilter
-    def get_queryset(self):
-        queryset = self.queryset
-        category = self.request.query_params.get('category', None)
-        category_name_only = Category.objects.get(name=category)
-        subcategory = self.request.query_params.get('subcategory', None)
-        if category is not None and subcategory is None:
-            queryset = queryset.filter(category__parent=category_name_only.id)
-        return queryset
