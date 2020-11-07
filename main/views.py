@@ -16,3 +16,8 @@ class MainPageView(generics.ListAPIView):
     parser_class = (FileUploadParser, )
     queryset = MainPage.objects.all()
     serializer_class = MainPageSerializer
+class SocialNetworksView(generics.ListAPIView):
+    permission_classes = [AllowAny, ]
+    parser_class = (FileUploadParser, )
+    queryset = SocialNetworks.objects.all()
+    serializer_class = SocialNetworksSerializer

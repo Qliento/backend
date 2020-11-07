@@ -78,7 +78,9 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
             content = {'message': 'Убедитесь в том, что вы ввели целые числа'}
             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
 
-class ResearchDetail(generics.RetrieveAPIView):
+class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny, ]
-    queryset = Research.objects.all()
+    queryset = Research.objects.filter(status = 2)
     serializer_class = ResearchSerializer
+
+    

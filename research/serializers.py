@@ -65,7 +65,7 @@ class ResearchSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True, many=True)
     name_ = serializers.ReadOnlyField(source='get_name')
     description_ = serializers.ReadOnlyField(source='get_description')
-    category = CategorySerializer()
+    category = CategorySerializer(read_only = True)
     author = AboutMeSection(read_only=True)
 
     def get_name(self):

@@ -16,17 +16,21 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
-from decouple import config
 
+# Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = 'ay@g8$$0c!$+c9h1xt^f6sk5!12zp^pmnc1%xmj8_2fh$#_$42'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+ALLOWED_HOSTS = ['207.154.250.71', '127.0.0.1', "localhost:3002", "localhost:3001", "localhost:3000",]
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Application definition
 
@@ -34,24 +38,20 @@ INSTALLED_APPS = [
     'modeltranslation',
     'jet.dashboard',
     'jet',
-
     'corsheaders',
     'post.apps.PostConfig',
     'research.apps.ResearchConfig',
     'main.apps.MainConfig',
     'question.apps.QuestionConfig',
-
     'rest_framework',
     'django_simple_tags',
     'django_horizontal_list_filter',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'mptt',
     'django_filters',
     'jwt',
@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
 
-
     # 'django_hosts',
     'rest_framework_recaptcha',
     'registration',
@@ -72,7 +71,9 @@ INSTALLED_APPS = [
 
     'drf_multiple_model',
 
+    
 ]
+
 
 
 MIDDLEWARE = [
@@ -97,7 +98,7 @@ ROOT_URLCONF = 'qliento.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,28 +118,12 @@ WSGI_APPLICATION = 'qliento.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'qliento',
-            'USER': 'postgres',
-            'PASSWORD': '3WYe^n;s5>GA',
-            'HOST': 'localhost',
-            'PORT': ''
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3"))
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('HOST'),
-            'PORT': ''
-        }
-    }
+}
 
 AUTH_USER_MODEL = 'registration.Users'
 # Password validation
@@ -217,6 +202,9 @@ USE_L10N = True
 
 TIME_ZONE = 'UTC'
 
+USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 LOCALE_PATHS = (
@@ -227,7 +215,7 @@ LOCALE_PATHS = (
 
 STATIC_URL = '/static/'
 # MEDIA_URL = '/files/'
-MEDIA_URL = '/static/files/'
+MEDIA_URL = '/files/'
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
@@ -237,18 +225,18 @@ STATTIC_DIRS = [ os.path.join(BASE_DIR, 'static') ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/files')
 PREFIX_DEFAULT_LOCALE = ''
 
-EMAIL_HOST = config('EMAIL_HOST')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = 'smtp.sendgrid.net'
+DEFAULT_FROM_EMAIL = 'qlientoinfo@gmail.com'
+EMAIL_HOST_USER = 'qlientoinfo@gmail.com'
+EMAIL_HOST_PASSWORD = 'ofniotneilq1'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # reCAPTCHA settings
-DRF_RECAPTCHA_SECRET_KEY = config('DRF_RECAPTCHA_SECRET_KEY')
+DRF_RECAPTCHA_SECRET_KEY = '6LcrLtEZAAAAACZHldmSPfvgnUHbuc5KvvHJrA3z'
 
-# client_id = config('client_id')
+# client_id = 6LcrLtEZAAAAAPc2hmaPPXHT_xqscPUIgey_M8n6
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
@@ -271,8 +259,8 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 # Facebook configuration
-SOCIAL_AUTH_FACEBOOK_KEY = config('SOCIAL_AUTH_FACEBOOK_KEY')
-SOCIAL_AUTH_FACEBOOK_SECRET = config('SOCIAL_AUTH_FACEBOOK_SECRET')
+SOCIAL_AUTH_FACEBOOK_KEY = '270558847271418'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'b4d9759f8ddd09f6e76eec20d94dba3d'
 
 # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
 # Email is not sent by default, to get it, you must request the email permission.
@@ -281,8 +269,8 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id, name, email, password'
 }
 # VK configuration
-SOCIAL_AUTH_VK_OAUTH2_KEY = config('SOCIAL_AUTH_VK_OAUTH2_KEY')
-SOCIAL_AUTH_VK_OAUTH2_SECRET = config('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_KEY = '7609809'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = '4aIt5YSoctAFqeX9g15V'
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -290,8 +278,8 @@ SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
 # Google configuration
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1032556798687-6427pbbpse1jm5ho5is64cja01bad94u.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'tNKrBMOuSdxkoQTOknLeTyLm'
 # LOGIN_URL = '/auth/login/google-oauth2/'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
@@ -301,8 +289,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 # LOGOUT_REDIRECT_URL = '/'
 
 # HTTPS configuration
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = config('SOCIAL_AUTH_REDIRECT_IS_HTTPS', cast=bool)
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
-CORS_ORIGIN_ALLOW_ALL = config('CORS_ORIGIN_ALLOW_ALL', cast=bool)
-CORS_ALLOW_CREDENTIALS = config('CORS_ALLOW_CREDENTIALS', cast=bool)

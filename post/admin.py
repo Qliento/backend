@@ -10,7 +10,6 @@ from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin,Tabb
 class ImagePostAdmin(admin.TabularInline):
     model = ImagePost
 
-
 class PostAdmin(TabbedTranslationAdmin):
     inlines = [ImagePostAdmin, ]
     pass

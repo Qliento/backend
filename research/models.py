@@ -2,15 +2,12 @@ from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext_lazy as _
 from registration.models import QAdmins
-
+from django.db.models import Count
 
 # Create your models here.
 class Category(models.Model):
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
-	parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))
-	
-	def get_parent(self):
-		return self.parent
+	parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
 		
 	def __str__(self):
 		return self.name
@@ -19,11 +16,12 @@ class Category(models.Model):
 		verbose_name = _('Категория')
 		verbose_name_plural = _('Категории')
 
-	def get_recursive_product_count(self):
-		return Research.objects.filter(status = 2).select_related('category.parent').count()
 
 	def get_subcategories(self):
-		return Category.objects.filter(parent__isnull=False, parent = self)
+		return Category.objects.filter(parent = self)
+
+	def get_recursive_product_count(self):
+		return Research.objects.filter(category__parent=self, status = 2).count()
 
 	def get_categories(self):
 		return Category.objects.filter(parent = None)
@@ -81,5 +79,7 @@ class Research(models.Model):
 	class Meta:
 		verbose_name = _('Исследование')
 		verbose_name_plural = _('Исследования')
+	def get_parent(self):
+		return self.category.parent
 	
 

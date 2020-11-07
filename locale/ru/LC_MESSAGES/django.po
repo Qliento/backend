@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-19 22:17+0600\n"
+"POT-Creation-Date: 2020-11-07 16:24+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,46 +20,61 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: .\main\models.py:11 .\main\models.py:12
+#: .\main\models.py:13 .\main\models.py:14
 msgid "Контактная информация"
 msgstr "Контактная информация"
 
-#: .\main\models.py:15
+#: .\main\models.py:17
 msgid "Данные"
 msgstr "Данные"
 
-#: .\main\models.py:21 .\main\models.py:22
+#: .\main\models.py:23 .\main\models.py:24
 msgid "Контактные данные"
 msgstr "Контактные данные"
 
-#: .\main\models.py:25 .\post\models.py:7 .\post\models.py:16
-#: .\post\models.py:47 .\research\models.py:52
+#: .\main\models.py:27
+#, fuzzy
+#| msgid "Изображение"
+msgid "Оглавнение"
+msgstr "Изображение"
+
+#: .\main\models.py:28 .\post\models.py:9 .\post\models.py:18
+#: .\post\models.py:50 .\research\models.py:64
 msgid "Описание"
 msgstr "Описание"
 
-#: .\main\models.py:26 .\post\models.py:46 .\research\models.py:47
+#: .\main\models.py:29 .\main\models.py:53 .\post\models.py:49
+#: .\research\models.py:59
 msgid "Изображение"
 msgstr "Изображение"
 
-#: .\main\models.py:27
+#: .\main\models.py:30 .\main\models.py:54
 msgid "Ссылка"
 msgstr "Ссылка"
 
-#: .\main\models.py:31 .\main\models.py:32
+#: .\main\models.py:34 .\main\models.py:35
 msgid "Раздел о моб. приложении"
 msgstr "Раздел о моб. приложении"
 
-#: .\main\models.py:35
+#: .\main\models.py:41
 msgid "Информация о мобильном приложении"
 msgstr "Информация о мобильном приложении"
 
-#: .\main\models.py:36
+#: .\main\models.py:42
 msgid "Контакты"
 msgstr "Контакты"
 
-#: .\main\models.py:41 .\main\models.py:42
+#: .\main\models.py:47 .\main\models.py:48
 msgid "Главная страница"
 msgstr "Главная страница"
+
+#: .\main\models.py:52 .\research\models.py:9 .\research\models.py:58
+msgid "Название"
+msgstr "Название"
+
+#: .\main\models.py:58 .\main\models.py:59
+msgid "Социальные сети"
+msgstr ""
 
 #: .\orders\models.py:27
 msgid "Заказ"
@@ -77,64 +92,64 @@ msgstr ""
 msgid "Формы заказов"
 msgstr ""
 
-#: .\post\models.py:6 .\post\models.py:15 .\post\models.py:45
+#: .\post\models.py:8 .\post\models.py:17 .\post\models.py:48
 #: .\question\models.py:15
 msgid "Заголовок"
 msgstr "Заголовок"
 
-#: .\post\models.py:11 .\post\models.py:12
+#: .\post\models.py:13 .\post\models.py:14
 msgid "О нас"
 msgstr "О нас"
 
-#: .\post\models.py:17 .\post\models.py:48 .\research\models.py:48
+#: .\post\models.py:19 .\post\models.py:51 .\research\models.py:60
 msgid "Дата публикации"
 msgstr "Дата публикации"
 
-#: .\post\models.py:18 .\research\models.py:59 .\research\models.py:70
+#: .\post\models.py:20 .\research\models.py:71 .\research\models.py:82
 msgid "Исследование"
 msgstr "Исследование"
 
-#: .\post\models.py:23 .\post\models.py:24
+#: .\post\models.py:25 .\post\models.py:26
 msgid "Блог"
 msgstr ""
 
-#: .\post\models.py:31
+#: .\post\models.py:33
 #, fuzzy
 #| msgid "Изображение для окна о нас"
 msgid "Изображение для окна блога"
 msgstr "Изображение для окна о нас"
 
-#: .\post\models.py:32
+#: .\post\models.py:34
 #, fuzzy
 #| msgid "Изображения для окна о нас"
 msgid "Изображения для окна блога"
 msgstr "Изображения для окна о нас"
 
-#: .\post\models.py:39
+#: .\post\models.py:41
 msgid "Изображение для окна о нас"
 msgstr "Изображение для окна о нас"
 
-#: .\post\models.py:40
+#: .\post\models.py:42
 msgid "Изображения для окна о нас"
 msgstr "Изображения для окна о нас"
 
-#: .\post\models.py:49
+#: .\post\models.py:52
 msgid "Источник"
 msgstr "Источник"
 
-#: .\post\models.py:54
+#: .\post\models.py:58
 msgid "Новость"
 msgstr "Новость"
 
-#: .\post\models.py:55
+#: .\post\models.py:59
 msgid "Новости"
 msgstr "Новости"
 
-#: .\qliento\settings.py:178
+#: .\qliento\settings.py:180
 msgid "Kyrgyz"
 msgstr ""
 
-#: .\qliento\settings.py:179
+#: .\qliento\settings.py:181
 msgid "English"
 msgstr ""
 
@@ -212,85 +227,81 @@ msgstr ""
 msgid "Заказчики"
 msgstr ""
 
-#: .\registration\models.py:80
+#: .\registration\models.py:81
 msgid "Поставщик"
 msgstr ""
 
-#: .\registration\models.py:81
+#: .\registration\models.py:82
 msgid "Поставщики"
 msgstr ""
 
-#: .\registration\serializers.py:146
+#: .\registration\serializers.py:147
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr ""
 
-#: .\registration\serializers.py:152
+#: .\registration\serializers.py:153
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: .\research\models.py:9 .\research\models.py:46
-msgid "Название"
-msgstr "Название"
-
-#: .\research\models.py:10 .\research\models.py:16 .\research\models.py:55
+#: .\research\models.py:10 .\research\models.py:19 .\research\models.py:67
 msgid "Категория"
 msgstr "Категория"
 
-#: .\research\models.py:17
+#: .\research\models.py:20
 msgid "Категории"
 msgstr "Категории"
 
-#: .\research\models.py:22 .\research\models.py:26 .\research\models.py:58
+#: .\research\models.py:34 .\research\models.py:38 .\research\models.py:70
 msgid "Статус"
 msgstr "Статус"
 
-#: .\research\models.py:27
+#: .\research\models.py:39
 msgid "Статусы"
 msgstr "Статусы"
 
-#: .\research\models.py:30 .\research\models.py:34
+#: .\research\models.py:42 .\research\models.py:46
 msgid "Ключевое слово"
 msgstr "Ключевое слово"
 
-#: .\research\models.py:35 .\research\models.py:54
+#: .\research\models.py:47 .\research\models.py:66
 msgid "Ключевые слова"
 msgstr "Ключевые слова"
 
-#: .\research\models.py:38 .\research\models.py:42 .\research\models.py:57
+#: .\research\models.py:50 .\research\models.py:54 .\research\models.py:69
 msgid "Страна"
 msgstr "Страна"
 
-#: .\research\models.py:43
+#: .\research\models.py:55
 msgid "Страны"
 msgstr "Страны"
 
-#: .\research\models.py:49
+#: .\research\models.py:61
 msgid "Количество страниц"
 msgstr "Количество страниц"
 
-#: .\research\models.py:50
+#: .\research\models.py:62
 msgid "Старая цена"
 msgstr "Старая цена"
 
-#: .\research\models.py:51
+#: .\research\models.py:63
 msgid "Новая цена"
 msgstr "Новая цена"
 
-#: .\research\models.py:53
+#: .\research\models.py:65
 #, fuzzy
 #| msgid "Описание"
 msgid "Содержание"
 msgstr "Содержание"
 
-#: .\research\models.py:56
+#: .\research\models.py:68
 msgid "Демоверсия"
 msgstr "Демоверсия"
 
-#: .\research\models.py:60
+#: .\research\models.py:72
 msgid "Похожие исследования"
 msgstr "Похожие исследования"
 
-#: .\research\models.py:71
+#: .\research\models.py:83
 msgid "Исследования"
 msgstr "Исследования"
 
