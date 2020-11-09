@@ -76,18 +76,18 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
         try:
             my_queryset = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference).update(new_price=request.data.get('new_price'))
             get_updated = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference)
-
+            name_of_research = list(get_updated.values())[0].get('name')
             email_body = 'Доброго времени суток, Qliento! \n' + \
                          'Партнер: {}, отправил вам запрос на одобрение скидочной цены своего исследования. \n' \
                          'Название исследования: "{}". \n' \
                          'Новая скидочная цена: "{}". \n'  \
                          'Пройдите пожалуйста в админ-панель для принятия дальнейших действий.'.format(request.user.name,
-                                                                                                       list(my_queryset.values())[0].get('name'),
+                                                                                                       name_of_research,
                                                                                                        request.data.get('new_price'),
                                                                                                        )
 
             data = {'email_body': email_body, 'to_email': 'qlientoinfo@gmail.com',
-                    'email_subject': 'Исследование на подтверждение'}
+                    'email_subject': 'Цена исследования на подтверждение'}
             Util.send_email(data)
 
             return Response(list(get_updated.values())[0], status=status.HTTP_202_ACCEPTED)
