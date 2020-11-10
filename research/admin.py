@@ -14,6 +14,7 @@ from django.conf import settings
 from mptt.admin import DraggableMPTTAdmin
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 
+
 class CategoryForm(forms.ModelForm):
     parent = forms.ModelChoiceField(queryset=Category.objects.filter(parent=None), label = "Категория",required=False)
 
@@ -93,13 +94,11 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
 class CountryAdmin(TranslationAdmin):
     search_fields = ['name']
 
+
 class CategoryAdmin(TranslationAdmin):
     form = CategoryForm
     list_display = ('name', 'parent', )
 
-
-class CategoryAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
 
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass

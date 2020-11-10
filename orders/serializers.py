@@ -5,7 +5,7 @@ from .models import Orders, OrderForm, Cart, DemoVersionForm, Instructions, Stat
 from collections import OrderedDict
 from rest_framework import request
 from registration.models import QAdmins
-from research.serializers import Country, Hashtag
+from research.serializers import Country, Hashtag, CardResearchSerializer
 
 
 def to_dict(instance):
@@ -19,6 +19,8 @@ def to_dict(instance):
 
 
 class CartedItemsSerializer(serializers.ModelSerializer):
+    ordered_item = CardResearchSerializer(read_only=True)
+
     class Meta:
         model = Cart
         fields = "__all__"
