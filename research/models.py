@@ -70,7 +70,7 @@ class Research(models.Model):
 	date = models.DateField(auto_now_add = True, verbose_name = _('Дата публикации'))
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
-	new_price = models.IntegerField(verbose_name = _('Новая цена'), null = True, blank = True)
+	new_price = models.IntegerField(verbose_name = _('Новая цена'), null=True, blank=True)
 	description = models.TextField(verbose_name = _('Описание'))
 	content = models.TextField( verbose_name = _('Содержание'))
 	hashtag = models.ManyToManyField(Hashtag, verbose_name = _('Ключевые слова'))

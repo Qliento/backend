@@ -220,8 +220,6 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
-
-
 STATIC_URL = '/static/'
 # MEDIA_URL = '/files/'
 MEDIA_URL = '/static/files/'
