@@ -1,29 +1,41 @@
 from django.db import models
-from research.models import Research
-from registration.models import Users
+from registration.models import Users, QAdmins
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from registration.utils import Util
+from django.db.models import Avg, Count, Min, Sum
+from django.core.mail import EmailMessage
+from research.models import Research
+from django.conf import settings
 from random import randint
 from django.db.models import F
 # Create your models here.
 
 
-class Orders(models.Model):
-    ordered_researches = models.ForeignKey(Research, on_delete=models.CASCADE, default=1, related_name='researches')
-    date_added = models.DateTimeField(auto_now_add=True)
-    completed = models.BooleanField(null=True, blank=True, default=False)
-    customer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='buyer')
-    total = models.IntegerField(blank=True, null=True)
+class Cart(models.Model):
+    ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items', default=1)
+    amount_of_items = models.IntegerField(blank=True, null=True)
+    discount = models.IntegerField(blank=True, null=True)
+    total_of_all = models.IntegerField(blank=True, null=True)
+    buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer")
 
     @property
-    def get_total(self):
-        return self.ordered_researches.new_price
+    def count_items(self):
+        return Research.objects.filter(ordered_items=self.pk).count()
+
+    @property
+    def get_cost_of_1(self):
+        return self.ordered_item.new_price
+
+    @property
+    def get_discount(self):
+        return self.ordered_item.old_price - self.ordered_item.new_price
+
+    @property
+    def get_general_sum(self):
+        return Research.objects.filter(ordered_items=self.pk).aggregate(Sum('new_price'))
 
     def save(self, *args, **kwargs):
-
-        super(Orders, self).save(*args, **kwargs)
-
         super(Cart, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -43,13 +55,20 @@ class Orders(models.Model):
     completed = models.BooleanField(null=True, blank=True, default=False)
     items_ordered = models.ManyToManyField(Cart, related_name="items_to_pay")
 
-
     class Meta:
         verbose_name = _("Покупки клиентов")
         verbose_name_plural = _('Покупки клиентов')
 
     def __str__(self):
         return '{}{}'.format('ID', self.pk)
+
+    @property
+    def get_total_from_cart(self):
+        price = Cart.objects.filter(items_to_pay=self.pk).aggregate(Sum('total_of_all'))
+        return price.get('total_of_all__sum')
+
+    def save(self, *args, **kwargs):
+        return super(Orders, self).save(*args, **kwargs)
 
 
 class OrderForm(models.Model):

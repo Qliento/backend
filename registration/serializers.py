@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import QAdmins, Users, Clients
+from .models import QAdmins, Users, Clients, UsersConsentQliento
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import password_validation
 from research.models import Research
@@ -35,6 +35,7 @@ class UsersSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         respondents_data = Users.objects.create_user(**validated_data)
+        respondents_data.set_password(validated_data['password'])
         respondents_data.save()
         return respondents_data
 
@@ -101,10 +102,10 @@ class UsersInfoSerializer(serializers.ModelSerializer):
 
 
 class QAdminSerializer(serializers.ModelSerializer):
-    admin_status = UsersUpdateSerializer(required=True, many=False)
+    admin_status = UsersInfoSerializer(required=True, many=False)
 
     class Meta:
-        fields = ["logo", "admin_status", "about_me"]
+        fields = '__all__'
         model = QAdmins
 
     def create(self, validated_data):
@@ -112,7 +113,6 @@ class QAdminSerializer(serializers.ModelSerializer):
         user = Users.objects.create_user(**initial_data)
         researcher = QAdmins.objects.create(admin_status=user, **validated_data)
         return researcher
-
 
     def update(self, instance, validated_data):
         user_to_update = Users.objects.get(id=self.data['admin_status']['id'])
@@ -147,6 +147,11 @@ class ClientSerializer(serializers.ModelSerializer):
         user = Users.objects.create_user(**initial_data)
         qlient = Clients.objects.create(client_status=user, **validated_data)
         return qlient
+
+    def to_representation(self, instance):
+        response = super(ClientSerializer, self).to_representation(instance)
+        del response.get('client_status')['password']
+        return response
 
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
@@ -199,7 +204,6 @@ class CleanedFileOnly(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ['research']
-
 
 
 class CleanedDemoOnly(serializers.ModelSerializer):

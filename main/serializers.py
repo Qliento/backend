@@ -19,7 +19,7 @@ class ContactInfoSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(many=True)
     class Meta:
         model = ContactInfo
-        fields = ("contacts", )
+        fields = ('id', "contacts", )
         
         
 class MainPageSerializer(serializers.ModelSerializer):
@@ -36,5 +36,5 @@ class MainPageSerializer(serializers.ModelSerializer):
 class SocialNetworksSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialNetworks
-        fields = ('name', "image", "url", )
+        fields = ('id', 'name', "image", "url", )
 
