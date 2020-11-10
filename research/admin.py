@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import *
-<<<<<<< HEAD
 from django import forms
 
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
