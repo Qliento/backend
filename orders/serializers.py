@@ -162,4 +162,3 @@ class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         fields = '__all__'
-

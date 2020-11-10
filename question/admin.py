@@ -16,6 +16,7 @@ class PartnershipAdmin(TabbedDjangoJqueryTranslationAdmin):
 class QuestionAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
+
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(PartnershipInfo, PartnershipInfoAdmin)
 admin.site.register(HaveQuestion)

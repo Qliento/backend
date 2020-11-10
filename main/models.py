@@ -24,12 +24,12 @@ class Contact(models.Model):
 		verbose_name_plural = _('Контактные данные')
 
 class MobApp(models.Model):
-	header = models.CharField(max_length = 255, verbose_name = 'Оглавнение')
+	header = models.CharField(max_length = 255, verbose_name = _('Оглавнение'))
 	description = models.TextField(verbose_name = _('Описание'))
 	image = models.ImageField(null = True, blank = True, upload_to='images', verbose_name = _('Изображение'))
 	url = models.URLField(max_length=250, verbose_name = _('Ссылка'))
 	def __str__(self):
-		return "Информация о мобильном прижении"
+		return "Информация о мобильном приложении"
 	class Meta:
 		verbose_name = _('Раздел о моб. приложении')
 		verbose_name_plural = _('Раздел о моб. приложении')
@@ -48,3 +48,12 @@ class MainPage(models.Model):
 		verbose_name_plural = _('Главная страница')
 
 
+class SocialNetworks(models.Model):
+	name = models.CharField(max_length = 255, verbose_name = _('Название'))
+	image = models.ImageField(null = True, blank = True, upload_to='images', verbose_name = _('Изображение'))
+	url = models.URLField(max_length=250, verbose_name = _('Ссылка'))
+	def __str__(self):
+		return self.name
+	class Meta:
+		verbose_name = _('Социальные сети')
+		verbose_name_plural = _('Социальные сети')

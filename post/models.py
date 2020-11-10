@@ -2,12 +2,7 @@ from django.db import models
 from research.models import Research
 # Create your models here.
 from django.utils.translation import ugettext_lazy as _
-from PIL import Image
-from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
-import sys
 from django_resized import ResizedImageField
-
 
 class Info(models.Model):
 	header = models.CharField(max_length = 255, verbose_name = _("Заголовок"))

@@ -1,4 +1,4 @@
-from research.viewsets import ResearchViewSet
+from research.viewsets import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()

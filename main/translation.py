@@ -5,5 +5,5 @@ from .models import *
 
 @register(MobApp)
 class MobAppTranslationOptions(TranslationOptions):
-    fields = ('description', )
+    fields = ('header', 'description', )
 

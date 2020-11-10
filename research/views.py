@@ -96,7 +96,9 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
 
 
+
 class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
-    queryset = Research.objects.filter(status=2)
-    serializer_class = CardResearchSerializer
+    queryset = Research.objects.filter(status = 2)
+    serializer_class = ResearchSerializer
+
