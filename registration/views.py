@@ -5,7 +5,8 @@ from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_404_NOT_FOUND
 from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, \
-    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly
+    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, \
+    CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly, AdditionalInfoToken
 from .models import QAdmins, Users, Clients, UsersConsentQliento
 from research.models import Research
 from orders.models import Orders
@@ -24,11 +25,16 @@ from django.http import FileResponse
 from django.shortcuts import redirect
 from rest_framework import generics, permissions, status, views
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework_simplejwt.views import TokenObtainPairView
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy, load_backend, psa
 from social_core.backends.oauth import BaseOAuth2
 from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
 # Create your views here.
+
+
+class UpdatedTokenObtainPairView(TokenObtainPairView):
+    serializer_class = AdditionalInfoToken
 
 
 class QAdminRegistration(GenericAPIView):

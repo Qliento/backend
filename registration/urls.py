@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('my-researches/', MyUploadedResearches.as_view()),
     path('download-file/<int:pk>/', DownloadFileView.as_view()),
-    path('qliento-consent/', UserConsentView.as_view())
+    path('qliento-consent/', UserConsentView.as_view()),
+    path('jwt-create/', UpdatedTokenObtainPairView.as_view())
 
 ]
