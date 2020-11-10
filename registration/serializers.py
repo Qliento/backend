@@ -80,6 +80,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = [
+                  "id",
                   "name",
                   "surname",
                   "password",
@@ -111,6 +112,27 @@ class QAdminSerializer(serializers.ModelSerializer):
         user = Users.objects.create_user(**initial_data)
         researcher = QAdmins.objects.create(admin_status=user, **validated_data)
         return researcher
+
+
+    def update(self, instance, validated_data):
+        user_to_update = Users.objects.get(id=self.data['admin_status']['id'])
+        try:
+            user_to_update.surname = self.context['surname']
+            user_to_update.name = self.context['name']
+            user_to_update.phone_number = self.context['phone_number']
+            user_to_update.save()
+        except KeyError:
+            user_to_update.save()
+
+        instance.about_me = validated_data.get('about_me', instance.about_me)
+        instance.position = validated_data.get('position', instance.position)
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        response = super(QAdminSerializer, self).to_representation(instance)
+        del response.get('admin_status')['password']
+        return response
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -178,3 +200,17 @@ class CleanedFileOnly(serializers.ModelSerializer):
         model = Research
         fields = ['research']
 
+
+
+class CleanedDemoOnly(serializers.ModelSerializer):
+
+    class Meta:
+        model = Research
+        fields = ['demo']
+
+
+class UserConsentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UsersConsentQliento
+        fields = '__all__'

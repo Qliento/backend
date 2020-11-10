@@ -7,13 +7,18 @@ from rest_framework import generics
 from .serializers import *
 from .models import *
 from registration.models import QAdmins
+from orders.models import Statistics
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from collections import OrderedDict
+from django.core.signals import request_finished
+from django.db.models import Avg, Count, Min, Sum, F
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+
 
 class FiltersAPIView(ObjectMultipleModelAPIView):
     permission_classes = (AllowAny,)
@@ -24,6 +29,7 @@ class FiltersAPIView(ObjectMultipleModelAPIView):
         {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
     ]
 
+
 class DefaultResearchView(APIView):
     permission_classes = [AllowAny, ]
     parser_classes = [MultiPartParser, FormParser]
@@ -33,13 +39,15 @@ class DefaultResearchView(APIView):
     def get(self, request, format=None):
         research = Research.objects.order_by('-id').filter(status=2)
         serializer = ResearchSerializer(research, many=True)
+        del serializer.data[0]['research_data']
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class UploadResearchView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [AllowAny, ]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
+    parser_classes = (JSONRenderer, MultiPartParser)
 
     def post(self, request, *args, **kwargs):
         file_serializer = self.get_serializer(data=request.data)
@@ -78,7 +86,9 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
             content = {'message': 'Убедитесь в том, что вы ввели целые числа'}
             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
 
-class ResearchDetail(generics.RetrieveUpdateDestroyAPIView):
+
+
+class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.filter(status = 2)
     serializer_class = ResearchSerializer

@@ -1,9 +1,14 @@
 from django.shortcuts import render
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, GenericAPIView, ListAPIView
 from rest_framework.response import Response
-
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, MyOrdersSerializer
 from .models import OrderForm, Orders
+
+from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
+    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, InstructionSerializer, StatisticsSerializer
+from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics
+from registration.models import Users, Clients
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 # Create your views here.
@@ -32,3 +37,41 @@ class MyOrdersView(ListAPIView):
 
 
 
+
+class ItemCartDeleteView(RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CartedItemsSerializer
+    queryset = None
+
+    def destroy(self, request, *args, **kwargs):
+        instance = Cart.objects.filter(buyer=request.user.id, id=self.kwargs['pk'])
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AddToCartView(CreateAPIView):
+    queryset = Cart.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AddToCartSerializer
+
+
+class SendDemoView(CreateAPIView):
+    queryset = DemoVersionForm.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = EmailDemoSerializer
+
+
+class ShortDescriptionView(ListAPIView):
+    queryset = ShortDescriptions.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = InstructionSerializer
+
+
+class StatViewForResearch(RetrieveAPIView):
+    queryset = None
+    permission_classes = (IsAuthenticated,)
+    serializer_class = StatisticsSerializer
+
+    def get(self, request, *args, **kwargs):
+        self.queryset = Statistics.objects.filter(Q(partner_admin=request.user.initial_reference, partner_admin__creator__id=self.kwargs['exact_research']))
+        return Response(list(self.queryset.values())[0], status=status.HTTP_200_OK)

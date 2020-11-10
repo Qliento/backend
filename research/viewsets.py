@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters  import rest_framework as filters
 from rest_framework.permissions import AllowAny
 from django.db.models import Q
-
+from .models import Category
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class ResearchFilter(filters.FilterSet):
@@ -24,7 +25,6 @@ class ResearchFilter(filters.FilterSet):
         }
 
 
-
 class ResearchViewSet(viewsets.ModelViewSet):
     queryset = Research.objects.filter(status = 2).order_by('-id')
     serializer_class = CardResearchSerializer
@@ -32,6 +32,7 @@ class ResearchViewSet(viewsets.ModelViewSet):
 
     filter_fields=('country', 'category', 'hashtag', 'author', 'name')
     filterset_class = ResearchFilter
+
     def get_queryset(self):
         queryset = self.queryset
         category = self.request.query_params.get('category', None)
