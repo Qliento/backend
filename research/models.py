@@ -83,7 +83,11 @@ class Research(models.Model):
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True)
 
 	def similar_researches(self):
-		return type(self).objects.prefetch_related('hashtag').filter(status=2).exclude(id=self.id)
+		hashtags = Research.objects.get(name=self.name)
+		similars = Research.objects.filter(id=self.id)
+		for hashtag in hashtags.hashtag.all():
+			similars = similars | Research.objects.filter(hashtag = hashtag).exclude(id=self.id)
+		return similars.exclude(id = self.id)
 
 	def __str__(self):
 		return self.name

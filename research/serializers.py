@@ -88,7 +88,6 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     def get_description(self):
         return _(self.name)
-    
     similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
 
     class Meta:
