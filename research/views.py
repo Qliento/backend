@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
@@ -10,11 +9,7 @@ from registration.models import QAdmins
 from orders.models import Statistics
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
-from django_filters.rest_framework import DjangoFilterBackend
-from django_filters import rest_framework as filters
-from collections import OrderedDict
-from django.core.signals import request_finished
-from django.db.models import Avg, Count, Min, Sum, F
+
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_multiple_model.views import ObjectMultipleModelAPIView
@@ -44,7 +39,7 @@ class DefaultResearchView(APIView):
 
 
 class UploadResearchView(generics.GenericAPIView):
-    permission_classes = [AllowAny, ]
+    permission_classes = [IsAuthenticated, ]
     queryset = Research.objects.all()
     serializer_class = ResearchSerializer
     parser_classes = (JSONRenderer, MultiPartParser)
@@ -81,6 +76,20 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
         try:
             my_queryset = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference).update(new_price=request.data.get('new_price'))
             get_updated = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference)
+            name_of_research = list(get_updated.values())[0].get('name')
+            email_body = 'Доброго времени суток, Qliento! \n' + \
+                         'Партнер: {}, отправил вам запрос на одобрение скидочной цены своего исследования. \n' \
+                         'Название исследования: "{}". \n' \
+                         'Новая скидочная цена: "{}". \n'  \
+                         'Пройдите пожалуйста в админ-панель для принятия дальнейших действий.'.format(request.user.name,
+                                                                                                       name_of_research,
+                                                                                                       request.data.get('new_price'),
+                                                                                                       )
+
+            data = {'email_body': email_body, 'to_email': 'qlientoinfo@gmail.com',
+                    'email_subject': 'Цена исследования на подтверждение'}
+            Util.send_email(data)
+
             return Response(list(get_updated.values())[0], status=status.HTTP_202_ACCEPTED)
         except ValueError:
             content = {'message': 'Убедитесь в том, что вы ввели целые числа'}
@@ -93,4 +102,3 @@ class ResearchDetail(generics.RetrieveAPIView):
     queryset = Research.objects.filter(status = 2)
     serializer_class = ResearchSerializer
 
-    

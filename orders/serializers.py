@@ -22,6 +22,13 @@ class CartedItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = "__all__"
+        depth = 1
+
+    def to_representation(self, instance):
+        data = super(CartedItemsSerializer, self).to_representation(instance)
+        cleaned_data = dict(data)
+        cleaned_data.pop('buyer')
+        return cleaned_data
 
 
 class AddToCartSerializer(serializers.ModelSerializer):
