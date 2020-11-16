@@ -5,6 +5,7 @@ from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin,Tabb
 
 
 
+
 # Register your models here.
 
 class ImagePostAdmin(admin.TabularInline):
@@ -13,6 +14,12 @@ class ImagePostAdmin(admin.TabularInline):
 
 class PostAdmin(TabbedTranslationAdmin):
     inlines = [ImagePostAdmin, ]
+    formfield_overrides = {
+        models.CharField: {'widget': Textarea(
+                           attrs={'rows': 2,
+                                  'cols': 50,
+                                  'style': 'height: 5em;'})},
+    }
     pass
 
 class ImageInfoAdmin(admin.TabularInline):
@@ -25,7 +32,10 @@ class InfoAdmin(TabbedTranslationAdmin):
 class NewsAdmin(TabbedTranslationAdmin):
     search_fields = ['name']
     formfield_overrides = {
-        models.CharField: {'widget': TextInput(attrs={'rows': '50', 'columns': '50'})},
+        models.CharField: {'widget': Textarea(
+                           attrs={'rows': 2,
+                                  'cols': 50,
+                                  'style': 'height: 5em;'})},
     }
     pass
 

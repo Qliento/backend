@@ -13,6 +13,7 @@ from research.models import Research
 from django.conf import settings
 from mptt.admin import DraggableMPTTAdmin
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
+from django.forms import TextInput, Textarea
 
 class CategoryForm(forms.ModelForm):
     parent = forms.ModelChoiceField(queryset=Category.objects.filter(parent=None), label = "Категория",required=False)
@@ -41,6 +42,12 @@ class StatusesListFilter(admin.SimpleListFilter):
 
 class HashtagAdmin(TranslationAdmin):
     search_fields = ['name']
+    formfield_overrides = {
+        models.CharField: {'widget': Textarea(
+                           attrs={'rows': 2,
+                                  'cols': 50,
+                                  'style': 'height: 5em;'})},
+    }
 
 
 class ResearchFileAdmin(admin.TabularInline):
@@ -53,6 +60,12 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
     autocomplete_fields = ['hashtag', 'country']
     list_display = ('name', 'status', )
     list_filter = (StatusesListFilter, )
+    formfield_overrides = {
+        models.CharField: {'widget': Textarea(
+                           attrs={'rows': 2,
+                                  'cols': 50,
+                                  'style': 'height: 5em;'})},
+    }
 
     def response_change(self, request, obj):
         if "_approve" in request.POST:
@@ -97,9 +110,6 @@ class CategoryAdmin(TranslationAdmin):
     form = CategoryForm
     list_display = ('name', 'parent', )
 
-
-class CategoryAdmin(TabbedDjangoJqueryTranslationAdmin):
-    pass
 
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
