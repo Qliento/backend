@@ -85,7 +85,6 @@ MIDDLEWARE = [
     'qliento.utils.ActivateTranslationMiddleware',
     'qliento.utils.AdminLocaleURLMiddleware',
     'qliento.utils.corsMiddleware',
-    
 
 ]
 

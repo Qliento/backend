@@ -52,7 +52,7 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
     inlines = [ResearchFileAdmin, ]
     change_form_template = "admin/acceptordeny.html"
     autocomplete_fields = ['hashtag', 'country']
-    list_display = ('name', 'status', )
+    list_display = ('name', 'status', 'id')
     list_filter = (StatusesListFilter, )
 
     def response_change(self, request, obj):

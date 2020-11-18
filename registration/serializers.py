@@ -18,7 +18,6 @@ class AdditionalInfoToken(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-
         refresh = self.get_token(self.user)
 
         data['refresh'] = str(refresh)
