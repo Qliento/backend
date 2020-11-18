@@ -7,20 +7,23 @@ from django.forms import TextInput, Textarea
 
 
 class ContactAdmin(admin.TabularInline):
-	model = Contact
-	
+
+    model = Contact
+
+
 class ContactInfoAdmin(admin.ModelAdmin):
+
     inlines = [ContactAdmin, ]
 
+
 class MobAppAdmin(TabbedTranslationAdmin):
-	formfield_overrides = {
+    formfield_overrides = {
         models.CharField: {'widget': Textarea(
                            attrs={'rows': 2,
                                   'cols': 50,
                                   'style': 'height: 5em;'})},
-    }
+                           }
     pass
-
 
 
 admin.site.register(MainPage)

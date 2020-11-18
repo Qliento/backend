@@ -40,7 +40,6 @@ class StatusesListFilter(admin.SimpleListFilter):
         return queryset
 
 
-
 class HashtagAdmin(TranslationAdmin):
     search_fields = ['name']
     formfield_overrides = {

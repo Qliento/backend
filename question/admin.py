@@ -5,8 +5,11 @@ from django.forms import TextInput, Textarea
 
 # Register your models here.
 
+
 class PartnershipAdmin(admin.TabularInline):
-	model = Partnership
+    model = Partnership
+
+
 class PartnershipInfoAdmin(admin.ModelAdmin):
     inlines = [PartnershipAdmin, ]
     formfield_overrides = {
@@ -14,16 +17,17 @@ class PartnershipInfoAdmin(admin.ModelAdmin):
                            attrs={'rows': 2,
                                   'cols': 50,
                                   'style': 'height: 5em;'})},
-    }
+                           }
 
 
 class QuestionAdmin(TabbedDjangoJqueryTranslationAdmin):
-	formfield_overrides = {
+    formfield_overrides = {
         models.CharField: {'widget': Textarea(
                            attrs={'rows': 2,
                                   'cols': 50,
-                                  'style': 'height: 5em;'})},
-    }
+                                  'style': 'height: 5em;'})
+                           },
+                           }
     pass
 
 

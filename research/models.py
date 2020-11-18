@@ -96,6 +96,7 @@ class Research(models.Model):
 		verbose_name = _('Исследование')
 		verbose_name_plural = _('Исследования')
 
+
 class ResearchFiles(models.Model):
 	name = models.FileField(null=True, blank=True, verbose_name=_('Файл'), default='1')
 	research = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='research_data', default='1', null=True, blank=True, verbose_name=_('Исследование'))
