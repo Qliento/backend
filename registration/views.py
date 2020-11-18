@@ -22,9 +22,11 @@ from .utils import Util
 import jwt
 from django.core.mail import send_mail
 from django.http import FileResponse
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 from rest_framework import generics, permissions, status, views
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
+
 from rest_framework_simplejwt.views import TokenObtainPairView
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy, load_backend, psa
@@ -75,7 +77,7 @@ class VerifyEmail(views.APIView):
             if not user.is_active:
                 user.is_active = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return HttpResponseRedirect(redirect_to="https://qliento.com/users/login/clients/")
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
@@ -181,6 +183,7 @@ class UsersUpdate(RetrieveUpdateAPIView):
 class PartnersUpdate(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = QAdminSerializer
+    parser_classes = [JSONRenderer, MultiPartParser]
 
     def get(self, request, *args, **kwargs):
         get_data_from = QAdmins.objects.get(admin_status=request.user)

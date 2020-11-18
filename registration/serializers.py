@@ -102,6 +102,7 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
 
 class UsersInfoSerializer(serializers.ModelSerializer):
     password_check = serializers.CharField(max_length=160, write_only=True)
+    photo = serializers.ImageField(read_only=True)
 
     class Meta:
         model = Users
@@ -109,6 +110,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
                   "id",
                   "name",
                   "surname",
+                  "photo",
                   "password",
                   "password_check",
                   "email",
@@ -145,6 +147,7 @@ class QAdminSerializer(serializers.ModelSerializer):
             user_to_update.surname = self.context['surname']
             user_to_update.name = self.context['name']
             user_to_update.phone_number = self.context['phone_number']
+            user_to_update.photo = self.context['photo']
             user_to_update.save()
         except KeyError:
             user_to_update.save()
