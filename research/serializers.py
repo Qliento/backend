@@ -88,12 +88,11 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     def get_description(self):
         return _(self.name)
-    
     similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
 
     class Meta:
         model = Research
-        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price',
+        fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
                   'description_', 'hashtag', 'category', 'demo', 'country', 'status',
                   'similars', 'author', 'content',
                   'research_data'
