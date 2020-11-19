@@ -23,12 +23,17 @@ class AdditionalInfoToken(TokenObtainPairSerializer):
         data['refresh'] = str(refresh)
         data['access'] = str(refresh.access_token)
 
-        if QAdmins.objects.get(admin_status_id=self.user.id):
+        try:
+            QAdmins.objects.get(admin_status_id=self.user.id)
             data['user'] = 'partner'
-        elif Clients.objects.get(client_status_id=self.user.id):
+        except ObjectDoesNotExist:
+            pass
+
+        try:
+            Clients.objects.get(client_status_id=self.user.id)
             data['user'] = 'client'
-        else:
-            serializers.ValidationError('Что-то пошло не так...')
+        except ObjectDoesNotExist:
+            pass
 
         return data
 
