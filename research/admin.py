@@ -81,6 +81,23 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
                                 settings.EMAIL_HOST_USER,
                                 [obj.author.admin_status.email])
+            mail.send()
+
+            return HttpResponseRedirect(".")
+
+        if "_discount" in request.POST:
+
+            mail = EmailMessage(' Время добавить скидочную цену!',
+                                'Доброго времени суток, {}. \n'
+                                'Мы рассмотрели вашу заявку и рады сообщить, что осталось совсем немного!\n'
+                                'Осталось добавить скидочную цену в личном кабинете, аосле чего мы его рассмотрим его и обновим статус вашего исследования. \n'
+                                'Название: "{}" \n'
+                                'Идентификатор: {} \n'
+                                '\n'
+                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                                settings.EMAIL_HOST_USER,
+                                [obj.author.admin_status.email])
+            mail.send()
 
             return HttpResponseRedirect(".")
 

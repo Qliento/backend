@@ -77,7 +77,7 @@ class VerifyEmail(views.APIView):
             if not user.is_active:
                 user.is_active = True
                 user.save()
-            return HttpResponseRedirect(redirect_to="https://qliento.com/users/login/clients/")
+            return HttpResponseRedirect(redirect_to="http://qliento-project.surge.sh")
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:

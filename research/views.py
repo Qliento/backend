@@ -96,9 +96,22 @@ class UpdateResearchView(generics.RetrieveUpdateAPIView):
             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
 
 
-
 class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.filter(status = 2)
     serializer_class = ResearchSerializer
 
+
+class UpdateDiscountPrice(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = DiscountPriceSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.serializer_class(Research.objects.get(status=3, id=self.kwargs['pk'], author_id=self.request.user.id))
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.serializer_class(Research.objects.get(status=3, id=self.kwargs['pk'], author_id=self.request.user.id), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

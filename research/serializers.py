@@ -97,7 +97,7 @@ class ResearchSerializer(serializers.ModelSerializer):
                   'similars', 'author', 'content',
                   'research_data'
                   )
-        read_only_fields = ('date', 'status', 'similars')
+        read_only_fields = ('date', 'status', 'similars', 'new_price')
 
     def create(self, validated_data):
         files_of_research = self.context.get('request').FILES
@@ -173,3 +173,8 @@ class ResearchUpdateSerializer(serializers.ModelSerializer):
 
         fields = ['new_price', 'hashtag', 'country', 'description_', 'name_', 'category', 'similars']
 
+
+class DiscountPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Research
+        fields = ['new_price']
