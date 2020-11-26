@@ -41,7 +41,7 @@ class DefaultResearchView(APIView):
 class UploadResearchView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated, ]
     queryset = Research.objects.all()
-    serializer_class = ResearchSerializer
+    serializer_class = ResearchUploadSerializer
     parser_classes = (JSONRenderer, MultiPartParser)
 
     def post(self, request, *args, **kwargs):
