@@ -121,7 +121,7 @@ def login_respondents(request):
     client_as_user = Users.objects.get(email=email)
     if client_as_user.is_active:
         if email is None or password is None:
-            return Response({'error': 'Убедитесь в правильности вводимых данных'},
+            return Response({'detail': 'Убедитесь в правильности вводимых данных'},
                             status=HTTP_400_BAD_REQUEST)
 
         user = authenticate(request, username=email, password=password)
@@ -148,7 +148,7 @@ def login_qadmins(request):
     qadmin_as_user = Users.objects.get(email=email)
     if qadmin_as_user.is_active:
         if email is None or password is None:
-            return Response({'error': 'Введите почту и пароль'},
+            return Response({'detail': 'Введите почту и пароль'},
                             status=HTTP_400_BAD_REQUEST)
         user = authenticate(request, username=email, password=password)
 

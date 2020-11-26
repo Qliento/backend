@@ -222,8 +222,8 @@ class UpdatePassword(serializers.Serializer):
     def validate_old_password(self, data):
         user = self.context['request'].user
         if not user.check_password(data):
-            raise serializers.ValidationError(
-                _('Your old password was entered incorrectly. Please enter it again.')
+            raise serializers.ValidationError({'detail':
+                _('Your old password was entered incorrectly. Please enter it again.')}
             )
         return data
 
