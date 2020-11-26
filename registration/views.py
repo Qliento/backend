@@ -186,14 +186,14 @@ class PartnersUpdate(GenericAPIView):
     parser_classes = [JSONParser, MultiPartParser]
 
     def get(self, *args, **kwargs):
-        serializer = self.serializer_class(QAdmins.objects.get(admin_status=self.kwargs['pk']))
+        serializer = self.serializer_class(QAdmins.objects.get(admin_status=self.request.user))
         return Response(serializer.data)
 
     def get_queryset(self):
         return QAdmins.objects.filter(admin_status=self.request.user)
 
     def perform_update(self, request, *args, **kwargs):
-        serializer = QAdminUpdateSerializer(QAdmins.objects.get(admin_status=self.kwargs['pk']), data=request.data, context=request.data, partial=True)
+        serializer = QAdminUpdateSerializer(QAdmins.objects.get(admin_status=self.request.user), data=request.data, context=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
