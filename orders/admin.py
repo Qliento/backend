@@ -42,10 +42,18 @@ class StatisticsAdmin(admin.ModelAdmin):
     readonly_fields = ['partner_admin', 'demo_downloaded', 'watches', 'bought']
 
 
-admin.site.register(OrderForm)
+class DemoVersionFormAdmin(admin.ModelAdmin):
+    list_display = ['email']
+
+
+class OrderFormAdmin(admin.ModelAdmin):
+    list_display = ['email']
+
+
+admin.site.register(OrderForm, OrderFormAdmin)
 # admin.site.register(Orders, OrdersAdmin)
 admin.site.register(Cart, CartAdmin)
-admin.site.register(DemoVersionForm)
+admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionsAdmin)
 admin.site.register(Instructions, InstructionsAdmin)
 admin.site.register(Statistics, StatisticsAdmin)

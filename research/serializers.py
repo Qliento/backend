@@ -64,7 +64,8 @@ class CardResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ("id", "name", "image", "old_price", "pages", 'demo', 'new_price', 'hashtag', 'date', 'country', 'author')
+        fields = ("id", "name", "image", "old_price", "pages", 'demo', 'new_price',
+                  'hashtag', 'date', 'country', 'author')
 
 
 class ResearchFilePathSerializer(serializers.ModelSerializer):
@@ -178,3 +179,26 @@ class DiscountPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ['new_price']
+
+
+class ResearchRetrieveSerializer(serializers.ModelSerializer):
+    name_ = serializers.ReadOnlyField(source='get_name')
+    description_ = serializers.ReadOnlyField(source='get_description')
+    about_author = serializers.ReadOnlyField(source='author.about_me')
+
+    def get_name(self):
+        return _(self.name)
+
+    def get_description(self):
+        return _(self.name)
+
+    class Meta:
+        model = Research
+        read_only_fields = [
+            'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
+            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
+            'date', 'status', 'hashtag', 'similars', 'category']
+
+        fields = ['name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
+            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
+            'date', 'status', 'hashtag', 'similars', 'category', 'about_author']

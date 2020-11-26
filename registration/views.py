@@ -6,13 +6,14 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_404_NOT_FOUND
 from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, \
     EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, \
-    CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly, AdditionalInfoToken
+    CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly, AdditionalInfoToken, QAdminUpdateSerializer
 from .models import QAdmins, Users, Clients, UsersConsentQliento
 from research.models import Research
 from orders.models import Orders
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, GenericAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
+import json
 import string
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -26,7 +27,6 @@ from django.http import HttpResponseRedirect
 from rest_framework import generics, permissions, status, views
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy, load_backend, psa
@@ -180,21 +180,26 @@ class UsersUpdate(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PartnersUpdate(RetrieveUpdateAPIView):
+class PartnersUpdate(GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = QAdminSerializer
-    parser_classes = [JSONRenderer, MultiPartParser]
+    serializer_class = QAdminUpdateSerializer
+    parser_classes = [JSONParser, MultiPartParser]
 
-    def get(self, request, *args, **kwargs):
-        get_data_from = QAdmins.objects.get(admin_status=request.user)
-        serializer = self.serializer_class(get_data_from)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, *args, **kwargs):
+        serializer = self.serializer_class(QAdmins.objects.get(admin_status=self.request.user))
+        return Response(serializer.data)
 
-    def update(self, request, *args, **kwargs):
-        serializer = self.serializer_class(QAdmins.objects.get(admin_status=request.user), data=request.data, context=request.data, partial=True)
+    def get_queryset(self):
+        return QAdmins.objects.filter(admin_status=self.request.user)
+
+    def perform_update(self, request, *args, **kwargs):
+        serializer = QAdminUpdateSerializer(QAdmins.objects.get(admin_status=self.request.user), data=request.data, context=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        return self.perform_update(request, *args, **kwargs)
 
 
 @csrf_exempt

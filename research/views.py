@@ -30,7 +30,7 @@ class DefaultResearchView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     queryset = Research.objects.all()
     serializer_class = CardResearchSerializer
-    
+
     def get(self, request, format=None):
         research = Research.objects.order_by('-id').filter(status=2)
         serializer = ResearchSerializer(research, many=True)
@@ -102,13 +102,24 @@ class ResearchDetail(generics.RetrieveAPIView):
     serializer_class = ResearchSerializer
 
 
+class ResearchOfPartnerDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ResearchRetrieveSerializer
+
+    def get(self, request, *args, **kwargs):
+        data_of_instance = Research.objects.get(id=self.kwargs['pk'], author=request.user.initial_reference)
+        print(data_of_instance)
+        serializer = self.serializer_class(data_of_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class UpdateDiscountPrice(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, ]
     serializer_class = DiscountPriceSerializer
 
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(Research.objects.get(status=3, id=self.kwargs['pk'], author_id=self.request.user.id))
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(Research.objects.get(status=3, id=self.kwargs['pk'], author_id=self.request.user.id), data=request.data, partial=True)
