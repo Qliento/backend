@@ -63,37 +63,37 @@ class UploadResearchView(generics.GenericAPIView):
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UpdateResearchView(generics.RetrieveUpdateAPIView):
-    permission_classes = [IsAuthenticated, ]
-    queryset = Research.objects.all()
-    serializer_class = ResearchUpdateSerializer
-
-    def get(self, request, *args, **kwargs):
-        self.queryset = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference)
-        return Response(data=list(self.queryset.values()), status=status.HTTP_200_OK)
-
-    def partial_update(self, request, *args, **kwargs):
-        try:
-            my_queryset = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference).update(new_price=request.data.get('new_price'))
-            get_updated = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference)
-            name_of_research = list(get_updated.values())[0].get('name')
-            email_body = 'Доброго времени суток, Qliento! \n' + \
-                         'Партнер: {}, отправил вам запрос на одобрение скидочной цены своего исследования. \n' \
-                         'Название исследования: "{}". \n' \
-                         'Новая скидочная цена: "{}". \n'  \
-                         'Пройдите пожалуйста в админ-панель для принятия дальнейших действий.'.format(request.user.name,
-                                                                                                       name_of_research,
-                                                                                                       request.data.get('new_price'),
-                                                                                                       )
-
-            data = {'email_body': email_body, 'to_email': 'qlientoinfo@gmail.com',
-                    'email_subject': 'Цена исследования на подтверждение'}
-            Util.send_email(data)
-
-            return Response(list(get_updated.values())[0], status=status.HTTP_202_ACCEPTED)
-        except ValueError:
-            content = {'message': 'Убедитесь в том, что вы ввели целые числа'}
-            return Response(content, status=status.HTTP_304_NOT_MODIFIED)
+# class UpdateResearchView(generics.RetrieveUpdateAPIView):
+#     permission_classes = [IsAuthenticated, ]
+#     queryset = Research.objects.all()
+#     serializer_class = ResearchUpdateSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         self.queryset = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference)
+#         return Response(data=list(self.queryset.values()), status=status.HTTP_200_OK)
+#
+#     def partial_update(self, request, *args, **kwargs):
+#         try:
+#             my_queryset = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference).update(new_price=request.data.get('new_price'))
+#             get_updated = Research.objects.filter(id=self.kwargs['pk'], author=request.user.initial_reference)
+#             name_of_research = list(get_updated.values())[0].get('name')
+#             email_body = 'Доброго времени суток, Qliento! \n' + \
+#                          'Партнер: {}, отправил вам запрос на одобрение скидочной цены своего исследования. \n' \
+#                          'Название исследования: "{}". \n' \
+#                          'Новая скидочная цена: "{}". \n'  \
+#                          'Пройдите пожалуйста в админ-панель для принятия дальнейших действий.'.format(request.user.name,
+#                                                                                                        name_of_research,
+#                                                                                                        request.data.get('new_price'),
+#                                                                                                        )
+#
+#             data = {'email_body': email_body, 'to_email': 'qlientoinfo@gmail.com',
+#                     'email_subject': 'Цена исследования на подтверждение'}
+#             Util.send_email(data)
+#
+#             return Response(list(get_updated.values())[0], status=status.HTTP_202_ACCEPTED)
+#         except ValueError:
+#             content = {'message': 'Убедитесь в том, что вы ввели целые числа'}
+#             return Response(content, status=status.HTTP_304_NOT_MODIFIED)
 
 
 class ResearchDetail(generics.RetrieveAPIView):
@@ -117,11 +117,24 @@ class UpdateDiscountPrice(generics.RetrieveUpdateAPIView):
     serializer_class = DiscountPriceSerializer
 
     def get(self, request, *args, **kwargs):
-        serializer = self.serializer_class(Research.objects.get(status=3, id=self.kwargs['pk'], author_id=self.request.user.id))
+        serializer = self.serializer_class(Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.id))
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        serializer = self.serializer_class(Research.objects.get(status=3, id=self.kwargs['pk'], author_id=self.request.user.id), data=request.data, partial=True)
+        the_object = Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.id)
+        serializer = self.serializer_class(the_object, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        email_body = 'Доброго времени суток, Qliento! \n' + \
+                     'Партнер: {}, отправил вам запрос на одобрение скидочной цены своего исследования. \n' \
+                     'Название исследования: "{}". \n' \
+                     'Новая скидочная цена: "{}". \n' \
+                     'Пройдите пожалуйста в админ-панель для принятия дальнейших действий.'.format(request.user.name,
+                                                                                                   the_object.name,
+                                                                                                   request.data.get('new_price'),
+                                                                                                   )
+
+        data = {'email_body': email_body, 'to_email': 'qlientoinfo@gmail.com',
+                'email_subject': 'Цена исследования на подтверждение'}
+        Util.send_email(data)
         return Response(serializer.data, status=status.HTTP_200_OK)

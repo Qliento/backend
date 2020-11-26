@@ -155,24 +155,24 @@ class ResearchSerializer(serializers.ModelSerializer):
         return research
 
 
-class ResearchUpdateSerializer(serializers.ModelSerializer):
-    name_ = serializers.ReadOnlyField(source='get_name')
-    description_ = serializers.ReadOnlyField(source='get_description')
-
-    def get_name(self):
-        return _(self.name)
-
-    def get_description(self):
-        return _(self.name)
-
-    class Meta:
-        model = Research
-        read_only_fields = [
-            'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
-            'date', 'status', 'hashtag', 'similars', 'category']
-
-        fields = ['new_price', 'hashtag', 'country', 'description_', 'name_', 'category', 'similars']
+# class ResearchUpdateSerializer(serializers.ModelSerializer):
+#     name_ = serializers.ReadOnlyField(source='get_name')
+#     description_ = serializers.ReadOnlyField(source='get_description')
+#
+#     def get_name(self):
+#         return _(self.name)
+#
+#     def get_description(self):
+#         return _(self.name)
+#
+#     class Meta:
+#         model = Research
+#         read_only_fields = [
+#             'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
+#             'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
+#             'date', 'status', 'hashtag', 'similars', 'category']
+#
+#         fields = ['new_price', 'hashtag', 'country', 'description_', 'name_', 'category', 'similars']
 
 
 class DiscountPriceSerializer(serializers.ModelSerializer):
