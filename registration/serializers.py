@@ -175,7 +175,6 @@ class QAdminUpdateSerializer(serializers.ModelSerializer):
         user_retrieved = instance.admin_status
         take_from_data = validated_data.pop('admin_status')
         for i in take_from_data:
-            print(i)
             user_retrieved.name = take_from_data.get('name', user_retrieved.name)
             user_retrieved.surname = take_from_data.get('surname', user_retrieved.surname)
             user_retrieved.phone_number = take_from_data.get('phone_number', user_retrieved.phone_number)
@@ -230,7 +229,7 @@ class UpdatePassword(serializers.Serializer):
 
     def validate(self, data):
         if data['new_password'] != data['password_check']:
-            raise serializers.ValidationError({'password_check': _("The two password fields didn't match.")})
+            raise serializers.ValidationError({'detail': _("The two password fields didn't match.")})
         password_validation.validate_password(data['new_password'], self.context['request'].user)
         return data
 

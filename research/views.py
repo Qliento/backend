@@ -108,7 +108,6 @@ class ResearchOfPartnerDetail(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         data_of_instance = Research.objects.get(id=self.kwargs['pk'], author=request.user.initial_reference)
-        print(data_of_instance)
         serializer = self.serializer_class(data_of_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

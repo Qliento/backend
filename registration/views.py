@@ -231,11 +231,11 @@ def send_email(request):
                       fail_silently=False)
 
             if old_password:
-                content = {'message': 'Инструкция была отправлена на почту'}
+                content = {'detail': 'Инструкция была отправлена на почту'}
                 return Response(content, status=200)
 
         except Users.DoesNotExist:
-            content = {'message': 'Напишите вашу почту корректно'}
+            content = {'detail': 'Напишите вашу почту корректно'}
             return Response(content, status=400)
 
 
