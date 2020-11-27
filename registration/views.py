@@ -13,7 +13,7 @@ from orders.models import Orders
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, GenericAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
-import json
+from orders.models import Statistics, StatisticsDemo
 import string
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -251,7 +251,7 @@ class PasswordReset(UpdateAPIView):
         if hasattr(user, 'auth_token'):
             user.auth_token.delete()
         token, created = Token.objects.get_or_create(user=user)
-        content = {'Ваш пароль был изменен'}
+        content = {'detail': 'Ваш пароль был изменен'}
         return Response(content, status=status.HTTP_200_OK)
 
 
@@ -279,7 +279,7 @@ class DownloadFileView(GenericAPIView):
             return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
 
         except IndexError:
-            content = {'message': 'Данное исследование не имеет файлов'}
+            content = {'detail': 'Данное исследование не имеет файлов'}
             return Response(content, status=400)
 
 
@@ -294,10 +294,13 @@ class DownloadDemoView(GenericAPIView):
             self.queryset = Research.objects.filter(id=self.kwargs['pk'], status=2)
             file_itself = self.queryset.values('demo')
             path_of_file = list(file_itself)[0].get('demo')
+            a = StatisticsDemo.objects.create(count_demo=1)
+            b = Statistics.objects.filter(research_to_collect=self.kwargs['pk'])
+            b.update(demo_downloaded=a)
             return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
 
         except IndexError:
-            content = {'message': 'Данное исследование не имеет файлов'}
+            content = {'detail': 'Данное исследование не имеет файлов'}
             return Response(content, status=400)
 
 

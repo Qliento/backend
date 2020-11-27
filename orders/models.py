@@ -171,7 +171,6 @@ class DemoVersionForm(models.Model):
         mail.attach_file('static/files/{}'.format(name_of_file))
         mail.send()
 
-        Statistics.objects.filter(partner_admin=normalized_data.get('author_id')).update(demo_downloaded=F('demo_downloaded') + 1)
         return super(DemoVersionForm, self).save(*args, **kwargs)
 
 
@@ -196,20 +195,52 @@ class ShortDescriptions(models.Model):
         verbose_name_plural = _('Данные для краткого описания')
 
 
+class StatisticsDemo(models.Model):
+    count_demo = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.count_demo)
+
+
+class StatisticsWatches(models.Model):
+    count_watches = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+
+class StatisticsBought(models.Model):
+    count_purchases = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+
 class Statistics(models.Model):
-    partner_admin = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='partner_admin', verbose_name="Партнёр")
-    demo_downloaded = models.IntegerField(verbose_name="Количество скачанных демо-версий")
-    watches = models.IntegerField(verbose_name="Количество просмотров")
-    bought = models.IntegerField(verbose_name="Количество купленных исследований")
+    research_to_collect = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='research_of_admin', verbose_name="Исследование")
+    demo_downloaded = models.ForeignKey(StatisticsDemo, null=True, blank=True, on_delete=models.CASCADE, related_name='demos_downloaded', verbose_name="Количество скачанных демо-версий")
+    watches = models.ForeignKey(StatisticsWatches, null=True, blank=True, on_delete=models.CASCADE, related_name='watches_counted', verbose_name="Количество просмотров")
+    bought = models.ForeignKey(StatisticsBought, null=True, blank=True, on_delete=models.CASCADE, related_name='bought_researches', verbose_name="Количество скачиваний")
 
     class Meta:
         verbose_name = _("Статистика")
         verbose_name_plural = _('Статистика')
 
+    @property
+    def get_name_partner(self):
+        return '{}'.format(self.research_to_collect.author)
+
+    @property
+    def get_demo_downloaded(self):
+        count_demos = Research.objects.filter(research_of_admin=self.pk).aggregate(demo_total=Sum('research_of_admin__demo_downloaded'))
+        return count_demos.get('demo_total')
+
+    @property
+    def get_total_watches(self):
+        count_watched_researches = Research.objects.filter(research_of_admin=self.pk).aggregate(watches_total=Sum('research_of_admin__watches'))
+        return count_watched_researches.get('watches_total')
+
 
 def create_stat_for_qadmin(sender, **kwargs):
     details_for_stat = kwargs['instance']
-    Statistics.objects.create(partner_admin=details_for_stat, demo_downloaded=0, watches=0, bought=0)
+    Statistics.objects.create(research_to_collect=details_for_stat)
 
 
-post_save.connect(create_stat_for_qadmin, sender=QAdmins)
+post_save.connect(create_stat_for_qadmin, sender=Research)

@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
-from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Instructions, Check
+from .models import OrderForm, Orders, Cart, ShortDescriptions, \
+    DemoVersionForm, Statistics, Instructions, Check, StatisticsDemo
 from .serializers import to_dict
+from django.db.models import Avg, Count, Min, Sum
+
 from django.core.mail import EmailMessage
 from research.models import Research
 from django.conf import settings
@@ -38,8 +41,21 @@ class CheckAdmin(admin.ModelAdmin):
 
 
 class StatisticsAdmin(admin.ModelAdmin):
-    list_display = ['partner_admin']
-    readonly_fields = ['partner_admin', 'demo_downloaded', 'watches', 'bought']
+    list_display = ['research_to_collect', 'get_name_partner']
+    fields = ['research_to_collect', 'bought', 'get_name_partner', 'get_demo_downloaded', 'get_total_watches']
+    readonly_fields = ['get_name_partner', 'demo_downloaded', 'watches', 'get_demo_downloaded', 'get_total_watches']
+
+    def get_name_partner(self, obj):
+        return obj.get_name_partner
+    get_name_partner.short_description = 'Партнёр'
+
+    def get_demo_downloaded(self, obj):
+        return obj.get_demo_downloaded
+    get_demo_downloaded.short_description = 'Количество скачанных демо-версий'
+
+    def get_total_watches(self, obj):
+        return obj.get_total_watches
+    get_total_watches.short_description = 'Количество просмотров'
 
 
 class DemoVersionFormAdmin(admin.ModelAdmin):

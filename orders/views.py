@@ -8,7 +8,7 @@ from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIVie
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, InstructionSerializer, StatisticsSerializer
-from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics
+from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
 from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
@@ -49,7 +49,7 @@ class MyOrdersView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Orders.objects.filter(items_ordered__buyer=request.user)
+        self.queryset = Check.objects.filter(client_bought=request.user.email)
         return self.list(request, *args, **kwargs)
 
 

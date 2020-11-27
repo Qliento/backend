@@ -64,7 +64,7 @@ class CardResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ("id", "name", "image", "old_price", "pages", 'demo', 'new_price',
+        fields = ("id", "name", "image", "old_price", "pages", 'demo_data', 'new_price',
                   'hashtag', 'date', 'country', 'author')
 
 

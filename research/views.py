@@ -6,7 +6,7 @@ from rest_framework import generics
 from .serializers import *
 from .models import *
 from registration.models import QAdmins
-from orders.models import Statistics
+from orders.models import Statistics, StatisticsWatches
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -99,6 +99,14 @@ class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.filter(status = 2)
     serializer_class = ResearchSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        a = StatisticsWatches.objects.create(count_watches=1)
+        b = Statistics.objects.filter(research_to_collect=self.kwargs['pk'])
+        b.update(watches=a)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class ResearchOfPartnerDetail(generics.RetrieveAPIView):

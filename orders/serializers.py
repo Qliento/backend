@@ -1,7 +1,8 @@
 from itertools import chain
 from rest_framework import serializers
 from research.models import Research
-from .models import Orders, OrderForm, Cart, DemoVersionForm, Instructions, Statistics, ShortDescriptions
+from .models import Orders, OrderForm, Cart, DemoVersionForm, Instructions, Statistics, \
+    ShortDescriptions, StatisticsDemo, Check
 from collections import OrderedDict
 from rest_framework import request
 from registration.models import QAdmins
@@ -97,17 +98,25 @@ class EmailDemoSerializer(serializers.ModelSerializer):
         fields = "__all__"
         model = DemoVersionForm
 
+    def create(self, validated_data):
+        demo_validated = validated_data.pop('desired_research')
+        a = StatisticsDemo.objects.create(count_demo=1)
+        b = Statistics.objects.filter(research_to_collect=demo_validated)
+        b.update(demo_downloaded=a)
+        demo = DemoVersionForm.objects.create(desired_research=demo_validated, **validated_data)
+        return demo
+
 
 class MyOrdersSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Orders
-        fields = ['items_ordered', 'date_added', 'completed']
+        model = Check
+        fields = ['ordered_researches', 'date', 'id']
 
     def to_representation(self, instance):
         data = super(MyOrdersSerializer, self).to_representation(instance)
         research_details = []
-        get_cleaned_data = dict(data).get('items_ordered')[0]
+        get_cleaned_data = dict(data).get('ordered_researches')[0]
 
         get_filtered_researches = Research.objects.filter(id=get_cleaned_data)
         data_for_filtering = list(get_filtered_researches.values())[0]
