@@ -83,7 +83,7 @@ class Research(models.Model):
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
 
 	def similar_researches(self):
-		hashtags = Research.objects.get(name=self.name)
+		hashtags = Research.objects.get(id=self.id)
 		similars = Research.objects.filter(id=self.id)
 		for hashtag in hashtags.hashtag.all():
 			similars = similars | Research.objects.filter(hashtag = hashtag).exclude(id=self.id)

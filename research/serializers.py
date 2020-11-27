@@ -231,7 +231,6 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
         return research
 
 
-
 class DiscountPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research

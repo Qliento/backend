@@ -34,7 +34,7 @@ class DefaultResearchView(APIView):
     def get(self, request, format=None):
         research = Research.objects.order_by('-id').filter(status=2)
         serializer = ResearchSerializer(research, many=True)
-        del serializer.data[0]['research_data']
+        # del serializer.data[0]['research_data']
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
