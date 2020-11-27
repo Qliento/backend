@@ -54,7 +54,7 @@ class AboutMeSection(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = QAdmins
-        fields = ('logo', )
+        fields = ('logo', 'about_me')
 
 
 class CardResearchSerializer(serializers.ModelSerializer):
@@ -82,7 +82,6 @@ class ResearchSerializer(serializers.ModelSerializer):
     description_ = serializers.ReadOnlyField(source='get_description')
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
-    research_data = ResearchFilePathSerializer(read_only=True, many=True)
 
     def get_name(self):
         return _(self.name)
@@ -95,64 +94,9 @@ class ResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
                   'description_', 'hashtag', 'category', 'demo', 'country', 'status',
-                  'similars', 'author', 'content',
-                  'research_data'
+                  'similars', 'author', 'content'
                   )
         read_only_fields = ('date', 'status', 'similars', 'new_price')
-
-    def create(self, validated_data):
-        files_of_research = self.context.get('request').FILES
-        files_of_research.pop('demo')
-        research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
-        all_hashtags = []
-        all_countries = []
-
-        for file in files_of_research.values():
-            ext = os.path.splitext(file.name)[1]
-            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv']:
-
-                raise serializers.ValidationError("Неподдерживаемый тип данных")
-
-            else:
-                a = ResearchFiles.objects.create(research=research, name=file)
-
-        hashtag_name = self.context.get('request').POST.__getitem__('hashtag')
-        if not hashtag_name.isdigit():
-            validated_data['hashtag'] = hashtag_name
-
-            split_hashtags = hashtag_name.split()
-            for i in split_hashtags:
-                try:
-                    created = Hashtag.objects.get(name=i.replace(',', ''))
-                    get_id_if_yes = created.id
-                    add_if_yes = research.hashtag.add(get_id_if_yes)
-                    all_hashtags.append(add_if_yes)
-                except ObjectDoesNotExist:
-                    hashtag = research.hashtag.create(name=i.replace(',', ''))
-                    all_hashtags.append(hashtag)
-
-        else:
-            raise serializers.ValidationError("Хэштеги не должны содержать числа")
-
-        country_names = self.context.get('request').POST.__getitem__('country')
-        if not country_names.isdigit():
-            validated_data['country'] = country_names
-
-            split_countries = country_names.split()
-            for country in split_countries:
-                try:
-                    created = Country.objects.get(name=country.replace(',', ''))
-                    add_id_if_country_exists = created.id
-                    add_if_true = research.country.add(add_id_if_country_exists)
-                    all_countries.append(add_if_true)
-                except ObjectDoesNotExist:
-                    state = research.country.get_or_create(name=country.replace(',', ''))
-                    all_countries.append(state)
-
-        else:
-            raise serializers.ValidationError("Страны не должны содержать числа")
-
-        return research
 
 
 class ResearchUploadSerializer(serializers.ModelSerializer):
@@ -187,7 +131,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
             ext = os.path.splitext(file.name)[1]
             if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv']:
 
-                raise serializers.ValidationError("Неподдерживаемый тип данных")
+                raise serializers.ValidationError({'detail': _("Not supported data format.")})
 
             else:
                 a = ResearchFiles.objects.create(research=research, name=file)
@@ -208,7 +152,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
                     all_hashtags.append(hashtag)
 
         else:
-            raise serializers.ValidationError("Хэштеги не должны содержать числа")
+            raise serializers.ValidationError({'detail': _("Hashtag can not contain digits.")})
 
         country_names = self.context.get('request').POST.__getitem__('country')
         if not country_names.isdigit():
@@ -226,7 +170,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
                     all_countries.append(state)
 
         else:
-            raise serializers.ValidationError("Страны не должны содержать числа")
+            raise serializers.ValidationError({'detail': _("Countries can not contain digits.")})
 
         return research
 
