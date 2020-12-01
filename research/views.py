@@ -8,7 +8,7 @@ from .models import *
 from registration.models import QAdmins
 from orders.models import Statistics, StatisticsWatches
 from registration.utils import Util
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -29,7 +29,6 @@ class DefaultResearchView(APIView):
     permission_classes = [AllowAny, ]
     parser_classes = [MultiPartParser, FormParser]
     queryset = Research.objects.all()
-    serializer_class = CardResearchSerializer
 
     def get(self, request, format=None):
         research = Research.objects.order_by('-id').filter(status=2)
@@ -41,7 +40,7 @@ class UploadResearchView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated, ]
     queryset = Research.objects.all()
     serializer_class = ResearchUploadSerializer
-    parser_classes = (JSONRenderer, MultiPartParser)
+    parser_classes = (JSONParser, MultiPartParser)
 
     def post(self, request, *args, **kwargs):
         file_serializer = self.get_serializer(data=request.data)

@@ -24,4 +24,9 @@ class CountryTranslationOptions(TranslationOptions):
 
 @register(Research)
 class ResearchShotsTranslationOptions(TranslationOptions):
-    fields = ('name', 'description')
+    fields = ('name', 'description', 'demo',)
+
+
+@register(ResearchContent)
+class ResearchContentTranslationOption(TranslationOptions):
+    fields = ['content', 'page']

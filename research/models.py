@@ -78,6 +78,7 @@ class Research(models.Model):
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
+	demo = models.FileField(null=True, blank=True, upload_to='demos', verbose_name=_('Демоверсия'))
 
 	def similar_researches(self):
 		hashtags = Research.objects.get(id=self.id)
@@ -94,6 +95,16 @@ class Research(models.Model):
 		verbose_name_plural = _('Исследования')
 
 
+class ResearchContent(models.Model):
+	content = models.CharField(max_length=200, verbose_name=_('Глава'))
+	page = models.IntegerField(verbose_name=_('Страница'))
+	content_data = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='content_data', null=True, blank=True, verbose_name=_('Контент'))
+
+	class Meta:
+		verbose_name = _('Контент')
+		verbose_name_plural = _('Контент')
+
+
 class ResearchFiles(models.Model):
 	name = models.FileField(null=True, blank=True, verbose_name=_('Файл'), default='1')
 	research = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='research_data', default='1', null=True, blank=True, verbose_name=_('Исследование'))
@@ -104,14 +115,3 @@ class ResearchFiles(models.Model):
 	class Meta:
 		verbose_name = _('Файл')
 		verbose_name_plural = _('Файлы')
-
-
-class DemoVersionFiles(models.Model):
-	name = models.FileField(null=True, blank=True, upload_to='demos', verbose_name=_('Файл'))
-	research = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='demo_data', default='1', null=True, blank=True, verbose_name=_('Исследование'))
-
-
-class ResearchContent(models.Model):
-	content = models.TextField(verbose_name=_('Глава'))
-	page = models.IntegerField(verbose_name=_('Страница'))
-	research = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='content_data', default='1', null=True, blank=True, verbose_name=_('Исследование'))

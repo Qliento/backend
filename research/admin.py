@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 from django import forms
-
+from jet.admin import CompactInline
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 
 # Register your models here.
@@ -54,12 +54,17 @@ class ResearchFileAdmin(admin.TabularInline):
     model = ResearchFiles
 
 
+class ResearchContentInline(CompactInline):
+    model = ResearchContent
+
+
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
-    inlines = [ResearchFileAdmin, ]
+    inlines = [ResearchFileAdmin, ResearchContentInline]
     change_form_template = "admin/acceptordeny.html"
     autocomplete_fields = ['hashtag', 'country']
     list_display = ('name', 'status', 'id')
     list_filter = (StatusesListFilter, )
+
     formfield_overrides = {
         models.CharField: {'widget': Textarea(
                            attrs={'rows': 2,
@@ -101,6 +106,9 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
             mail.send()
 
         if '_change_discount' in request.POST:
+            get_some_status_4 = Status.objects.get(id=4)
+            obj.status = get_some_status_4
+            obj.save()
             mail = EmailMessage('Поправка скидочной цены!',
                                 'Доброго времени суток, {}. \n'
                                 'К сожалению, ваша скидочная цена {} - не одобрена.\n'
@@ -163,9 +171,15 @@ class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
     pass
 
 
+class ResearchContentAdmin(admin.ModelAdmin):
+    fields = ['page', 'content', 'content_data']
+    readonly_fields = ['page', 'content', 'content_data']
+
+
 admin.site.register(ResearchFiles)
 admin.site.register(Status, StatusAdmin)
 admin.site.register(Research, ResearchAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Hashtag, HashtagAdmin)
 admin.site.register(Country, CountryAdmin)
+# admin.site.register(ResearchContent, ResearchContentAdmin)

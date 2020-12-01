@@ -4,6 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
 import os
+import json
+from collections import OrderedDict
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -64,7 +66,7 @@ class CardResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ("id", "name", "image", "old_price", "pages", 'demo_data', 'new_price',
+        fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
                   'hashtag', 'date', 'country', 'author')
 
 
@@ -75,6 +77,13 @@ class ResearchFilePathSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class ResearchContentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ResearchContent
+        fields = '__all__'
+
+
 class ResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(many=True, required=False)
     country = CountrySerializer(many=True, required=False)
@@ -82,21 +91,22 @@ class ResearchSerializer(serializers.ModelSerializer):
     description_ = serializers.ReadOnlyField(source='get_description')
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
+    similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
 
     def get_name(self):
         return _(self.name)
 
     def get_description(self):
         return _(self.name)
-    similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
 
     class Meta:
         model = Research
         fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-                  'description_', 'hashtag', 'category', 'demo', 'country', 'status',
-                  'similars', 'author', 'content'
+                  'description_', 'hashtag', 'category', 'country', 'status',
+                  'similars', 'author', 'demo', 'content_data',
                   )
         read_only_fields = ('date', 'status', 'similars', 'new_price')
+        depth = 1
 
 
 class ResearchUploadSerializer(serializers.ModelSerializer):
@@ -107,13 +117,14 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
     research_data = ResearchFilePathSerializer(read_only=True, many=True)
+    content_data = ResearchContentSerializer(many=True, required=False)
+    similars = CardResearchSerializer(source='similar_researches', many = True, read_only=True)
 
     def get_name(self):
         return _(self.name)
 
     def get_description(self):
         return _(self.name)
-    similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
 
     class Meta:
         model = Research
@@ -121,58 +132,63 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
         read_only_fields = ('date', 'status', 'similars', 'new_price')
 
     def create(self, validated_data):
+        content_data_validated = validated_data.pop('content_data', None)
         files_of_research = self.context.get('request').FILES
-        files_of_research.pop('demo')
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
-        all_hashtags = []
-        all_countries = []
+
+        if content_data_validated is None:
+            pass
+        else:
+            for main_language in content_data_validated:
+                r_content = ResearchContent.objects.create(content_data=research, **main_language)
 
         for file in files_of_research.values():
             ext = os.path.splitext(file.name)[1]
-            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv']:
+            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv', '.ppt', '.pptx']:
 
                 raise serializers.ValidationError({'detail': _("Not supported data format.")})
 
             else:
                 a = ResearchFiles.objects.create(research=research, name=file)
 
-        hashtag_name = self.context.get('request').POST.__getitem__('hashtag')
+        hashtag_name = self.context.get('request').POST.get('hashtag', 'None')
+
         if not hashtag_name.isdigit():
             validated_data['hashtag'] = hashtag_name
 
-            split_hashtags = hashtag_name.split()
+            split_hashtags = hashtag_name.split(' ')
             for i in split_hashtags:
                 try:
                     created = Hashtag.objects.get(name=i.replace(',', ''))
                     get_id_if_yes = created.id
                     add_if_yes = research.hashtag.add(get_id_if_yes)
-                    all_hashtags.append(add_if_yes)
                 except ObjectDoesNotExist:
                     hashtag = research.hashtag.create(name=i.replace(',', ''))
-                    all_hashtags.append(hashtag)
 
         else:
             raise serializers.ValidationError({'detail': _("Hashtag can not contain digits.")})
 
-        country_names = self.context.get('request').POST.__getitem__('country')
+        country_names = self.context.get('request').POST.get('country', 'None')
         if not country_names.isdigit():
             validated_data['country'] = country_names
 
-            split_countries = country_names.split()
+            split_countries = country_names.split(' ')
             for country in split_countries:
                 try:
                     created = Country.objects.get(name=country.replace(',', ''))
                     add_id_if_country_exists = created.id
                     add_if_true = research.country.add(add_id_if_country_exists)
-                    all_countries.append(add_if_true)
                 except ObjectDoesNotExist:
                     state = research.country.get_or_create(name=country.replace(',', ''))
-                    all_countries.append(state)
 
         else:
             raise serializers.ValidationError({'detail': _("Countries can not contain digits.")})
 
         return research
+
+    # def to_representation(self, instance):
+    #     research_information = Research.objects.filter(id=instance.id).values()
+    #     return list(research_information)[0]
 
 
 class DiscountPriceSerializer(serializers.ModelSerializer):
@@ -196,9 +212,10 @@ class ResearchRetrieveSerializer(serializers.ModelSerializer):
         model = Research
         read_only_fields = [
             'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
-            'date', 'status', 'hashtag', 'similars', 'category']
+            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'similars', 'author',
+            'date', 'status', 'hashtag', 'similars', 'category', 'content_data']
 
         fields = ['name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'research_data', 'similars', 'author',
-            'date', 'status', 'hashtag', 'similars', 'category', 'about_author']
+                  'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'similars', 'author',
+                  'date', 'status', 'hashtag', 'similars', 'category', 'about_author', 'content_data']
+        depth = 1
