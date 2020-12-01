@@ -214,7 +214,7 @@ class StatisticsBought(models.Model):
 
 
 class Statistics(models.Model):
-    research_to_collect = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='research_of_admin', verbose_name="Исследование")
+    research_to_collect = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='research_of_admin', verbose_name="Исследование", default=1)
     demo_downloaded = models.ForeignKey(StatisticsDemo, null=True, blank=True, on_delete=models.CASCADE, related_name='demos_downloaded', verbose_name="Количество скачанных демо-версий")
     watches = models.ForeignKey(StatisticsWatches, null=True, blank=True, on_delete=models.CASCADE, related_name='watches_counted', verbose_name="Количество просмотров")
     bought = models.ForeignKey(StatisticsBought, null=True, blank=True, on_delete=models.CASCADE, related_name='bought_researches', verbose_name="Количество скачиваний")
