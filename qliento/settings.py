@@ -28,8 +28,10 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.spl
 # Application definition
 
 INSTALLED_APPS = [
+
     'jet.dashboard',
     'jet',
+    'modeltranslation',
 
     'corsheaders',
     'post.apps.PostConfig',
@@ -50,7 +52,6 @@ INSTALLED_APPS = [
 
     'mptt',
     'django_filters',
-    'modeltranslation',
     'jwt',
     'djoser',
 
