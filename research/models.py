@@ -5,15 +5,14 @@ from registration.models import QAdmins
 from django.db.models import Count
 
 # Create your models here.
-class Category(models.Model):
+class Category(MPTTModel):
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
-	parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
+	parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
 		
-	def get_parent(self):
-		return self.parent
-
 	def __str__(self):
 		return self.name
+	class MPTTMeta:	
+		order_insertion_by = ['name']
 
 	class Meta:
 		verbose_name = _('Категория')
