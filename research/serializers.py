@@ -135,14 +135,13 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
         content_data_validated = validated_data.pop('content_data', None)
         files_of_research = self.context.get('request').FILES
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
-
         if content_data_validated is None:
             pass
         else:
             for main_language in content_data_validated:
                 r_content = ResearchContent.objects.create(content_data=research, **main_language)
 
-        for file in files_of_research.values():
+        for file in dict(files_of_research)['files']:
             ext = os.path.splitext(file.name)[1]
             if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv', '.ppt', '.pptx']:
 

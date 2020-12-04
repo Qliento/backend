@@ -3,7 +3,6 @@ from .models import *
 from django import forms
 from jet.admin import CompactInline
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
-
 # Register your models here.
 from django.http import HttpResponseRedirect
 from .models import Status
