@@ -1,23 +1,24 @@
 from django.db import models
 from registration.models import Users, QAdmins
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from registration.utils import Util
 from django.db.models import Avg, Count, Min, Sum
 from django.core.mail import EmailMessage
 from research.models import Research
 from django.conf import settings
+from django.db import transaction
 from random import randint
 from django.db.models import F
 # Create your models here.
 
 
 class Cart(models.Model):
-    ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items', default=1)
-    amount_of_items = models.IntegerField(blank=True, null=True)
-    discount = models.IntegerField(blank=True, null=True)
-    total_of_all = models.IntegerField(blank=True, null=True)
-    buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer")
+    ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items', default=1, verbose_name="Исследования")
+    amount_of_items = models.IntegerField(blank=True, null=True, verbose_name="Количество")
+    discount = models.IntegerField(blank=True, null=True, verbose_name="Скидка")
+    total_of_all = models.IntegerField(blank=True, null=True, verbose_name="Общая стоимость")
+    buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer", verbose_name="Покупатель")
 
     @property
     def count_items(self):
@@ -56,11 +57,8 @@ class Orders(models.Model):
     items_ordered = models.ManyToManyField(Cart, related_name="items_to_pay")
 
     class Meta:
-        verbose_name = _("Покупки клиентов")
-        verbose_name_plural = _('Покупки клиентов')
-
-    def __str__(self):
-        return '{}{}'.format('ID', self.pk)
+        verbose_name = _("Пред-покупки клиентов")
+        verbose_name_plural = _('Пред-покупки клиентов')
 
     @property
     def get_total_from_cart(self):
@@ -71,13 +69,45 @@ class Orders(models.Model):
         return super(Orders, self).save(*args, **kwargs)
 
 
+def create_check_info(sender, action, **kwargs):
+    details = kwargs['instance']
+    if action == 'post_add':
+        id_of_cart_objects = details.items_ordered.filter(items_to_pay=details.id)
+        get_the_buyer = Cart.objects.get(id=list(kwargs['pk_set'])[0]).buyer
+        print(get_the_buyer)
+        c = Check.objects.create(total_price=details.get_total_from_cart,
+                                 date=details.date_added,
+                                 client_bought=get_the_buyer)
+        for i in list(id_of_cart_objects):
+
+            b = Research.objects.get(id=i.ordered_item.id)
+            b.check_set.add(c)
+
+
+m2m_changed.connect(create_check_info, sender=Orders.items_ordered.through)
+
+
+class Check(models.Model):
+    ordered_researches = models.ManyToManyField(Research, verbose_name="Исследование")
+    total_price = models.IntegerField(verbose_name="Общая стоимость")
+    date = models.DateTimeField(verbose_name="Время покупки")
+    client_bought = models.CharField(max_length=100, verbose_name="Почта покупателя")
+
+    class Meta:
+        verbose_name = _("Покупки клиентов")
+        verbose_name_plural = _('Покупки клиентов')
+
+    def __str__(self):
+        return '{}{}'.format('ID', self.pk)
+
+
 class OrderForm(models.Model):
     name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="Имя")
     surname = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="Фамилия")
     logo = models.CharField(blank=True, null=True, verbose_name="Название организации", max_length=100)
     email = models.EmailField(max_length=120, verbose_name="Электронная почта")
     phone_number = models.CharField(default=0000, verbose_name='Номер телефона', max_length=20)
-    description = models.TextField()
+    description = models.TextField(verbose_name='Описание')
 
     class Meta:
         verbose_name = _("Заявка на исследование")
@@ -107,7 +137,7 @@ class DemoVersionForm(models.Model):
     name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name="ФИО")
     email = models.EmailField(max_length=120, verbose_name="Электронная почта")
     phone_number = models.CharField(default=0000, verbose_name='Номер телефона', max_length=20)
-    desired_research = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='wanted_research')
+    desired_research = models.ForeignKey(Research, on_delete=models.CASCADE, verbose_name='Исследование', related_name='wanted_research')
 
     class Meta:
         verbose_name = _("Заявка на демоверсию")
@@ -141,7 +171,6 @@ class DemoVersionForm(models.Model):
         mail.attach_file('static/files/{}'.format(name_of_file))
         mail.send()
 
-        Statistics.objects.filter(partner_admin=normalized_data.get('author_id')).update(demo_downloaded=F('demo_downloaded') + 1)
         return super(DemoVersionForm, self).save(*args, **kwargs)
 
 
@@ -157,29 +186,61 @@ class Instructions(models.Model):
 
 
 class ShortDescriptions(models.Model):
-    picture1 = models.ImageField(blank=True, null=True)
-    text1 = models.TextField(blank=True, null=True)
-    data_needed = models.ForeignKey(Instructions, on_delete=models.CASCADE, related_name='data_for_instructions')
+    picture1 = models.ImageField(blank=True, null=True, verbose_name='Изображение')
+    text1 = models.TextField(blank=True, null=True, verbose_name='Текст')
+    data_needed = models.ForeignKey(Instructions, on_delete=models.CASCADE, verbose_name="Инструкции", related_name='data_for_instructions')
 
     class Meta:
         verbose_name = _("Данные для краткого описания")
         verbose_name_plural = _('Данные для краткого описания')
 
 
+class StatisticsDemo(models.Model):
+    count_demo = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.count_demo)
+
+
+class StatisticsWatches(models.Model):
+    count_watches = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+
+class StatisticsBought(models.Model):
+    count_purchases = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+
 class Statistics(models.Model):
-    partner_admin = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='partner_admin')
-    demo_downloaded = models.IntegerField()
-    watches = models.IntegerField()
-    bought = models.IntegerField()
+    research_to_collect = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='research_of_admin', verbose_name="Исследование", default=1)
+    demo_downloaded = models.ForeignKey(StatisticsDemo, null=True, blank=True, on_delete=models.CASCADE, related_name='demos_downloaded', verbose_name="Количество скачанных демо-версий")
+    watches = models.ForeignKey(StatisticsWatches, null=True, blank=True, on_delete=models.CASCADE, related_name='watches_counted', verbose_name="Количество просмотров")
+    bought = models.ForeignKey(StatisticsBought, null=True, blank=True, on_delete=models.CASCADE, related_name='bought_researches', verbose_name="Количество скачиваний")
 
     class Meta:
         verbose_name = _("Статистика")
         verbose_name_plural = _('Статистика')
 
+    @property
+    def get_name_partner(self):
+        return '{}'.format(self.research_to_collect.author)
+
+    @property
+    def get_demo_downloaded(self):
+        count_demos = Research.objects.filter(research_of_admin=self.pk).aggregate(demo_total=Sum('research_of_admin__demo_downloaded'))
+        return count_demos.get('demo_total')
+
+    @property
+    def get_total_watches(self):
+        count_watched_researches = Research.objects.filter(research_of_admin=self.pk).aggregate(watches_total=Sum('research_of_admin__watches'))
+        return count_watched_researches.get('watches_total')
+
 
 def create_stat_for_qadmin(sender, **kwargs):
     details_for_stat = kwargs['instance']
-    Statistics.objects.create(partner_admin=details_for_stat, demo_downloaded=0, watches=0, bought=0)
+    Statistics.objects.create(research_to_collect=details_for_stat)
 
 
-post_save.connect(create_stat_for_qadmin, sender=QAdmins)
+post_save.connect(create_stat_for_qadmin, sender=Research)

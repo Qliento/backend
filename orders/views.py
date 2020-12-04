@@ -1,5 +1,6 @@
-  
-from django.shortcuts import render
+from rest_framework.decorators import api_view, permission_classes
+import hashlib
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from rest_framework import status
@@ -7,10 +8,14 @@ from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIVie
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, InstructionSerializer, StatisticsSerializer
-from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics
+from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
 from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
-# Create your views here.
+import secrets
+import string
+import hashlib
+
+from django.http import HttpResponseRedirect
 
 
 class OrderFormCreateView(CreateAPIView):
@@ -24,6 +29,19 @@ class OrderCreateView(ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = OrdersCreateSerializer
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        alphabet = string.ascii_letters + string.digits
+        salt = ''.join(secrets.choice(alphabet) for i in range(16))
+
+        str2hash = "payment.php;{};USD;test;ru;534270;{};vwc90Vew0ZJVxUfa".format(response.data['get_total_from_cart'], salt)
+        result = hashlib.md5(str2hash.encode())
+        md5result = result.hexdigest()
+
+        return HttpResponseRedirect(
+            redirect_to='https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_salt={}&pg_language=ru&pg_sig'
+                        '={}'.format(response.data['get_total_from_cart'], salt, md5result))
+
 
 class MyOrdersView(ListAPIView):
     permission_classes = (IsAuthenticated,)
@@ -31,7 +49,7 @@ class MyOrdersView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Orders.objects.filter(items_ordered__buyer=request.user)
+        self.queryset = Check.objects.filter(client_bought=request.user.email)
         return self.list(request, *args, **kwargs)
 
 

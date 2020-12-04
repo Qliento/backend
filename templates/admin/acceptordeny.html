@@ -2,7 +2,28 @@
 
 {% block submit_buttons_bottom %}
     {{ block.super }}
+    <style>
+    .myDiv {
+        padding: 12px 14px;
+        margin: 0 0 20px;
+        border: 1px solid #eee;
+        text-align: left;
+        overflow: hidden;
+    }
+    </style>
     <div class="submit-row">
             <input type="submit" value="Одобрить" name="_approve">
+    </div>
+
+    <div class="submit-row">
+            <input type="submit" value="Разрешить добавление скидочной цены" name="_discount">
+    </div>
+
+    <div class="submit-row">
+            <input type="submit" value="Запросить изменение скидочной цены" name="_change_discount">
+    </div>
+
+    <div class="submit-row">
+            <input type="submit" value="Отклонить" name="_refuse">
     </div>
 {% endblock %}

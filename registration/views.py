@@ -5,13 +5,15 @@ from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK, HTTP_404_NOT_FOUND
 from .serializers import QAdminSerializer, UpdatePassword, ClientSerializer, \
-    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly
+    EmailVerificationSerializer, UsersUpdateSerializer, CleanedResearchSerializer, \
+    CleanedFileOnly, UserConsentSerializer, CleanedDemoOnly, AdditionalInfoToken, QAdminUpdateSerializer
 from .models import QAdmins, Users, Clients, UsersConsentQliento
 from research.models import Research
 from orders.models import Orders
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, GenericAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
+from orders.models import Statistics, StatisticsDemo
 import string
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,14 +23,20 @@ from .utils import Util
 import jwt
 from django.core.mail import send_mail
 from django.http import FileResponse
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 from rest_framework import generics, permissions, status, views
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy, load_backend, psa
 from social_core.backends.oauth import BaseOAuth2
 from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
 # Create your views here.
+
+
+class UpdatedTokenObtainPairView(TokenObtainPairView):
+    serializer_class = AdditionalInfoToken
 
 
 class QAdminRegistration(GenericAPIView):
@@ -69,7 +77,7 @@ class VerifyEmail(views.APIView):
             if not user.is_active:
                 user.is_active = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return HttpResponseRedirect(redirect_to="http://qliento-project.surge.sh")
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
@@ -113,7 +121,7 @@ def login_respondents(request):
     client_as_user = Users.objects.get(email=email)
     if client_as_user.is_active:
         if email is None or password is None:
-            return Response({'error': 'Убедитесь в правильности вводимых данных'},
+            return Response({'detail': 'Убедитесь в правильности вводимых данных'},
                             status=HTTP_400_BAD_REQUEST)
 
         user = authenticate(request, username=email, password=password)
@@ -140,7 +148,7 @@ def login_qadmins(request):
     qadmin_as_user = Users.objects.get(email=email)
     if qadmin_as_user.is_active:
         if email is None or password is None:
-            return Response({'error': 'Введите почту и пароль'},
+            return Response({'detail': 'Введите почту и пароль'},
                             status=HTTP_400_BAD_REQUEST)
         user = authenticate(request, username=email, password=password)
 
@@ -172,20 +180,26 @@ class UsersUpdate(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PartnersUpdate(RetrieveUpdateAPIView):
+class PartnersUpdate(GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = QAdminSerializer
+    serializer_class = QAdminUpdateSerializer
+    parser_classes = [JSONParser, MultiPartParser]
 
-    def get(self, request, *args, **kwargs):
-        get_data_from = QAdmins.objects.get(admin_status=request.user)
-        serializer = self.serializer_class(get_data_from)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, *args, **kwargs):
+        serializer = self.serializer_class(QAdmins.objects.get(admin_status=self.request.user))
+        return Response(serializer.data)
 
-    def update(self, request, *args, **kwargs):
-        serializer = self.serializer_class(QAdmins.objects.get(admin_status=request.user), data=request.data, context=request.data, partial=True)
+    def get_queryset(self):
+        return QAdmins.objects.filter(admin_status=self.request.user)
+
+    def perform_update(self, request, *args, **kwargs):
+        serializer = QAdminUpdateSerializer(QAdmins.objects.get(admin_status=self.request.user), data=request.data, context=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        return self.perform_update(request, *args, **kwargs)
 
 
 @csrf_exempt
@@ -217,11 +231,11 @@ def send_email(request):
                       fail_silently=False)
 
             if old_password:
-                content = {'message': 'Инструкция была отправлена на почту'}
+                content = {'detail': 'Инструкция была отправлена на почту'}
                 return Response(content, status=200)
 
         except Users.DoesNotExist:
-            content = {'message': 'Напишите вашу почту корректно'}
+            content = {'detail': 'Напишите вашу почту корректно'}
             return Response(content, status=400)
 
 
@@ -237,7 +251,7 @@ class PasswordReset(UpdateAPIView):
         if hasattr(user, 'auth_token'):
             user.auth_token.delete()
         token, created = Token.objects.get_or_create(user=user)
-        content = {'Ваш пароль был изменен'}
+        content = {'detail': 'Ваш пароль был изменен'}
         return Response(content, status=status.HTTP_200_OK)
 
 
@@ -265,7 +279,7 @@ class DownloadFileView(GenericAPIView):
             return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
 
         except IndexError:
-            content = {'message': 'Данное исследование не имеет файлов'}
+            content = {'detail': 'Данное исследование не имеет файлов'}
             return Response(content, status=400)
 
 
@@ -280,10 +294,13 @@ class DownloadDemoView(GenericAPIView):
             self.queryset = Research.objects.filter(id=self.kwargs['pk'], status=2)
             file_itself = self.queryset.values('demo')
             path_of_file = list(file_itself)[0].get('demo')
+            a = StatisticsDemo.objects.create(count_demo=1)
+            b = Statistics.objects.filter(research_to_collect=self.kwargs['pk'])
+            b.update(demo_downloaded=a)
             return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
 
         except IndexError:
-            content = {'message': 'Данное исследование не имеет файлов'}
+            content = {'detail': 'Данное исследование не имеет файлов'}
             return Response(content, status=400)
 
 

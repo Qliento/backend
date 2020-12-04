@@ -1,4 +1,3 @@
-asgiref==3.2.10
 certifi==2020.6.20
 cffi==1.14.2
 chardet==3.0.4
@@ -15,6 +14,7 @@ django-cors-headers==3.5.0
 django-filter==2.4.0
 django-horizontal-list-filter==0.1.2
 django-hosts==4.0
+django-idempotency-key==1.1.1
 django-ipware==3.0.1
 django-jet2==1.0.12
 django-js-asset==1.2.2
@@ -24,7 +24,6 @@ django-oauth-toolkit==1.3.2
 django-resized==0.3.11
 django-rest-framework-social-oauth2==1.1.0
 django-rest-multiple-models==2.1.3
-django-resized==0.3.11
 django-simple-tags==0.6.0
 django-sortedm2m==3.0.2
 django-sortedm2m-filter-horizontal-widget==1.3.2
@@ -34,13 +33,12 @@ djangorestframework==3.11.1
 djangorestframework-recaptcha==0.2.0
 djangorestframework-simplejwt==4.4.0
 djoser==2.0.5
+drf-nested-field-multipart==0.0.3
 drf-yasg==1.17.1
 gunicorn==20.0.4
 idna==2.10
 inflection==0.5.1
 itypes==1.2.0
-jet-bridge-base==0.8.0
-jet-django==1.0.5
 Jinja2==2.11.2
 MarkupSafe==1.1.1
 oauthlib==3.1.0
@@ -52,9 +50,9 @@ pycparser==2.20
 PyJWT==1.7.1
 pyparsing==2.4.7
 python-dateutil==2.8.1
+python-decouple==3.3
 python-gettext==4.0
 python3-openid==3.2.0
-python-decouple==3.3
 pytz==2020.1
 regex==2020.9.27
 requests==2.24.0
