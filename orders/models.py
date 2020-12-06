@@ -74,7 +74,6 @@ def create_check_info(sender, action, **kwargs):
     if action == 'post_add':
         id_of_cart_objects = details.items_ordered.filter(items_to_pay=details.id)
         get_the_buyer = Cart.objects.get(id=list(kwargs['pk_set'])[0]).buyer
-        print(get_the_buyer)
         c = Check.objects.create(total_price=details.get_total_from_cart,
                                  date=details.date_added,
                                  client_bought=get_the_buyer)

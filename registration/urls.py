@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from .views import *
 from rest_framework_simplejwt.views import TokenRefreshView
+# from .social_logins import SocialLoginView
 
 
 urlpatterns = [
@@ -21,6 +22,8 @@ urlpatterns = [
     path('download-file/<int:pk>/', DownloadFileView.as_view()),
     path('qliento-consent/', UserConsentView.as_view()),
     path('jwt-create/', UpdatedTokenObtainPairView.as_view()),
-    path('jwt-refresh/', TokenRefreshView.as_view())
+    path('jwt-refresh/', TokenRefreshView.as_view()),
+    # path('login/facebook/', SocialLoginView.as_view())
+    path('google/', GoogleSocialAuthView.as_view()),
 
 ]

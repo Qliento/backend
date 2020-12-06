@@ -26,13 +26,27 @@ from django.http import FileResponse
 from django.http import HttpResponseRedirect
 from rest_framework import generics, permissions, status, views
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy, load_backend, psa
 from social_core.backends.oauth import BaseOAuth2
 from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
-# Create your views here.
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.generics import GenericAPIView
+from .serializers import GoogleSocialAuthSerializer
+
+
+class GoogleSocialAuthView(GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = GoogleSocialAuthSerializer
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class UpdatedTokenObtainPairView(TokenObtainPairView):

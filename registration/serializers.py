@@ -9,6 +9,44 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
 from PIL import Image
 from rest_framework_recaptcha.fields import ReCaptchaField
+from . import googlehelper
+from qliento import settings
+from rest_framework.exceptions import AuthenticationFailed
+from .registrationhelper import register_social_user
+
+
+class GoogleSocialAuthSerializer(serializers.Serializer):
+    auth_token = serializers.CharField()
+    user = serializers.CharField()
+
+    def validate(self, validated_data):
+        user_data = googlehelper.Google.validate(validated_data.pop('auth_token'))
+        try:
+            user_data['sub']
+
+        except:
+            raise serializers.ValidationError(
+                'The token is invalid or expired. Please login again.'
+            )
+
+        if user_data['aud'] != settings.GOOGLE_CLIENT_ID:
+            raise AuthenticationFailed('Please register first')
+
+        email = user_data['email']
+        name = 'N/A'
+        surname = 'N/A'
+
+        try:
+            name = user_data['given_name']
+            surname = user_data['family_name']
+        except ValueError:
+            pass
+
+        provider = 'google'
+        who = validated_data.pop('user')
+
+        return register_social_user(provider=provider, email=email,
+                                    name=name, surname=surname, who=who)
 
 
 class AdditionalInfoToken(TokenObtainPairSerializer):
@@ -271,3 +309,8 @@ class UserConsentSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsersConsentQliento
         fields = '__all__'
+
+
+class SocialSerializer(serializers.Serializer):
+    provider = serializers.CharField(max_length=255, required=True)
+    access_token = serializers.CharField(max_length=4096, required=True, trim_whitespace=True)
