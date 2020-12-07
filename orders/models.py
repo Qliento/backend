@@ -189,19 +189,19 @@ class DemoVersionForm(models.Model):
 
 
 class Instructions(models.Model):
-    name = models.CharField(verbose_name='Заголовок', max_length=100, blank=True, null=True)
+    name = models.CharField(verbose_name=_('Заголовок'), max_length=100, blank=True, null=True)
 
     class Meta:
-        verbose_name = _("Краткие инструкции")
-        verbose_name_plural = _('Краткие инструкции')
+        verbose_name = _("Заказать исследование")
+        verbose_name_plural = _('Заказать исследования')
 
-    def __str__(self):
+    def __str(self):
         return self.name
 
 
 class ShortDescriptions(models.Model):
     picture1 = models.ImageField(blank=True, null=True, verbose_name='Изображение')
-    text1 = models.TextField(blank=True, null=True, verbose_name='Текст')
+    text1 = models.TextField(blank=True, null=True, verbose_name=_('Текст'))
     data_needed = models.ForeignKey(Instructions, on_delete=models.CASCADE, verbose_name="Инструкции", related_name='data_for_instructions')
 
     class Meta:

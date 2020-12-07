@@ -1,15 +1,7 @@
 from django.contrib import admin
-from django.http import HttpResponseRedirect
 from .models import OrderForm, Orders, Cart, ShortDescriptions, \
     DemoVersionForm, Statistics, Instructions, Check, StatisticsDemo
-from .serializers import to_dict
-from django.db.models import Avg, Count, Min, Sum
-
-from django.core.mail import EmailMessage
-from research.models import Research
-from django.conf import settings
-
-# Register your models here.
+from modeltranslation.admin import TranslationStackedInline, TabbedDjangoJqueryTranslationAdmin
 
 
 class OrdersAdmin(admin.ModelAdmin):
@@ -21,11 +13,11 @@ class ShortDescriptionsAdmin(admin.ModelAdmin):
     list_display = ['data_needed']
 
 
-class ShortDescriptionInline(admin.TabularInline):
+class ShortDescriptionInline(TranslationStackedInline):
     model = ShortDescriptions
 
 
-class InstructionsAdmin(admin.ModelAdmin):
+class InstructionsAdmin(TabbedDjangoJqueryTranslationAdmin):
     inlines = [ShortDescriptionInline, ]
     list_display = ['name']
 

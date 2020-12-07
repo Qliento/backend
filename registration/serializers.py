@@ -7,12 +7,12 @@ from research.serializers import CountrySerializer, HashtagSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
-from PIL import Image
-from rest_framework_recaptcha.fields import ReCaptchaField
+from rest_framework.exceptions import PermissionDenied
 from . import googlehelper, facebookhelper, vkhelper
 from qliento import settings
 from rest_framework.exceptions import AuthenticationFailed
 from .registrationhelper import register_social_user
+from rest_framework import status
 
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
@@ -302,6 +302,17 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         fields = ['token']
 
 
+class CustomValidation(PermissionDenied):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = "wrong password input"
+    default_code = 'invalid'
+
+    def __init__(self, detail, status_code=None):
+        self.detail = detail
+        if status_code is not None:
+            self.status_code = status_code
+
+
 class UpdatePassword(serializers.Serializer):
     old_password = serializers.CharField(max_length=160, required=True)
     new_password = serializers.CharField(max_length=160, required=True)
@@ -310,14 +321,14 @@ class UpdatePassword(serializers.Serializer):
     def validate_old_password(self, data):
         user = self.context['request'].user
         if not user.check_password(data):
-            raise serializers.ValidationError({'detail':
-                _('Your old password was entered incorrectly. Please enter it again.')}
-            )
+            raise CustomValidation(detail={"detail": _("Your old password is incorrect")})
+
         return data
 
     def validate(self, data):
         if data['new_password'] != data['password_check']:
-            raise serializers.ValidationError({'detail': _("The two password fields didn't match.")})
+            raise PermissionDenied(detail={"detail": _("Your passwords does not match")})
+
         password_validation.validate_password(data['new_password'], self.context['request'].user)
         return data
 
