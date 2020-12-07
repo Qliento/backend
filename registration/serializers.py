@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
 from PIL import Image
 from rest_framework_recaptcha.fields import ReCaptchaField
-from . import googlehelper
+from . import googlehelper, facebookhelper, vkhelper
 from qliento import settings
 from rest_framework.exceptions import AuthenticationFailed
 from .registrationhelper import register_social_user
@@ -43,6 +43,56 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
             pass
 
         provider = 'google'
+        who = validated_data.pop('user')
+
+        return register_social_user(provider=provider, email=email,
+                                    name=name, surname=surname, who=who)
+
+
+class FacebookSocialAuthSerializer(serializers.Serializer):
+    auth_token = serializers.CharField()
+    user = serializers.CharField()
+
+    def validate(self, validated_data):
+        user_data = facebookhelper.Facebook.validate(validated_data.pop('auth_token'))
+
+        email = user_data['email']
+        name = 'N/A'
+        surname = 'N/A'
+
+        try:
+            take_name = user_data['name'].split(' ')
+            name = take_name[0]
+            surname = take_name[1]
+        except ValueError:
+            pass
+
+        provider = 'facebook'
+        who = validated_data.pop('user')
+
+        return register_social_user(provider=provider, email=email,
+                                    name=name, surname=surname, who=who)
+
+
+class VKSocialAuthSerializer(serializers.Serializer):
+    auth_token = serializers.CharField()
+    user = serializers.CharField()
+
+    def validate(self, validated_data):
+        user_data = vkhelper.VK.validate(validated_data.pop('auth_token'))
+        print(user_data)
+        email = user_data['email']
+        name = 'N/A'
+        surname = 'N/A'
+
+        try:
+            take_name = user_data['name'].split(' ')
+            name = take_name[0]
+            surname = take_name[1]
+        except ValueError:
+            pass
+
+        provider = 'facebook'
         who = validated_data.pop('user')
 
         return register_social_user(provider=provider, email=email,

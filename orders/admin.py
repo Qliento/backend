@@ -31,7 +31,7 @@ class InstructionsAdmin(admin.ModelAdmin):
 
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['id', 'buyer', 'ordered_item']
+    list_display = ['id', 'buyer']
 
 
 class CheckAdmin(admin.ModelAdmin):

@@ -20,7 +20,21 @@ def to_dict(instance):
 
 
 class CartedItemsSerializer(serializers.ModelSerializer):
-    ordered_item = CardResearchSerializer(read_only=True)
+    ordered_items = CardResearchSerializer(read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = "__all__"
+        depth = 2
+
+    def to_representation(self, instance):
+        data = super(CartedItemsSerializer, self).to_representation(instance)
+        cleaned_data = dict(data)
+        cleaned_data.pop('buyer')
+        return cleaned_data
+
+
+class ItemsInCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
@@ -28,7 +42,7 @@ class CartedItemsSerializer(serializers.ModelSerializer):
         depth = 1
 
     def to_representation(self, instance):
-        data = super(CartedItemsSerializer, self).to_representation(instance)
+        data = super(ItemsInCartSerializer, self).to_representation(instance)
         cleaned_data = dict(data)
         cleaned_data.pop('buyer')
         return cleaned_data
@@ -38,27 +52,29 @@ class AddToCartSerializer(serializers.ModelSerializer):
     count_items = serializers.CharField(read_only=True)
     get_discount = serializers.CharField(read_only=True)
     get_general_sum = serializers.CharField(read_only=True)
-    ordered_items = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
+    ordered_item = serializers.PrimaryKeyRelatedField(many=True, queryset=Research.objects.all())
 
     class Meta:
         model = Cart
-        fields = ['id', 'count_items', 'get_discount', 'get_general_sum', 'ordered_items']
+        fields = ['id', 'count_items', 'get_discount', 'get_general_sum', 'ordered_item']
 
     def create(self, validated_data):
-        ordered_thin = validated_data.pop('ordered_items')
-        cart_general = Cart.objects.create(buyer=self.context['request'].user, ordered_item=ordered_thin, **validated_data)
-        cart_general.amount_of_items = cart_general.count_items
-        cart_general.discount = cart_general.get_discount
-        cart_general.total_of_all = cart_general.get_general_sum['new_price__sum']
-        cart_general.save(update_fields=['amount_of_items'])
-        cart_general.save(update_fields=['discount'])
-        cart_general.save(update_fields=['total_of_all'])
+
+        ordered_thin = validated_data.pop('ordered_item')
+        cart_general = Cart.objects.create(buyer=self.context['request'].user,
+                                           **validated_data)
+        for i in ordered_thin:
+            cart_general.ordered_item.add(i)
+
         return cart_general
 
     def to_representation(self, instance):
+
         if instance:
-            serializer = CartedItemsSerializer(instance)
+            serializer = ItemsInCartSerializer(instance)
+
             return serializer.data
+
         else:
             raise Exception('Something went wrong...')
 

@@ -133,19 +133,20 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         content_data_validated = validated_data.pop('content_data', None)
-        files_of_research = self.context.get('request').FILES
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
+        files_of_research = self.context.get('request').FILES
+
         if content_data_validated is None:
             pass
         else:
             for main_language in content_data_validated:
                 r_content = ResearchContent.objects.create(content_data=research, **main_language)
 
-        for file in dict(files_of_research)['files']:
+        for file in files_of_research.values():
             ext = os.path.splitext(file.name)[1]
-            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv', '.ppt', '.pptx']:
+            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv']:
 
-                raise serializers.ValidationError({'detail': _("Not supported data format.")})
+                raise serializers.ValidationError("Неподдерживаемый тип данных")
 
             else:
                 a = ResearchFiles.objects.create(research=research, name=file)

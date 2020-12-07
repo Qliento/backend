@@ -13,4 +13,4 @@ class Google:
                 return idinfo
 
         except:
-            return "The token is either invalid or has expired"
+            return {"detail": "The token is invalid or expired."}

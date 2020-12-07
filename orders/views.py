@@ -4,10 +4,12 @@ from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
-    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, InstructionSerializer, StatisticsSerializer
+    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, \
+    EmailDemoSerializer, InstructionSerializer, StatisticsSerializer, \
+    ItemsInCartSerializer
 from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
 from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -30,6 +32,7 @@ class OrderCreateView(ListCreateAPIView):
     serializer_class = OrdersCreateSerializer
 
     def create(self, request, *args, **kwargs):
+        instances = Cart.objects.filter(buyer=request.user.id, id=request.data.get('items_ordered')[0]).update(added=True)
         response = super().create(request, *args, **kwargs)
         alphabet = string.ascii_letters + string.digits
         salt = ''.join(secrets.choice(alphabet) for i in range(16))
@@ -59,18 +62,18 @@ class ItemInCartView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Cart.objects.filter(buyer=request.user.id)
+        self.queryset = Cart.objects.filter(buyer=request.user.id, added=False)
         return self.list(request, *args, **kwargs)
 
 
-class ItemCartDeleteView(RetrieveDestroyAPIView):
+class ItemCartDeleteView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = CartedItemsSerializer
     queryset = None
 
-    def destroy(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         instance = Cart.objects.filter(buyer=request.user.id, id=self.kwargs['pk'])
-        self.perform_destroy(instance)
+        instance.update(added=True)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

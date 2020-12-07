@@ -1,40 +1,19 @@
 from django.db import models
-from registration.models import Users, QAdmins
+from registration.models import Users
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, m2m_changed
 from registration.utils import Util
-from django.db.models import Avg, Count, Min, Sum
+from django.db.models import Sum
 from django.core.mail import EmailMessage
 from research.models import Research
 from django.conf import settings
-from django.db import transaction
-from random import randint
-from django.db.models import F
-# Create your models here.
 
 
 class Cart(models.Model):
-    ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items', default=1, verbose_name="Исследования")
-    amount_of_items = models.IntegerField(blank=True, null=True, verbose_name="Количество")
-    discount = models.IntegerField(blank=True, null=True, verbose_name="Скидка")
+    ordered_item = models.ManyToManyField(Research, related_name='ordered_items', default=1, null=True, blank=True, verbose_name="Исследования")
     total_of_all = models.IntegerField(blank=True, null=True, verbose_name="Общая стоимость")
     buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer", verbose_name="Покупатель")
-
-    @property
-    def count_items(self):
-        return Research.objects.filter(ordered_items=self.pk).count()
-
-    @property
-    def get_cost_of_1(self):
-        return self.ordered_item.new_price
-
-    @property
-    def get_discount(self):
-        return self.ordered_item.old_price - self.ordered_item.new_price
-
-    @property
-    def get_general_sum(self):
-        return Research.objects.filter(ordered_items=self.pk).aggregate(Sum('new_price'))
+    added = models.BooleanField(null=True, blank=True, default=False)
 
     def save(self, *args, **kwargs):
         super(Cart, self).save(*args, **kwargs)
@@ -45,6 +24,39 @@ class Cart(models.Model):
     class Meta:
         verbose_name = _("Корзина покупателя")
         verbose_name_plural = _('Корзины покупателей')
+
+
+def add_cart_items(sender, action, **kwargs):
+    details = kwargs['pk_set']
+    its_id = kwargs['instance']
+
+    if action == 'post_add':
+        empty_researches = []
+        aggregated_np = Research.objects.filter(ordered_items=its_id.id).aggregate(Sum('new_price'))
+        aggregated_op = Research.objects.filter(ordered_items=its_id.id).aggregate(Sum('old_price'))
+
+        for research_details in details:
+            data_of_research = Research.objects.filter(id=research_details)
+            empty_researches = list(data_of_research.values())
+
+        for one in empty_researches:
+            each_cart = Cart.objects.filter(id=its_id.id, added=False)
+            try:
+                np = one.get('new_price')
+                op = one.get('old_price')
+
+                if np is None and aggregated_np.get('new_price__sum') is None:
+                    each_cart.update(total_of_all=aggregated_op.get('old_price__sum'))
+                elif np or aggregated_np.get('new_price__sum'):
+                    each_cart.update(total_of_all=aggregated_np.get('new_price__sum'))
+                else:
+                    each_cart.update(total_of_all=aggregated_op.get('old_price__sum'))
+
+            except:
+                raise ValueError
+
+
+m2m_changed.connect(add_cart_items, sender=Cart.ordered_item.through)
 
 
 class ItemsInCart(models.Model):
@@ -71,23 +83,26 @@ class Orders(models.Model):
 
 def create_check_info(sender, action, **kwargs):
     details = kwargs['instance']
+
     if action == 'post_add':
+
         id_of_cart_objects = details.items_ordered.filter(items_to_pay=details.id)
         get_the_buyer = Cart.objects.get(id=list(kwargs['pk_set'])[0]).buyer
+
         c = Check.objects.create(total_price=details.get_total_from_cart,
                                  date=details.date_added,
                                  client_bought=get_the_buyer)
-        for i in list(id_of_cart_objects):
 
-            b = Research.objects.get(id=i.ordered_item.id)
-            b.check_set.add(c)
+        b = Research.objects.filter(ordered_items=list(kwargs['pk_set'])[0])
+        for each_research in b:
+            c.ordered_researches.add(each_research.id)
 
 
 m2m_changed.connect(create_check_info, sender=Orders.items_ordered.through)
 
 
 class Check(models.Model):
-    ordered_researches = models.ManyToManyField(Research, verbose_name="Исследование")
+    ordered_researches = models.ManyToManyField(Research, verbose_name="Исследования")
     total_price = models.IntegerField(verbose_name="Общая стоимость")
     date = models.DateTimeField(verbose_name="Время покупки")
     client_bought = models.CharField(max_length=100, verbose_name="Почта покупателя")
