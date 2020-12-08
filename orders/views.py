@@ -8,7 +8,7 @@ from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIVie
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, \
-    EmailDemoSerializer, InstructionSerializer, StatisticsSerializer, \
+    EmailDemoSerializer, StatisticsSerializer, ShortDescriptionsSerializer, \
     ItemsInCartSerializer
 from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
 from registration.models import Users, Clients
@@ -92,7 +92,7 @@ class SendDemoView(CreateAPIView):
 class ShortDescriptionView(ListAPIView):
     queryset = ShortDescriptions.objects.all()
     permission_classes = (AllowAny,)
-    serializer_class = InstructionSerializer
+    serializer_class = ShortDescriptionsSerializer
 
 
 class StatViewForResearch(RetrieveAPIView):

@@ -4,7 +4,7 @@ from .models import *
 
 @register(ShortDescriptions)
 class MobAppTranslationOptions(TranslationOptions):
-    fields = ('text1',)
+    fields = ('text1', 'title', 'picture1', )
 
 
 @register(Instructions)

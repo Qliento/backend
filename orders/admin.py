@@ -9,17 +9,8 @@ class OrdersAdmin(admin.ModelAdmin):
     readonly_fields = ['date_added', 'get_total_from_cart']
 
 
-class ShortDescriptionsAdmin(admin.ModelAdmin):
-    list_display = ['data_needed']
-
-
-class ShortDescriptionInline(TranslationStackedInline):
-    model = ShortDescriptions
-
-
-class InstructionsAdmin(TabbedDjangoJqueryTranslationAdmin):
-    inlines = [ShortDescriptionInline, ]
-    list_display = ['name']
+class ShortDescriptionAdmin(TabbedDjangoJqueryTranslationAdmin):
+    list_display = ['title']
 
 
 class CartAdmin(admin.ModelAdmin):
@@ -62,7 +53,7 @@ admin.site.register(OrderForm, OrderFormAdmin)
 # admin.site.register(Orders, OrdersAdmin)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
-admin.site.register(ShortDescriptions, ShortDescriptionsAdmin)
-admin.site.register(Instructions, InstructionsAdmin)
+admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
+# admin.site.register(Instructions, InstructionsAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
 admin.site.register(Check, CheckAdmin)

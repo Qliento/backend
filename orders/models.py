@@ -200,9 +200,9 @@ class Instructions(models.Model):
 
 
 class ShortDescriptions(models.Model):
+    title = models.CharField(max_length=120, default='Название', null=True, blank=True, verbose_name="Заголовок")
     picture1 = models.ImageField(blank=True, null=True, verbose_name='Изображение')
     text1 = models.TextField(blank=True, null=True, verbose_name=_('Текст'))
-    data_needed = models.ForeignKey(Instructions, on_delete=models.CASCADE, verbose_name="Инструкции", related_name='data_for_instructions')
 
     class Meta:
         verbose_name = _("Данные для краткого описания")

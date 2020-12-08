@@ -168,15 +168,7 @@ class MyOrdersSerializer(serializers.ModelSerializer):
         return OrderedDict(research_details)
 
 
-class InstructionSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ShortDescriptions
-        fields = "__all__"
-
-
 class ShortDescriptionsSerializer(serializers.ModelSerializer):
-    data_for_instructions = InstructionSerializer(many=True)
 
     class Meta:
         model = ShortDescriptions

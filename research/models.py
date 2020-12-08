@@ -3,7 +3,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext_lazy as _
 from registration.models import QAdmins
 from django.db.models import Count
-
+from .validators import validate_file_extension
 # Create your models here.
 class Category(models.Model):
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
@@ -78,7 +78,7 @@ class Research(models.Model):
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
-	demo = models.FileField(null=True, blank=True, upload_to='demos', verbose_name=_('Демоверсия'))
+	demo = models.FileField(null=True, blank=True, upload_to='demos', max_length=500, verbose_name=_('Демоверсия'), validators=[validate_file_extension])
 
 	def similar_researches(self):
 		hashtags = Research.objects.get(id=self.id)
