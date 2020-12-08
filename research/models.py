@@ -65,13 +65,13 @@ class Country(models.Model):
 
 
 class Research(models.Model):
-	name = models.CharField(max_length = 1000, verbose_name = _('Название'))
+	name = models.CharField(max_length = 1000, verbose_name = _('Название'), null = True, blank = True,)
 	image = models.FileField(null = True, blank = True, upload_to='images', verbose_name = _('Изображение'))
 	date = models.DateField(auto_now_add = True, verbose_name = _('Дата публикации'))
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
 	new_price = models.IntegerField(verbose_name = _('Новая цена'), null=True, blank=True)
-	description = models.TextField(verbose_name = _('Описание'))
+	description = models.TextField(verbose_name = _('Описание'), null = True, blank = True,)
 	hashtag = models.ManyToManyField(Hashtag, verbose_name = _('Ключевые слова'))
 	category = models.ForeignKey('Category', null=True, blank=True, on_delete = models.CASCADE, verbose_name = _('Категория'))
 	country = models.ManyToManyField(Country, verbose_name = _('Страна'), null = True)
