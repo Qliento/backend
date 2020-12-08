@@ -172,7 +172,7 @@ class ShortDescriptionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShortDescriptions
-        fields = '__all__'
+        fields = ['title', 'picture1', 'text1']
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
