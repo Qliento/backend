@@ -144,7 +144,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
         for file in files_of_research.values():
             ext = os.path.splitext(file.name)[1]
-            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv']:
+            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv', 'jpeg']:
 
                 raise serializers.ValidationError("Неподдерживаемый тип данных")
 

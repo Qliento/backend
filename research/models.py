@@ -5,6 +5,8 @@ from registration.models import QAdmins
 from django.db.models import Count
 from .validators import validate_file_extension
 # Create your models here.
+
+
 class Category(models.Model):
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
 	parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
