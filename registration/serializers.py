@@ -257,7 +257,7 @@ class QAdminUpdateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(write_only=True)
     surname = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(write_only=True)
-    image = serializers.ImageField(write_only=True)
+    photo = serializers.ImageField(write_only=True)
 
     class Meta:
         fields = '__all__'
@@ -268,7 +268,7 @@ class QAdminUpdateSerializer(serializers.ModelSerializer):
         user_retrieved.name = validated_data.get('name', user_retrieved.name)
         user_retrieved.surname = validated_data.get('surname', user_retrieved.surname)
         user_retrieved.phone_number = validated_data.get('phone_number', user_retrieved.phone_number)
-        user_retrieved.photo = validated_data.get('image', user_retrieved.photo)
+        user_retrieved.photo = validated_data.get('photo', user_retrieved.photo)
         user_retrieved.save()
 
         instance.about_me = validated_data.get('about_me', instance.about_me)
