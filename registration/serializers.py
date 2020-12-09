@@ -13,6 +13,7 @@ from qliento import settings
 from rest_framework.exceptions import AuthenticationFailed
 from .registrationhelper import register_social_user
 from rest_framework import status
+from collections import OrderedDict
 
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
@@ -253,7 +254,10 @@ class RawDataUser(serializers.ModelSerializer):
 
 
 class QAdminUpdateSerializer(serializers.ModelSerializer):
-    admin_status = RawDataUser(required=True, many=False)
+    name = serializers.CharField(write_only=True)
+    surname = serializers.CharField(write_only=True)
+    phone_number = serializers.CharField(write_only=True)
+    photo = serializers.ImageField(write_only=True)
 
     class Meta:
         fields = '__all__'
@@ -261,18 +265,22 @@ class QAdminUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         user_retrieved = instance.admin_status
-        take_from_data = validated_data.pop('admin_status')
-        for i in take_from_data:
-            user_retrieved.name = take_from_data.get('name', user_retrieved.name)
-            user_retrieved.surname = take_from_data.get('surname', user_retrieved.surname)
-            user_retrieved.phone_number = take_from_data.get('phone_number', user_retrieved.phone_number)
-            user_retrieved.photo = take_from_data.get('photo', user_retrieved.photo)
-            user_retrieved.save()
+        user_retrieved.name = validated_data.get('name', user_retrieved.name)
+        user_retrieved.surname = validated_data.get('surname', user_retrieved.surname)
+        user_retrieved.phone_number = validated_data.get('phone_number', user_retrieved.phone_number)
+        user_retrieved.photo = validated_data.get('photo', user_retrieved.photo)
+        user_retrieved.save()
 
         instance.about_me = validated_data.get('about_me', instance.about_me)
         instance.position = validated_data.get('position', instance.position)
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        return {"admin_status": [RawDataUser(instance.admin_status).data],
+                "logo": str(instance.logo),
+                "about_me": str(instance.about_me),
+                "position": instance.position}
 
 
 class ClientSerializer(serializers.ModelSerializer):
