@@ -277,7 +277,7 @@ class QAdminUpdateSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        return {"admin_status": {RawDataUser(instance.admin_status).data},
+        return {"admin_status": RawDataUser(instance.admin_status).data,
                 "logo": str(instance.logo),
                 "about_me": str(instance.about_me),
                 "position": instance.position}
