@@ -46,9 +46,11 @@ class Cart(models.Model):
             if initial_price:
                 self.total_of_all = initial_price
                 return self.total_of_all
-            else:
+            elif i.old_price:
                 self.total_of_all = i.old_price
                 return self.total_of_all
+            else:
+                pass
 
     def save(self, *args, **kwargs):
         super(Cart, self).save(*args, **kwargs)
