@@ -73,8 +73,7 @@ class ItemCartDeleteView(RetrieveDestroyAPIView):
     queryset = None
 
     def destroy(self, request, *args, **kwargs):
-        instance = Cart.objects.filter(user_cart__buyer=request.user.id, id=self.kwargs['pk'])
-        self.perform_destroy(instance)
+        Cart.objects.filter(user_cart__buyer=self.request.user.id, ordered_item=self.kwargs['pk']).delete()
         return Response({"detail": _("Research was removed from your cart")}, status=status.HTTP_200_OK)
 
 
