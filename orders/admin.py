@@ -1,25 +1,21 @@
 from django.contrib import admin
 from .models import OrderForm, Orders, Cart, ShortDescriptions, \
-    DemoVersionForm, Statistics, Instructions, Check, StatisticsDemo
+    DemoVersionForm, Statistics, Check, StatisticsDemo
 from modeltranslation.admin import TranslationStackedInline, TabbedDjangoJqueryTranslationAdmin
 
 
-class OrdersAdmin(admin.ModelAdmin):
-    fields = ['items_ordered', 'date_added', 'completed', 'get_total_from_cart']
-    readonly_fields = ['date_added', 'get_total_from_cart']
+# class OrdersAdmin(admin.ModelAdmin):
+#     fields = ['items_ordered', 'date_added', 'completed', 'get_total_from_cart']
+#     readonly_fields = ['date_added', 'get_total_from_cart']
 
 
 class ShortDescriptionAdmin(TabbedDjangoJqueryTranslationAdmin):
     list_display = ['title']
 
 
-class CartAdmin(admin.ModelAdmin):
-    list_display = ['id', 'buyer']
-
-
 class CheckAdmin(admin.ModelAdmin):
-    fields = ['ordered_researches', 'total_price', 'date', 'client_bought']
-    readonly_fields = ['ordered_researches', 'total_price', 'date', 'client_bought']
+    fields = ['ordered_researches', 'total_price', 'date', 'client_bought', 'order_id']
+    readonly_fields = ['ordered_researches', 'total_price', 'date', 'client_bought', 'order_id']
     list_display = ['client_bought', 'date']
 
 
@@ -49,11 +45,49 @@ class OrderFormAdmin(admin.ModelAdmin):
     list_display = ['email']
 
 
+# class CartAdmin(admin.ModelAdmin):
+#     list_display = ['id']
+#
+#     fields = ['ordered_item', 'calculate_total_price', 'added', 'date_added']
+#     readonly_fields = ['calculate_total_price', 'date_added', 'added']
+#
+#     def calculate_total_price(self, obj):
+#         return obj.calculate_total_price
+#     calculate_total_price.short_description = 'Сумма'
+
+
+class CartInline(admin.StackedInline):
+    list_display = ['id']
+    model = Cart
+    fields = ['ordered_item', 'calculate_total_price', 'added', 'date_added']
+    readonly_fields = ['calculate_total_price', 'date_added', 'added']
+    extra = 1
+
+
+class OrdersAdmin(admin.ModelAdmin):
+    inlines = [CartInline]
+    list_display = ['buyer']
+    fields = ['total_sum', 'buyer']
+    readonly_fields = ['total_sum']
+
+    def get_queryset(self, request):
+        qs = super(OrdersAdmin, self).get_queryset(request)
+        the_id = list(qs.values('id'))[0]
+        check_price = Cart.objects.filter(user_cart=the_id.get('id'))
+        total_price = 0
+        for i in check_price:
+            total_price += i.calculate_total_price
+        if qs.values('total_sum') != total_price:
+            qs.update(total_sum=total_price)
+        else:
+            pass
+        return qs
+
+
 admin.site.register(OrderForm, OrderFormAdmin)
-# admin.site.register(Orders, OrdersAdmin)
-admin.site.register(Cart, CartAdmin)
+admin.site.register(Orders, OrdersAdmin)
+# admin.site.register(Cart, CartAdmin)
 admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
-# admin.site.register(Instructions, InstructionsAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
 admin.site.register(Check, CheckAdmin)

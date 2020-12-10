@@ -2,12 +2,13 @@ from rest_framework.decorators import api_view, permission_classes
 import hashlib
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveUpdateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
-    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, \
+    MyOrdersSerializer, DeleteCartedItemSerializer, AddToCartSerializer, \
     EmailDemoSerializer, StatisticsSerializer, ShortDescriptionsSerializer, \
     ItemsInCartSerializer
 from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
@@ -58,23 +59,23 @@ class MyOrdersView(ListAPIView):
 
 class ItemInCartView(ListAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CartedItemsSerializer
+    serializer_class = ItemsInCartSerializer
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Cart.objects.filter(buyer=request.user.id, added=False)
+        self.queryset = Orders.objects.filter(buyer=request.user.id)
         return self.list(request, *args, **kwargs)
 
 
-class ItemCartDeleteView(RetrieveUpdateAPIView):
+class ItemCartDeleteView(RetrieveDestroyAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CartedItemsSerializer
+    serializer_class = DeleteCartedItemSerializer
     queryset = None
 
-    def update(self, request, *args, **kwargs):
-        instance = Cart.objects.filter(buyer=request.user.id, id=self.kwargs['pk'])
-        instance.update(added=True)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def destroy(self, request, *args, **kwargs):
+        instance = Cart.objects.filter(user_cart__buyer=request.user.id, id=self.kwargs['pk'])
+        self.perform_destroy(instance)
+        return Response({"detail": _("Research was removed from your cart")}, status=status.HTTP_200_OK)
 
 
 class AddToCartView(CreateAPIView):

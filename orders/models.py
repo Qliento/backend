@@ -9,96 +9,52 @@ from research.models import Research
 from django.conf import settings
 
 
-class Cart(models.Model):
-    ordered_item = models.ManyToManyField(Research, related_name='ordered_items', default=1, null=True, blank=True, verbose_name="Исследования")
-    total_of_all = models.IntegerField(blank=True, null=True, verbose_name="Общая стоимость")
-    buyer = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="buyer", verbose_name="Покупатель")
-    added = models.BooleanField(null=True, blank=True, default=False)
-
-    def save(self, *args, **kwargs):
-        super(Cart, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return '{}'.format(self.ordered_item)
-
-    class Meta:
-        verbose_name = _("Корзина покупателя")
-        verbose_name_plural = _('Корзины покупателей')
-
-
-def add_cart_items(sender, action, **kwargs):
-    details = kwargs['pk_set']
-    its_id = kwargs['instance']
-
-    if action == 'post_add':
-        empty_researches = []
-        aggregated_np = Research.objects.filter(ordered_items=its_id.id).aggregate(Sum('new_price'))
-        aggregated_op = Research.objects.filter(ordered_items=its_id.id).aggregate(Sum('old_price'))
-
-        for research_details in details:
-            data_of_research = Research.objects.filter(id=research_details)
-            empty_researches = list(data_of_research.values())
-
-        for one in empty_researches:
-            each_cart = Cart.objects.filter(id=its_id.id, added=False)
-            try:
-                np = one.get('new_price')
-                op = one.get('old_price')
-
-                if np is None and aggregated_np.get('new_price__sum') is None:
-                    each_cart.update(total_of_all=aggregated_op.get('old_price__sum'))
-                elif np or aggregated_np.get('new_price__sum'):
-                    each_cart.update(total_of_all=aggregated_np.get('new_price__sum'))
-                else:
-                    each_cart.update(total_of_all=aggregated_op.get('old_price__sum'))
-
-            except:
-                raise ValueError
-
-
-m2m_changed.connect(add_cart_items, sender=Cart.ordered_item.through)
-
-
-class ItemsInCart(models.Model):
-    items_in_cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items_for_sell')
-
-
 class Orders(models.Model):
-    date_added = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(null=True, blank=True, default=False)
-    items_ordered = models.ManyToManyField(Cart, related_name="items_to_pay")
+    buyer = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="buyer", verbose_name="Покупатель")
+    total_sum = models.IntegerField(blank=True, null=True, verbose_name="Общая сумма")
 
     class Meta:
-        verbose_name = _("Пред-покупки клиентов")
-        verbose_name_plural = _('Пред-покупки клиентов')
+        verbose_name = _("Корзина клиента")
+        verbose_name_plural = _('Корзины клиентов')
 
     @property
     def get_total_from_cart(self):
-        price = Cart.objects.filter(items_to_pay=self.pk).aggregate(Sum('total_of_all'))
-        return price.get('total_of_all__sum')
+        price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
+        self.total_sum = price.get('total_of_all__sum')
+        return self.total_sum
 
     def save(self, *args, **kwargs):
         return super(Orders, self).save(*args, **kwargs)
 
 
-def create_check_info(sender, action, **kwargs):
-    details = kwargs['instance']
+class Cart(models.Model):
+    ordered_item = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='ordered_items', default=1, null=True, blank=True, verbose_name="Исследования")
+    total_of_all = models.IntegerField(blank=True, null=True, verbose_name="Цена")
+    added = models.BooleanField(null=True, blank=True, default=False, verbose_name="Куплено")
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+    user_cart = models.ForeignKey(Orders, on_delete=models.CASCADE, related_name='user_cart', default=1, blank=True, null=True, verbose_name="Корзина")
 
-    if action == 'post_add':
+    def __str__(self):
+        return '{}'.format(self.ordered_item)
 
-        id_of_cart_objects = details.items_ordered.filter(items_to_pay=details.id)
-        get_the_buyer = Cart.objects.get(id=list(kwargs['pk_set'])[0]).buyer
+    @property
+    def calculate_total_price(self):
+        research_objects = Research.objects.get(ordered_items=self.pk)
+        initial_price = research_objects.new_price
+        if initial_price:
+            self.total_of_all = initial_price
+            return self.total_of_all
+        else:
+            self.total_of_all = research_objects.old_price
+            return self.total_of_all
 
-        c = Check.objects.create(total_price=details.get_total_from_cart,
-                                 date=details.date_added,
-                                 client_bought=get_the_buyer)
+    def save(self, *args, **kwargs):
+        super(Cart, self).save(*args, **kwargs)
 
-        b = Research.objects.filter(ordered_items=list(kwargs['pk_set'])[0])
-        for each_research in b:
-            c.ordered_researches.add(each_research.id)
-
-
-m2m_changed.connect(create_check_info, sender=Orders.items_ordered.through)
+    class Meta:
+        verbose_name = _("Товар в корзине покупателя")
+        verbose_name_plural = _('Товары в корзинах покупателей')
 
 
 class Check(models.Model):
@@ -106,6 +62,7 @@ class Check(models.Model):
     total_price = models.IntegerField(verbose_name="Общая стоимость")
     date = models.DateTimeField(verbose_name="Время покупки")
     client_bought = models.CharField(max_length=100, verbose_name="Почта покупателя")
+    order_id = models.CharField(max_length=500, verbose_name="Номер заказа", null=True, blank=True)
 
     class Meta:
         verbose_name = _("Покупки клиентов")
@@ -188,25 +145,14 @@ class DemoVersionForm(models.Model):
         return super(DemoVersionForm, self).save(*args, **kwargs)
 
 
-class Instructions(models.Model):
-    name = models.CharField(verbose_name=_('Заголовок'), max_length=100, blank=True, null=True)
-
-    class Meta:
-        verbose_name = _("Заказать исследование")
-        verbose_name_plural = _('Заказать исследования')
-
-    def __str(self):
-        return self.name
-
-
 class ShortDescriptions(models.Model):
     title = models.CharField(max_length=120, default='Название', null=True, blank=True, verbose_name="Заголовок")
     picture1 = models.ImageField(blank=True, null=True, verbose_name='Изображение')
     text1 = models.TextField(blank=True, null=True, verbose_name=_('Текст'))
 
     class Meta:
-        verbose_name = _("Данные для краткого описания")
-        verbose_name_plural = _('Данные для краткого описания')
+        verbose_name = _("Заказать исследование")
+        verbose_name_plural = _('Заказать исследования')
 
 
 class StatisticsDemo(models.Model):

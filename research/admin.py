@@ -99,7 +99,8 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 'Название: "{}" \n'
                                 'Идентификатор: {} \n'
                                 '\n'
-                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                                '{}\n'
+                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment),
                                 settings.EMAIL_HOST_USER,
                                 [obj.author.admin_status.email])
             mail.send()
@@ -115,7 +116,8 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 'Название: "{}" \n'
                                 'Идентификатор: {} \n'
                                 '\n'
-                                'С уважением, команда Qliento'.format(obj.new_price, obj.author, obj.name, obj.id),
+                                '{}\n'
+                                'С уважением, команда Qliento'.format(obj.new_price, obj.author, obj.name, obj.id, obj.comment),
                                 settings.EMAIL_HOST_USER,
                                 [obj.author.admin_status.email])
             mail.send()

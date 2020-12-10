@@ -103,7 +103,7 @@ class ResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
                   'description_', 'hashtag', 'category', 'country', 'status',
-                  'similars', 'author', 'demo', 'content_data',
+                  'similars', 'author', 'demo', 'content_data'
                   )
         read_only_fields = ('date', 'status', 'similars', 'new_price')
         depth = 1
@@ -132,6 +132,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
         read_only_fields = ('date', 'status', 'similars', 'new_price')
 
     def create(self, validated_data):
+        check_data = self.context['request'].data
         content_data_validated = validated_data.pop('content_data', None)
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
         files_of_research = self.context.get('request').FILES
@@ -186,9 +187,11 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
         return research
 
-    # def to_representation(self, instance):
-    #     research_information = Research.objects.filter(id=instance.id).values()
-    #     return list(research_information)[0]
+    def to_representation(self, instance):
+        data = super(ResearchUploadSerializer, self).to_representation(instance)
+        cleaned_data = dict(data)
+        cleaned_data.pop('comment')
+        return cleaned_data
 
 
 class DiscountPriceSerializer(serializers.ModelSerializer):

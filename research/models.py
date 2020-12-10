@@ -81,6 +81,7 @@ class Research(models.Model):
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
 	demo = models.FileField(null=True, blank=True, upload_to='demos', max_length=500, verbose_name=_('Демоверсия'), validators=[validate_file_extension])
+	comment = models.TextField(null=True, blank=True, default='', verbose_name = _('Комментарий'))
 
 	def similar_researches(self):
 		hashtags = Research.objects.get(id=self.id)
@@ -90,7 +91,7 @@ class Research(models.Model):
 		return similars.exclude(id = self.id)
 
 	def __str__(self):
-		return self.name
+		return self.name or 'None'
 
 	class Meta:
 		verbose_name = _('Исследование')
