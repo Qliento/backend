@@ -11,7 +11,7 @@ from django.conf import settings
 
 class Orders(models.Model):
     completed = models.BooleanField(null=True, blank=True, default=False)
-    buyer = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="buyer", verbose_name="Покупатель")
+    buyer = models.OneToOneField(Users, on_delete=models.CASCADE, null=True, blank=True, related_name="buyer", verbose_name="Покупатель")
     total_sum = models.IntegerField(blank=True, null=True, verbose_name="Общая сумма")
 
     class Meta:
