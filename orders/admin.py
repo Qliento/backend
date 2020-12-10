@@ -75,13 +75,16 @@ class OrdersAdmin(admin.ModelAdmin):
         the_id = list(qs.values('id'))[0]
         check_price = Cart.objects.filter(user_cart=the_id.get('id'))
         total_price = 0
-        for i in check_price:
-            total_price += i.calculate_total_price
-        if qs.values('total_sum') != total_price:
-            qs.update(total_sum=total_price)
-        else:
-            pass
-        return qs
+        try:
+            for i in check_price:
+                total_price += i.calculate_total_price
+            if qs.values('total_sum') != total_price:
+                qs.update(total_sum=total_price)
+            else:
+                pass
+            return qs
+        except:
+            raise ValueError
 
 
 admin.site.register(OrderForm, OrderFormAdmin)
