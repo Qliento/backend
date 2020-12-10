@@ -40,14 +40,15 @@ class Cart(models.Model):
 
     @property
     def calculate_total_price(self):
-        research_objects = Research.objects.get(ordered_items=self.pk)
-        initial_price = research_objects.new_price
-        if initial_price:
-            self.total_of_all = initial_price
-            return self.total_of_all
-        else:
-            self.total_of_all = research_objects.old_price
-            return self.total_of_all
+        research_objects = Research.objects.filter(ordered_items=self.pk)
+        for i in research_objects:
+            initial_price = i.new_price
+            if initial_price:
+                self.total_of_all = initial_price
+                return self.total_of_all
+            else:
+                self.total_of_all = i.old_price
+                return self.total_of_all
 
     def save(self, *args, **kwargs):
         super(Cart, self).save(*args, **kwargs)
