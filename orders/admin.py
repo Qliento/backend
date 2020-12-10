@@ -89,7 +89,7 @@ class OrdersAdmin(admin.ModelAdmin):
 
 admin.site.register(OrderForm, OrderFormAdmin)
 admin.site.register(Orders, OrdersAdmin)
-# admin.site.register(Cart, CartAdmin)
+admin.site.register(Cart, )
 admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
