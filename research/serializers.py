@@ -77,13 +77,6 @@ class ResearchFilePathSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class ResearchContentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ResearchContent
-        fields = '__all__'
-
-
 class ResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(many=True, required=False)
     country = CountrySerializer(many=True, required=False)
@@ -117,8 +110,8 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
     research_data = ResearchFilePathSerializer(read_only=True, many=True)
-    content_data = ResearchContentSerializer(many=True, required=False)
     similars = CardResearchSerializer(source='similar_researches', many = True, read_only=True)
+    content_data = serializers.CharField(write_only=True)
 
     def get_name(self):
         return _(self.name)
@@ -132,15 +125,16 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
         read_only_fields = ('date', 'status', 'similars', 'new_price')
 
     def create(self, validated_data):
-        check_data = self.context['request'].data
+
         content_data_validated = validated_data.pop('content_data', None)
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
         files_of_research = self.context.get('request').FILES
+        serialized_content_data = json.loads(content_data_validated)
 
         if content_data_validated is None:
             pass
         else:
-            for main_language in content_data_validated:
+            for main_language in serialized_content_data:
                 r_content = ResearchContent.objects.create(content_data=research, **main_language)
 
         for file in files_of_research.values():
