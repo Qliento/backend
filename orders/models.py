@@ -20,9 +20,12 @@ class Orders(models.Model):
 
     @property
     def get_total_from_cart(self):
-        price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
-        self.total_sum = price.get('total_of_all__sum')
-        return self.total_sum
+        try:
+            price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
+            self.total_sum = price.get('total_of_all__sum')
+            return self.total_sum
+        except:
+            raise ValueError
 
     def save(self, *args, **kwargs):
         return super(Orders, self).save(*args, **kwargs)
