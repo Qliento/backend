@@ -19,7 +19,7 @@ urlpatterns = [
     path('password-update/', PasswordReset.as_view()),
 
     path('my-researches/', MyUploadedResearches.as_view()),
-    path('download-file/<int:pk>/', DownloadFileView.as_view()),
+    # path('download-file/<int:pk>/', DownloadFileView.as_view()),
 
     path('qliento-consent/', UserConsentView.as_view()),
 

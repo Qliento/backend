@@ -224,6 +224,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
 
 class QAdminSerializer(serializers.ModelSerializer):
     admin_status = UsersInfoSerializer(required=True, many=False)
+    about_me = serializers.CharField(required=False)
 
     class Meta:
         fields = '__all__'
