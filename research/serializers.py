@@ -82,6 +82,7 @@ class ResearchSerializer(serializers.ModelSerializer):
     country = CountrySerializer(many=True, required=False)
     name_ = serializers.ReadOnlyField(source='get_name')
     description_ = serializers.ReadOnlyField(source='get_description')
+    demo_ = serializers.FileField()
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
     similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
@@ -96,7 +97,7 @@ class ResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
                   'description_', 'hashtag', 'category', 'country', 'status',
-                  'similars', 'author', 'demo', 'content_data'
+                  'similars', 'author', 'demo_', 'content_data'
                   )
         read_only_fields = ('date', 'status', 'similars', 'new_price')
         depth = 1
@@ -111,7 +112,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
     author = AboutMeSection(read_only=True)
     research_data = ResearchFilePathSerializer(read_only=True, many=True)
     similars = CardResearchSerializer(source='similar_researches', many = True, read_only=True)
-    content_data = serializers.CharField(write_only=True)
+    content_data = serializers.CharField(write_only=True, required=False)
 
     def get_name(self):
         return _(self.name)
@@ -127,13 +128,14 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         content_data_validated = validated_data.pop('content_data', None)
+        print(content_data_validated)
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
         files_of_research = self.context.get('request').FILES
-        serialized_content_data = json.loads(content_data_validated)
 
         if content_data_validated is None:
             pass
         else:
+            serialized_content_data = json.loads(content_data_validated)
             for main_language in serialized_content_data:
                 r_content = ResearchContent.objects.create(content_data=research, **main_language)
 

@@ -99,8 +99,8 @@ class Research(models.Model):
 
 
 class ResearchContent(models.Model):
-	content = models.CharField(max_length=200, verbose_name=_('Глава'))
-	page = models.IntegerField(verbose_name=_('Страница'))
+	content = models.CharField(max_length=200, verbose_name=_('Глава'), null=True, blank=True)
+	page = models.IntegerField(verbose_name=_('Страница'), null=True, blank=True)
 	content_data = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='content_data', null=True, blank=True, verbose_name=_('Контент'))
 
 	class Meta:
