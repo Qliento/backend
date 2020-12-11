@@ -87,7 +87,7 @@ class Research(models.Model):
 		hashtags = Research.objects.get(id=self.id)
 		similars = Research.objects.filter(id=self.id)
 		for hashtag in hashtags.hashtag.all():
-			similars = similars | Research.objects.filter(hashtag = hashtag).exclude(id=self.id)
+			similars = similars | Research.objects.filter(hashtag = hashtag, status=2).exclude(id=self.id)
 		return similars.exclude(id = self.id)
 
 	def __str__(self):
