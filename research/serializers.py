@@ -77,6 +77,13 @@ class ResearchFilePathSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class ContentDataInfo(serializers.ModelSerializer):
+
+    class Meta:
+        model = ResearchContent
+        fields = ['content', 'page']
+
+
 class ResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(many=True, required=False)
     country = CountrySerializer(many=True, required=False)
@@ -85,6 +92,7 @@ class ResearchSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
     similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
+    content_data = ContentDataInfo(many=True)
 
     def get_name(self):
         return _(self.name)
