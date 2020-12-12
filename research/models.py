@@ -3,6 +3,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext_lazy as _
 from registration.models import QAdmins
 from django.db.models import Count
+from django_resized import ResizedImageField
 
 # Create your models here.
 class Category(MPTTModel):
@@ -65,7 +66,7 @@ class Country(models.Model):
 
 class Research(models.Model):
 	name = models.CharField(max_length = 1000, verbose_name = _('Название'))
-	image = models.FileField(null = True, blank = True, upload_to='images', verbose_name = _('Изображение'))
+	image = ResizedImageField(size=[540, 419],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	date = models.DateField(auto_now_add = True, verbose_name = _('Дата публикации'))
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))

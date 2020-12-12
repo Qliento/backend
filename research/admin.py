@@ -18,6 +18,8 @@ from django.forms import TextInput, Textarea
 class CategoryForm(forms.ModelForm):
     parent = forms.ModelChoiceField(queryset=Category.objects.filter(parent=None), label = "Категория",required=False)
 
+class ResearchForm(forms.ModelForm):
+    category = forms.ModelChoiceField(queryset=Category.objects.exclude(parent=None), label = "Категория", required=False)
 
 class StatusesListFilter(admin.SimpleListFilter):
     title = 'Статус'
