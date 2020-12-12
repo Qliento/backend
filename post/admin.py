@@ -4,8 +4,6 @@ from django.forms import TextInput, Textarea
 from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin,TabbedDjangoJqueryTranslationAdmin
 
 
-
-
 # Register your models here.
 
 class ImagePostAdmin(admin.TabularInline):
@@ -22,12 +20,15 @@ class PostAdmin(TabbedTranslationAdmin):
     }
     pass
 
+
 class ImageInfoAdmin(admin.TabularInline):
     model = ImageInfo
+
 
 class InfoAdmin(TabbedTranslationAdmin):
     inlines = [ImageInfoAdmin, ]
     pass
+
 
 class NewsAdmin(TabbedTranslationAdmin):
     search_fields = ['name']
@@ -38,7 +39,6 @@ class NewsAdmin(TabbedTranslationAdmin):
                                   'style': 'height: 5em;'})},
     }
     pass
-
 
 
 admin.site.register(Info, InfoAdmin)

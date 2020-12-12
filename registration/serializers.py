@@ -4,8 +4,38 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import password_validation
 from research.models import Research
 from research.serializers import CountrySerializer, HashtagSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.exceptions import ObjectDoesNotExist
 from PIL import Image
 from rest_framework_recaptcha.fields import ReCaptchaField
+
+
+class AdditionalInfoToken(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        return RefreshToken.for_user(user)
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+
+        try:
+            QAdmins.objects.get(admin_status_id=self.user.id)
+            data['user'] = 'partner'
+        except ObjectDoesNotExist:
+            pass
+
+        try:
+            Clients.objects.get(client_status_id=self.user.id)
+            data['user'] = 'client'
+        except ObjectDoesNotExist:
+            pass
+
+        return data
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -77,6 +107,7 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
 
 class UsersInfoSerializer(serializers.ModelSerializer):
     password_check = serializers.CharField(max_length=160, write_only=True)
+    photo = serializers.ImageField(read_only=True)
 
     class Meta:
         model = Users
@@ -84,6 +115,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
                   "id",
                   "name",
                   "surname",
+                  "photo",
                   "password",
                   "password_check",
                   "email",
@@ -114,25 +146,45 @@ class QAdminSerializer(serializers.ModelSerializer):
         researcher = QAdmins.objects.create(admin_status=user, **validated_data)
         return researcher
 
+    def to_representation(self, instance):
+        response = super(QAdminSerializer, self).to_representation(instance)
+        del response.get('admin_status')['password']
+        return response
+
+
+class RawDataUser(serializers.ModelSerializer):
+    photo = serializers.ImageField(required=False)
+
+    class Meta:
+        fields = ["photo",
+                  "name",
+                  "surname",
+                  "email",
+                  "phone_number"]
+        model = Users
+
+
+class QAdminUpdateSerializer(serializers.ModelSerializer):
+    admin_status = RawDataUser(required=True, many=False)
+
+    class Meta:
+        fields = '__all__'
+        model = QAdmins
+
     def update(self, instance, validated_data):
-        user_to_update = Users.objects.get(id=self.data['admin_status']['id'])
-        try:
-            user_to_update.surname = self.context['surname']
-            user_to_update.name = self.context['name']
-            user_to_update.phone_number = self.context['phone_number']
-            user_to_update.save()
-        except KeyError:
-            user_to_update.save()
+        user_retrieved = instance.admin_status
+        take_from_data = validated_data.pop('admin_status')
+        for i in take_from_data:
+            user_retrieved.name = take_from_data.get('name', user_retrieved.name)
+            user_retrieved.surname = take_from_data.get('surname', user_retrieved.surname)
+            user_retrieved.phone_number = take_from_data.get('phone_number', user_retrieved.phone_number)
+            user_retrieved.photo = take_from_data.get('photo', user_retrieved.photo)
+            user_retrieved.save()
 
         instance.about_me = validated_data.get('about_me', instance.about_me)
         instance.position = validated_data.get('position', instance.position)
         instance.save()
         return instance
-
-    def to_representation(self, instance):
-        response = super(QAdminSerializer, self).to_representation(instance)
-        del response.get('admin_status')['password']
-        return response
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -170,14 +222,14 @@ class UpdatePassword(serializers.Serializer):
     def validate_old_password(self, data):
         user = self.context['request'].user
         if not user.check_password(data):
-            raise serializers.ValidationError(
-                _('Your old password was entered incorrectly. Please enter it again.')
+            raise serializers.ValidationError({'detail':
+                _('Your old password was entered incorrectly. Please enter it again.')}
             )
         return data
 
     def validate(self, data):
         if data['new_password'] != data['password_check']:
-            raise serializers.ValidationError({'password_check': _("The two password fields didn't match.")})
+            raise serializers.ValidationError({'detail': _("The two password fields didn't match.")})
         password_validation.validate_password(data['new_password'], self.context['request'].user)
         return data
 
@@ -192,11 +244,12 @@ class UpdatePassword(serializers.Serializer):
 class CleanedResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(many=True, read_only=True)
     country = CountrySerializer(many=True, read_only=True)
+    about_author = serializers.ReadOnlyField(source='author.about_me')
 
     class Meta:
         model = Research
         fields = ['image', 'author_id', 'name', 'date', 'pages',
-                  'hashtag', 'country', 'new_price', 'old_price', 'id', 'status']
+                  'hashtag', 'country', 'new_price', 'old_price', 'id', 'status', 'about_author']
 
 
 class CleanedFileOnly(serializers.ModelSerializer):

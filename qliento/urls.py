@@ -31,6 +31,7 @@ urlpatterns = [
     path('auth/', include('rest_framework_social_oauth2.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    # path('auth/', include('registration.urls')),
     path('', include('post.urls')),
     path('', include('research.urls')),
     path('', include(router.urls)),

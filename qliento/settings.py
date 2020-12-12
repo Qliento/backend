@@ -28,9 +28,10 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.spl
 # Application definition
 
 INSTALLED_APPS = [
-    'modeltranslation',
+
     'jet.dashboard',
     'jet',
+    'modeltranslation',
 
     'corsheaders',
     'post.apps.PostConfig',
@@ -85,7 +86,6 @@ MIDDLEWARE = [
     'qliento.utils.ActivateTranslationMiddleware',
     'qliento.utils.AdminLocaleURLMiddleware',
     'qliento.utils.corsMiddleware',
-    
 
 ]
 
@@ -102,7 +102,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -250,6 +251,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.vk.VKOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+
 )
 
 SOCIAL_AUTH_PIPELINE = (

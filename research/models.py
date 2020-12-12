@@ -72,18 +72,16 @@ class Research(models.Model):
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
 	new_price = models.IntegerField(verbose_name = _('Новая цена'), null=True, blank=True)
 	description = models.TextField(verbose_name = _('Описание'))
-	content = models.TextField( verbose_name = _('Содержание'))
 	hashtag = models.ManyToManyField(Hashtag, verbose_name = _('Ключевые слова'))
 	category = models.ForeignKey('Category', null=True, blank=True, on_delete = models.CASCADE, verbose_name = _('Категория'))
-	demo = models.FileField(null = True, blank = True, upload_to='demos', verbose_name = _('Демоверсия'))
 	country = models.ManyToManyField(Country, verbose_name = _('Страна'), null = True)
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
-
-	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True)
+	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
+	demo = models.FileField(null=True, blank=True, upload_to='demos', verbose_name=_('Демоверсия'))
 
 	def similar_researches(self):
-		hashtags = Research.objects.get(name=self.name)
+		hashtags = Research.objects.get(id=self.id)
 		similars = Research.objects.filter(id=self.id)
 		for hashtag in hashtags.hashtag.all():
 			similars = similars | Research.objects.filter(hashtag = hashtag).exclude(id=self.id)
@@ -95,6 +93,17 @@ class Research(models.Model):
 	class Meta:
 		verbose_name = _('Исследование')
 		verbose_name_plural = _('Исследования')
+
+
+class ResearchContent(models.Model):
+	content = models.CharField(max_length=200, verbose_name=_('Глава'))
+	page = models.IntegerField(verbose_name=_('Страница'))
+	content_data = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='content_data', null=True, blank=True, verbose_name=_('Контент'))
+
+	class Meta:
+		verbose_name = _('Контент')
+		verbose_name_plural = _('Контент')
+
 
 class ResearchFiles(models.Model):
 	name = models.FileField(null=True, blank=True, verbose_name=_('Файл'), default='1')
