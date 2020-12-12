@@ -2,12 +2,15 @@ from rest_framework.decorators import api_view, permission_classes
 import hashlib
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
-    MyOrdersSerializer, CartedItemsSerializer, AddToCartSerializer, EmailDemoSerializer, InstructionSerializer, StatisticsSerializer
+    MyOrdersSerializer, DeleteCartedItemSerializer, AddToCartSerializer, \
+    EmailDemoSerializer, StatisticsSerializer, ShortDescriptionsSerializer, \
+    ItemsInCartSerializer
 from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
 from registration.models import Users, Clients
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -30,6 +33,7 @@ class OrderCreateView(ListCreateAPIView):
     serializer_class = OrdersCreateSerializer
 
     def create(self, request, *args, **kwargs):
+        instances = Cart.objects.filter(buyer=request.user.id, id=request.data.get('items_ordered')[0]).update(added=True)
         response = super().create(request, *args, **kwargs)
         alphabet = string.ascii_letters + string.digits
         salt = ''.join(secrets.choice(alphabet) for i in range(16))
@@ -55,23 +59,22 @@ class MyOrdersView(ListAPIView):
 
 class ItemInCartView(ListAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CartedItemsSerializer
+    serializer_class = ItemsInCartSerializer
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Cart.objects.filter(buyer=request.user.id)
+        self.queryset = Orders.objects.filter(buyer=request.user.id)
         return self.list(request, *args, **kwargs)
 
 
 class ItemCartDeleteView(RetrieveDestroyAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CartedItemsSerializer
+    serializer_class = DeleteCartedItemSerializer
     queryset = None
 
     def destroy(self, request, *args, **kwargs):
-        instance = Cart.objects.filter(buyer=request.user.id, id=self.kwargs['pk'])
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        Cart.objects.filter(user_cart__buyer=self.request.user.id, ordered_item=self.kwargs['pk']).delete()
+        return Response({"detail": _("Research was removed from your cart")}, status=status.HTTP_200_OK)
 
 
 class AddToCartView(CreateAPIView):
@@ -89,7 +92,7 @@ class SendDemoView(CreateAPIView):
 class ShortDescriptionView(ListAPIView):
     queryset = ShortDescriptions.objects.all()
     permission_classes = (AllowAny,)
-    serializer_class = InstructionSerializer
+    serializer_class = ShortDescriptionsSerializer
 
 
 class StatViewForResearch(RetrieveAPIView):

@@ -7,8 +7,97 @@ from research.serializers import CountrySerializer, HashtagSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
-from PIL import Image
-from rest_framework_recaptcha.fields import ReCaptchaField
+from rest_framework.exceptions import PermissionDenied
+from . import googlehelper, facebookhelper, vkhelper
+from qliento import settings
+from rest_framework.exceptions import AuthenticationFailed
+from .registrationhelper import register_social_user
+from rest_framework import status
+from collections import OrderedDict
+
+
+class GoogleSocialAuthSerializer(serializers.Serializer):
+    auth_token = serializers.CharField()
+    user = serializers.CharField()
+
+    def validate(self, validated_data):
+        user_data = googlehelper.Google.validate(validated_data.pop('auth_token'))
+        try:
+            user_data['sub']
+
+        except:
+            raise serializers.ValidationError(
+                'The token is invalid or expired. Please login again.'
+            )
+
+        if user_data['aud'] != settings.GOOGLE_CLIENT_ID:
+            raise AuthenticationFailed('Please register first')
+
+        email = user_data['email']
+        name = 'N/A'
+        surname = 'N/A'
+
+        try:
+            name = user_data['given_name']
+            surname = user_data['family_name']
+        except ValueError:
+            pass
+
+        provider = 'google'
+        who = validated_data.pop('user')
+
+        return register_social_user(provider=provider, email=email,
+                                    name=name, surname=surname, who=who)
+
+
+class FacebookSocialAuthSerializer(serializers.Serializer):
+    auth_token = serializers.CharField()
+    user = serializers.CharField()
+
+    def validate(self, validated_data):
+        user_data = facebookhelper.Facebook.validate(validated_data.pop('auth_token'))
+
+        email = user_data['email']
+        name = 'N/A'
+        surname = 'N/A'
+
+        try:
+            take_name = user_data['name'].split(' ')
+            name = take_name[0]
+            surname = take_name[1]
+        except ValueError:
+            pass
+
+        provider = 'facebook'
+        who = validated_data.pop('user')
+
+        return register_social_user(provider=provider, email=email,
+                                    name=name, surname=surname, who=who)
+
+
+class VKSocialAuthSerializer(serializers.Serializer):
+    auth_token = serializers.CharField()
+    user = serializers.CharField()
+
+    def validate(self, validated_data):
+        user_data = vkhelper.VK.validate(validated_data.pop('auth_token'))
+        print(user_data)
+        email = user_data['email']
+        name = 'N/A'
+        surname = 'N/A'
+
+        try:
+            take_name = user_data['name'].split(' ')
+            name = take_name[0]
+            surname = take_name[1]
+        except ValueError:
+            pass
+
+        provider = 'facebook'
+        who = validated_data.pop('user')
+
+        return register_social_user(provider=provider, email=email,
+                                    name=name, surname=surname, who=who)
 
 
 class AdditionalInfoToken(TokenObtainPairSerializer):
@@ -135,6 +224,7 @@ class UsersInfoSerializer(serializers.ModelSerializer):
 
 class QAdminSerializer(serializers.ModelSerializer):
     admin_status = UsersInfoSerializer(required=True, many=False)
+    about_me = serializers.CharField(required=False)
 
     class Meta:
         fields = '__all__'
@@ -165,7 +255,10 @@ class RawDataUser(serializers.ModelSerializer):
 
 
 class QAdminUpdateSerializer(serializers.ModelSerializer):
-    admin_status = RawDataUser(required=True, many=False)
+    name = serializers.CharField(write_only=True)
+    surname = serializers.CharField(write_only=True)
+    phone_number = serializers.CharField(write_only=True)
+    photo = serializers.ImageField(write_only=True)
 
     class Meta:
         fields = '__all__'
@@ -173,18 +266,22 @@ class QAdminUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         user_retrieved = instance.admin_status
-        take_from_data = validated_data.pop('admin_status')
-        for i in take_from_data:
-            user_retrieved.name = take_from_data.get('name', user_retrieved.name)
-            user_retrieved.surname = take_from_data.get('surname', user_retrieved.surname)
-            user_retrieved.phone_number = take_from_data.get('phone_number', user_retrieved.phone_number)
-            user_retrieved.photo = take_from_data.get('photo', user_retrieved.photo)
-            user_retrieved.save()
+        user_retrieved.name = validated_data.get('name', user_retrieved.name)
+        user_retrieved.surname = validated_data.get('surname', user_retrieved.surname)
+        user_retrieved.phone_number = validated_data.get('phone_number', user_retrieved.phone_number)
+        user_retrieved.photo = validated_data.get('photo', user_retrieved.photo)
+        user_retrieved.save()
 
         instance.about_me = validated_data.get('about_me', instance.about_me)
         instance.position = validated_data.get('position', instance.position)
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        return {"admin_status": RawDataUser(instance.admin_status).data,
+                "logo": str(instance.logo),
+                "about_me": str(instance.about_me),
+                "position": instance.position}
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -214,6 +311,17 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         fields = ['token']
 
 
+class CustomValidation(PermissionDenied):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = "wrong password input"
+    default_code = 'invalid'
+
+    def __init__(self, detail, status_code=None):
+        self.detail = detail
+        if status_code is not None:
+            self.status_code = status_code
+
+
 class UpdatePassword(serializers.Serializer):
     old_password = serializers.CharField(max_length=160, required=True)
     new_password = serializers.CharField(max_length=160, required=True)
@@ -222,14 +330,14 @@ class UpdatePassword(serializers.Serializer):
     def validate_old_password(self, data):
         user = self.context['request'].user
         if not user.check_password(data):
-            raise serializers.ValidationError({'detail':
-                _('Your old password was entered incorrectly. Please enter it again.')}
-            )
+            raise CustomValidation(detail={"detail": _("Your old password is incorrect")})
+
         return data
 
     def validate(self, data):
         if data['new_password'] != data['password_check']:
-            raise serializers.ValidationError({'detail': _("The two password fields didn't match.")})
+            raise PermissionDenied(detail={"detail": _("Your passwords does not match")})
+
         password_validation.validate_password(data['new_password'], self.context['request'].user)
         return data
 
@@ -271,3 +379,8 @@ class UserConsentSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsersConsentQliento
         fields = '__all__'
+
+
+class SocialSerializer(serializers.Serializer):
+    provider = serializers.CharField(max_length=255, required=True)
+    access_token = serializers.CharField(max_length=4096, required=True, trim_whitespace=True)

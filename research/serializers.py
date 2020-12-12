@@ -77,11 +77,11 @@ class ResearchFilePathSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class ResearchContentSerializer(serializers.ModelSerializer):
+class ContentDataInfo(serializers.ModelSerializer):
 
     class Meta:
         model = ResearchContent
-        fields = '__all__'
+        fields = ['content', 'page']
 
 
 class ResearchSerializer(serializers.ModelSerializer):
@@ -92,6 +92,7 @@ class ResearchSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
     similars = CardResearchSerializer(source = 'similar_researches', many = True, read_only=True)
+    content_data = ContentDataInfo(many=True)
 
     def get_name(self):
         return _(self.name)
@@ -103,7 +104,7 @@ class ResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ('id', 'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
                   'description_', 'hashtag', 'category', 'country', 'status',
-                  'similars', 'author', 'demo', 'content_data',
+                  'similars', 'author', 'demo', 'content_data'
                   )
         read_only_fields = ('date', 'status', 'similars', 'new_price')
         depth = 1
@@ -117,8 +118,8 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = AboutMeSection(read_only=True)
     research_data = ResearchFilePathSerializer(read_only=True, many=True)
-    content_data = ResearchContentSerializer(many=True, required=False)
     similars = CardResearchSerializer(source='similar_researches', many = True, read_only=True)
+    content_data = serializers.CharField(write_only=True, required=False)
 
     def get_name(self):
         return _(self.name)
@@ -132,20 +133,23 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
         read_only_fields = ('date', 'status', 'similars', 'new_price')
 
     def create(self, validated_data):
+
         content_data_validated = validated_data.pop('content_data', None)
-        files_of_research = self.context.get('request').FILES
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
+        files_of_research = self.context.get('request').FILES
+
         if content_data_validated is None:
             pass
         else:
-            for main_language in content_data_validated:
+            serialized_content_data = json.loads(content_data_validated)
+            for main_language in serialized_content_data:
                 r_content = ResearchContent.objects.create(content_data=research, **main_language)
 
-        for file in dict(files_of_research)['files']:
+        for file in files_of_research.values():
             ext = os.path.splitext(file.name)[1]
-            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv', '.ppt', '.pptx']:
+            if not ext.lower() in ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.xls', '.csv', '.jpeg', '.ppt']:
 
-                raise serializers.ValidationError({'detail': _("Not supported data format.")})
+                raise serializers.ValidationError("Неподдерживаемый тип данных")
 
             else:
                 a = ResearchFiles.objects.create(research=research, name=file)
@@ -185,9 +189,11 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
         return research
 
-    # def to_representation(self, instance):
-    #     research_information = Research.objects.filter(id=instance.id).values()
-    #     return list(research_information)[0]
+    def to_representation(self, instance):
+        data = super(ResearchUploadSerializer, self).to_representation(instance)
+        cleaned_data = dict(data)
+        cleaned_data.pop('comment')
+        return cleaned_data
 
 
 class DiscountPriceSerializer(serializers.ModelSerializer):

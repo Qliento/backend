@@ -4,6 +4,7 @@ import uuid
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext_lazy as _
 import datetime
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserManager(BaseUserManager):
@@ -45,6 +46,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     surname = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Фамилия")
     email = models.EmailField(max_length=120, unique=True, verbose_name="Электронная почта")
     phone_number = models.CharField(default=0000, verbose_name='Номер телефона', max_length=20)
+    provider = models.CharField(default='email', max_length=20, blank=True, null=True, verbose_name='Способ регистрации')
     REQUIRED_FIELDS = ['password']
     USERNAME_FIELD = 'email'
     objects = UserManager()
@@ -59,6 +61,12 @@ class Users(AbstractBaseUser, PermissionsMixin):
         users = Users.objects.filter(email__iexact=self.email).count()
         if users == 1 or users == 0:
             super(Users, self).save(*args, **kwargs)
+
+    def tokens(self):
+        token_refresh = RefreshToken.for_user(self)
+        creds = {"refresh": str(token_refresh),
+                 "access": str(token_refresh.access_token)}
+        return creds
 
 
 class Clients(models.Model):

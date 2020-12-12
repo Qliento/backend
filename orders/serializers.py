@@ -1,10 +1,13 @@
 from itertools import chain
 from rest_framework import serializers
 from research.models import Research
-from .models import Orders, OrderForm, Cart, DemoVersionForm, Instructions, Statistics, \
+from .models import Orders, OrderForm, Cart, DemoVersionForm, Statistics, \
     ShortDescriptions, StatisticsDemo, Check
 from collections import OrderedDict
+from django.utils.translation import ugettext_lazy as _
+from django.db.models import Sum
 from rest_framework import request
+from registration.serializers import CustomValidation
 from registration.models import QAdmins
 from research.serializers import Country, Hashtag, CardResearchSerializer
 
@@ -19,59 +22,65 @@ def to_dict(instance):
     return data
 
 
-class CartedItemsSerializer(serializers.ModelSerializer):
-    ordered_item = CardResearchSerializer(read_only=True)
+class AddToCartSerializer(serializers.ModelSerializer):
+    ordered_item = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
+
+    class Meta:
+        model = Cart
+        fields = ['ordered_item']
+
+    def create(self, validated_data):
+        item_added = None
+        add_item_to_cart, created = Orders.objects.get_or_create(buyer=self.context['request'].user)
+        item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
+
+        if not created:
+            raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+        else:
+            item_added.total_of_all = item_added.calculate_total_price
+            item_added.save()
+
+        return item_added
+
+
+class ItemsInCartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Orders
+        fields = ['user_cart']
+        depth = 1
+
+    def to_representation(self, instance):
+        data = super(ItemsInCartSerializer, self).to_representation(instance)
+        instance.total_sum = instance.get_total_from_cart
+        instance.save()
+
+        researches_from_cart = Cart.objects.filter(user_cart=instance.id)
+        list_of_researches = []
+        price_of_total = 0
+        nominal_total = researches_from_cart.aggregate(Sum('total_of_all'))
+
+        for each_item in researches_from_cart:
+            price_of_total += each_item.calculate_total_price
+            needed_data = CardResearchSerializer(each_item.ordered_item).data
+            list_of_researches.append(needed_data)
+
+        if nominal_total.get('total_of_all__sum') != price_of_total:
+            instance.total_sum = price_of_total
+            instance.save()
+        else:
+            pass
+
+        return {"ordered_items": list_of_researches,
+                "total_sum": instance.total_sum}
+
+
+class DeleteCartedItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
         fields = "__all__"
-        depth = 1
-
-    def to_representation(self, instance):
-        data = super(CartedItemsSerializer, self).to_representation(instance)
-        cleaned_data = dict(data)
-        cleaned_data.pop('buyer')
-        return cleaned_data
-
-
-class AddToCartSerializer(serializers.ModelSerializer):
-    count_items = serializers.CharField(read_only=True)
-    get_discount = serializers.CharField(read_only=True)
-    get_general_sum = serializers.CharField(read_only=True)
-    ordered_items = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
-
-    class Meta:
-        model = Cart
-        fields = ['id', 'count_items', 'get_discount', 'get_general_sum', 'ordered_items']
-
-    def create(self, validated_data):
-        ordered_thin = validated_data.pop('ordered_items')
-        cart_general = Cart.objects.create(buyer=self.context['request'].user, ordered_item=ordered_thin, **validated_data)
-        cart_general.amount_of_items = cart_general.count_items
-        cart_general.discount = cart_general.get_discount
-        cart_general.total_of_all = cart_general.get_general_sum['new_price__sum']
-        cart_general.save(update_fields=['amount_of_items'])
-        cart_general.save(update_fields=['discount'])
-        cart_general.save(update_fields=['total_of_all'])
-        return cart_general
-
-    def to_representation(self, instance):
-        if instance:
-            serializer = CartedItemsSerializer(instance)
-            return serializer.data
-        else:
-            raise Exception('Something went wrong...')
-
-
-class OrderFormSerailizer(serializers.ModelSerializer):
-
-    class Meta:
-        model = OrderForm
-        fields = ['name', 'surname', 'logo', 'email', 'phone_number', 'description']
-
-    def create(self, validated_data):
-        order = OrderForm.objects.create(**validated_data)
-        return order
+        depth = 2
 
 
 class OrdersCreateSerializer(serializers.ModelSerializer):
@@ -82,29 +91,6 @@ class OrdersCreateSerializer(serializers.ModelSerializer):
         model = Orders
         fields = "__all__"
         depth = 2
-
-
-class BoughtByUser(serializers.ModelSerializer):
-
-    class Meta:
-        model = Research
-        fields = ['image', 'name', 'description', 'pages', 'hashtag', 'country', 'new_price', 'id']
-
-
-class EmailDemoSerializer(serializers.ModelSerializer):
-    desired_research = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
-
-    class Meta:
-        fields = "__all__"
-        model = DemoVersionForm
-
-    def create(self, validated_data):
-        demo_validated = validated_data.pop('desired_research')
-        a = StatisticsDemo.objects.create(count_demo=1)
-        b = Statistics.objects.filter(research_to_collect=demo_validated)
-        b.update(demo_downloaded=a)
-        demo = DemoVersionForm.objects.create(desired_research=demo_validated, **validated_data)
-        return demo
 
 
 class MyOrdersSerializer(serializers.ModelSerializer):
@@ -152,19 +138,11 @@ class MyOrdersSerializer(serializers.ModelSerializer):
         return OrderedDict(research_details)
 
 
-class InstructionSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ShortDescriptions
-        fields = "__all__"
-
-
 class ShortDescriptionsSerializer(serializers.ModelSerializer):
-    data_for_instructions = InstructionSerializer(many=True)
 
     class Meta:
         model = ShortDescriptions
-        fields = '__all__'
+        fields = ['title', 'picture1', 'text1']
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
@@ -173,3 +151,37 @@ class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         fields = '__all__'
+
+
+class BoughtByUser(serializers.ModelSerializer):
+
+    class Meta:
+        model = Research
+        fields = ['image', 'name', 'description', 'pages', 'hashtag', 'country', 'new_price', 'id']
+
+
+class EmailDemoSerializer(serializers.ModelSerializer):
+    desired_research = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
+
+    class Meta:
+        fields = "__all__"
+        model = DemoVersionForm
+
+    def create(self, validated_data):
+        demo_validated = validated_data.pop('desired_research')
+        a = StatisticsDemo.objects.create(count_demo=1)
+        b = Statistics.objects.filter(research_to_collect=demo_validated)
+        b.update(demo_downloaded=a)
+        demo = DemoVersionForm.objects.create(desired_research=demo_validated, **validated_data)
+        return demo
+
+
+class OrderFormSerailizer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrderForm
+        fields = ['name', 'surname', 'logo', 'email', 'phone_number', 'description']
+
+    def create(self, validated_data):
+        order = OrderForm.objects.create(**validated_data)
+        return order

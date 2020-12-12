@@ -3,10 +3,14 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext_lazy as _
 from registration.models import QAdmins
 from django.db.models import Count
+from .validators import validate_file_extension
 from django_resized import ResizedImageField
 
 # Create your models here.
 class Category(MPTTModel):
+
+# Create your models here.
+
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
 	parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
 		
@@ -65,30 +69,32 @@ class Country(models.Model):
 
 
 class Research(models.Model):
-	name = models.CharField(max_length = 1000, verbose_name = _('Название'))
+
+  name = models.CharField(max_length = 1000, verbose_name = _('Название'), null = True, blank = True,)
 	image = ResizedImageField(size=[540, 419],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	date = models.DateField(auto_now_add = True, verbose_name = _('Дата публикации'))
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
 	new_price = models.IntegerField(verbose_name = _('Новая цена'), null=True, blank=True)
-	description = models.TextField(verbose_name = _('Описание'))
+	description = models.TextField(verbose_name = _('Описание'), null = True, blank = True,)
 	hashtag = models.ManyToManyField(Hashtag, verbose_name = _('Ключевые слова'))
 	category = models.ForeignKey('Category', null=True, blank=True, on_delete = models.CASCADE, verbose_name = _('Категория'))
 	country = models.ManyToManyField(Country, verbose_name = _('Страна'), null = True)
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
 	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
-	demo = models.FileField(null=True, blank=True, upload_to='demos', verbose_name=_('Демоверсия'))
+	demo = models.FileField(null=True, blank=True, upload_to='demos', max_length=500, verbose_name=_('Демоверсия'), validators=[validate_file_extension])
+	comment = models.TextField(null=True, blank=True, default='', verbose_name = _('Комментарий'))
 
 	def similar_researches(self):
 		hashtags = Research.objects.get(id=self.id)
 		similars = Research.objects.filter(id=self.id)
 		for hashtag in hashtags.hashtag.all():
-			similars = similars | Research.objects.filter(hashtag = hashtag).exclude(id=self.id)
+			similars = similars | Research.objects.filter(hashtag = hashtag, status=2).exclude(id=self.id)
 		return similars.exclude(id = self.id)
 
 	def __str__(self):
-		return self.name
+		return self.name or 'None'
 
 	class Meta:
 		verbose_name = _('Исследование')
@@ -96,8 +102,8 @@ class Research(models.Model):
 
 
 class ResearchContent(models.Model):
-	content = models.CharField(max_length=200, verbose_name=_('Глава'))
-	page = models.IntegerField(verbose_name=_('Страница'))
+	content = models.CharField(max_length=200, verbose_name=_('Глава'), null=True, blank=True)
+	page = models.IntegerField(verbose_name=_('Страница'), null=True, blank=True)
 	content_data = models.ForeignKey(Research, on_delete=models.SET_NULL, related_name='content_data', null=True, blank=True, verbose_name=_('Контент'))
 
 	class Meta:
