@@ -4,18 +4,20 @@ from django.utils.translation import ugettext_lazy as _
 from registration.models import QAdmins
 from django.db.models import Count
 from .validators import validate_file_extension
+from django_resized import ResizedImageField
+
+# Create your models here.
+class Category(MPTTModel):
+
 # Create your models here.
 
-
-class Category(models.Model):
 	name = models.CharField(max_length=200, verbose_name = _('Название'))
-	parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
+	parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name = _('Категория'))	
 		
-	def get_parent(self):
-		return self.parent
-
 	def __str__(self):
 		return self.name
+	class MPTTMeta:	
+		order_insertion_by = ['name']
 
 	class Meta:
 		verbose_name = _('Категория')
@@ -67,8 +69,9 @@ class Country(models.Model):
 
 
 class Research(models.Model):
-	name = models.CharField(max_length = 1000, verbose_name = _('Название'), null = True, blank = True,)
-	image = models.FileField(null = True, blank = True, upload_to='images', verbose_name = _('Изображение'))
+
+  name = models.CharField(max_length = 1000, verbose_name = _('Название'), null = True, blank = True,)
+	image = ResizedImageField(size=[540, 419],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	date = models.DateField(auto_now_add = True, verbose_name = _('Дата публикации'))
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
