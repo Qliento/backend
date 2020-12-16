@@ -21,7 +21,7 @@ class Orders(models.Model):
     @property
     def get_total_from_cart(self):
         try:
-            price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
+            price = Cart.objects.filter(user_cart_set=self.pk).aggregate(Sum('total_of_all'))
             self.total_sum = price.get('total_of_all__sum')
             return self.total_sum
         except:
@@ -36,7 +36,7 @@ class Cart(models.Model):
     total_of_all = models.IntegerField(blank=True, null=True, verbose_name="Цена")
     added = models.BooleanField(null=True, blank=True, default=False, verbose_name="Куплено")
     date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
-    user_cart = models.ForeignKey(Orders, on_delete=models.CASCADE, related_name='user_cart', default=1, blank=True, null=True, verbose_name="Корзина")
+    user_cart = models.ForeignKey(Orders, on_delete=models.CASCADE, default=1, blank=True, null=True, verbose_name="Корзина")
 
     def __str__(self):
         return '{}'.format(self.ordered_item)

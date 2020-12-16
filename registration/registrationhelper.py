@@ -4,7 +4,7 @@ from qliento import settings
 from rest_framework.exceptions import AuthenticationFailed
 
 
-def register_social_user(provider, email, name, surname, who):
+def register_social_user(provider, email, name, surname):
     filtered_user_by_email = Users.objects.filter(email=email)
     if filtered_user_by_email.exists():
 
@@ -34,15 +34,11 @@ def register_social_user(provider, email, name, surname, who):
         user.provider = provider
         user.save()
 
-        if who == 'partner':
-            QAdmins.objects.create(admin_status=user)
-        else:
-            Clients.objects.create(client_status=user)
+        Clients.objects.create(client_status=user)
 
         new_user = authenticate(username=email, password=settings.SOCIAL_SECRET)
 
         return {
             'email': new_user.email,
-            'user': new_user.id,
             'tokens': new_user.tokens()
         }

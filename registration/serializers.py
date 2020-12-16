@@ -8,7 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import PermissionDenied
-from . import googlehelper, facebookhelper, vkhelper
+from . import googlehelper, facebookhelper, twitterhelper
 from qliento import settings
 from rest_framework.exceptions import AuthenticationFailed
 from .registrationhelper import register_social_user
@@ -18,7 +18,6 @@ from collections import OrderedDict
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
-    user = serializers.CharField()
 
     def validate(self, validated_data):
         user_data = googlehelper.Google.validate(validated_data.pop('auth_token'))
@@ -44,15 +43,13 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
             pass
 
         provider = 'google'
-        who = validated_data.pop('user')
 
         return register_social_user(provider=provider, email=email,
-                                    name=name, surname=surname, who=who)
+                                    name=name, surname=surname)
 
 
 class FacebookSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
-    user = serializers.CharField()
 
     def validate(self, validated_data):
         user_data = facebookhelper.Facebook.validate(validated_data.pop('auth_token'))
@@ -69,35 +66,34 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
             pass
 
         provider = 'facebook'
-        who = validated_data.pop('user')
 
         return register_social_user(provider=provider, email=email,
-                                    name=name, surname=surname, who=who)
+                                    name=name, surname=surname)
 
 
-class VKSocialAuthSerializer(serializers.Serializer):
-    auth_token = serializers.CharField()
-    user = serializers.CharField()
+class TwitterSocialAuthSerializer(serializers.Serializer):
+    access_token_key = serializers.CharField()
+    access_token_secret = serializers.CharField()
 
-    def validate(self, validated_data):
-        user_data = vkhelper.VK.validate(validated_data.pop('auth_token'))
-        print(user_data)
-        email = user_data['email']
-        name = 'N/A'
-        surname = 'N/A'
+    def validate(self, attrs):
 
+        access_token_key = attrs.get('access_token_key')
+        access_token_secret = attrs.get('access_token_secret')
+
+        user_info = twitterhelper.TwitterAuthTokenVerification.validate_twitter_auth_tokens(
+            access_token_key, access_token_secret)
+        print('lala', user_info)
         try:
-            take_name = user_data['name'].split(' ')
-            name = take_name[0]
-            surname = take_name[1]
-        except ValueError:
-            pass
-
-        provider = 'facebook'
-        who = validated_data.pop('user')
+            email = user_info['email']
+            name = user_info['name']
+            provider = 'twitter'
+        except:
+            raise serializers.ValidationError(
+                'The tokens are invalid or expired. Please login again.'
+            )
 
         return register_social_user(provider=provider, email=email,
-                                    name=name, surname=surname, who=who)
+                                    name=name, surname='None')
 
 
 class AdditionalInfoToken(TokenObtainPairSerializer):

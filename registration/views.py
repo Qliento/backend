@@ -34,7 +34,7 @@ from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
-from .serializers import GoogleSocialAuthSerializer, FacebookSocialAuthSerializer, VKSocialAuthSerializer
+from .serializers import GoogleSocialAuthSerializer, FacebookSocialAuthSerializer, TwitterSocialAuthSerializer
 
 
 class GoogleSocialAuthView(GenericAPIView):
@@ -61,9 +61,9 @@ class FacebookSocialAuthView(GenericAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class VKSocialAuthView(GenericAPIView):
+class TwitterSocialAuthView(GenericAPIView):
     permission_classes = [AllowAny]
-    serializer_class = VKSocialAuthSerializer
+    serializer_class = TwitterSocialAuthSerializer
 
     def post(self, request):
 

@@ -56,11 +56,11 @@ class OrderFormAdmin(admin.ModelAdmin):
 #     calculate_total_price.short_description = 'Сумма'
 
 
-class CartInline(admin.StackedInline):
+class CartInline(admin.TabularInline):
     list_display = ['id']
     model = Cart
     fields = ['ordered_item', 'calculate_total_price', 'added', 'date_added']
-    readonly_fields = ['calculate_total_price', 'date_added', 'added']
+    readonly_fields = ['calculate_total_price', 'date_added']
     extra = 1
 
 
@@ -73,23 +73,28 @@ class OrdersAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(OrdersAdmin, self).get_queryset(request)
         the_id = list(qs.values('id'))[0]
-        check_price = Cart.objects.filter(user_cart=the_id.get('id'))
+        check_price = Cart.objects.filter(user_cart=the_id.get('id'), added=False)
+        print(check_price)
         total_price = 0
         try:
             for i in check_price:
-                total_price += i.calculate_total_price
+                if i is None:
+                    pass
+                else:
+                    total_price += i.calculate_total_price
+
             if qs.values('total_sum') != total_price:
                 qs.update(total_sum=total_price)
             else:
                 pass
             return qs
         except:
-            raise ValueError
+            pass
 
 
 admin.site.register(OrderForm, OrderFormAdmin)
 admin.site.register(Orders, OrdersAdmin)
-# admin.site.register(Cart, )
+admin.site.register(Cart, )
 admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
