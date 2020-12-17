@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import OrderForm, Orders, Cart, ShortDescriptions, \
-    DemoVersionForm, Statistics, Check, StatisticsDemo
+    DemoVersionForm, Statistics, Check, StatisticsDemo, StatisticsBought, StatisticsWatches
 from modeltranslation.admin import TranslationStackedInline, TabbedDjangoJqueryTranslationAdmin
 
 
@@ -56,12 +56,12 @@ class OrderFormAdmin(admin.ModelAdmin):
 #     calculate_total_price.short_description = 'Сумма'
 
 
-class CartInline(admin.StackedInline):
+class CartInline(admin.TabularInline):
     list_display = ['id']
     model = Cart
     fields = ['ordered_item', 'calculate_total_price', 'added', 'date_added']
-    readonly_fields = ['calculate_total_price', 'date_added', 'added']
-    extra = 1
+    readonly_fields = ['calculate_total_price', 'date_added']
+    extra = 0
 
 
 class OrdersAdmin(admin.ModelAdmin):
@@ -70,27 +70,33 @@ class OrdersAdmin(admin.ModelAdmin):
     fields = ['total_sum', 'buyer']
     readonly_fields = ['total_sum']
 
-    def get_queryset(self, request):
-        qs = super(OrdersAdmin, self).get_queryset(request)
-        the_id = list(qs.values('id'))[0]
-        check_price = Cart.objects.filter(user_cart=the_id.get('id'))
+    def get_object(self, request, object_id, from_field=None):
+        qs = Orders.objects.get(id=object_id)
+        check_price = Cart.objects.filter(user_cart=int(object_id), added=False)
         total_price = 0
         try:
             for i in check_price:
-                total_price += i.calculate_total_price
-            if qs.values('total_sum') != total_price:
-                qs.update(total_sum=total_price)
+                if i is None:
+                    pass
+                else:
+                    total_price += i.calculate_total_price
+            if qs.total_sum != total_price:
+                qs.total_sum = total_price
             else:
                 pass
             return qs
         except:
-            raise ValueError
+            raise ValueError({"detail": "Something went wrong"})
 
 
 admin.site.register(OrderForm, OrderFormAdmin)
 admin.site.register(Orders, OrdersAdmin)
-# admin.site.register(Cart, )
+admin.site.register(Cart, )
 admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
 admin.site.register(Check, CheckAdmin)
+admin.site.register(StatisticsDemo)
+admin.site.register(StatisticsWatches)
+admin.site.register(StatisticsBought)
+

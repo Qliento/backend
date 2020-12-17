@@ -227,7 +227,7 @@ MEDIA_URL = '/static/files/'
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
-STATTIC_DIRS = [ os.path.join(BASE_DIR, 'static') ]
+STATTIC_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/files')
 PREFIX_DEFAULT_LOCALE = ''
@@ -307,3 +307,6 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = config('SOCIAL_AUTH_REDIRECT_IS_HTTPS', cast=boo
 # CSRF_COOKIE_SECURE = True
 CORS_ORIGIN_ALLOW_ALL = config('CORS_ORIGIN_ALLOW_ALL', cast=bool)
 CORS_ALLOW_CREDENTIALS = config('CORS_ALLOW_CREDENTIALS', cast=bool)
+
+TWITTER_API_KEY = config('TWITTER_API_KEY')
+TWITTER_API_SECRET = config('TWITTER_API_SECRET')

@@ -28,6 +28,6 @@ urlpatterns = [
     # path('login/facebook/', SocialLoginView.as_view())
     path('google/', GoogleSocialAuthView.as_view()),
     path('facebook/', FacebookSocialAuthView.as_view()),
-    path('vk/', VKSocialAuthView.as_view()),
+    path('twitter/', TwitterSocialAuthView.as_view()),
 
 ]

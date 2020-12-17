@@ -18,8 +18,6 @@ from django.forms import TextInput, Textarea
 class CategoryForm(forms.ModelForm):
     parent = forms.ModelChoiceField(queryset=Category.objects.filter(parent=None), label = "Категория",required=False)
 
-class ResearchForm(forms.ModelForm):
-    category = forms.ModelChoiceField(queryset=Category.objects.exclude(parent=None), label = "Категория", required=False)
 
 class StatusesListFilter(admin.SimpleListFilter):
     title = 'Статус'
@@ -135,8 +133,8 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 'К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n'
                                 'Название: "{}" \n'
                                 'Идентификатор: {} \n'
-                                '\n'
-                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                                '{}\n'
+                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment),
                                 settings.EMAIL_HOST_USER,
                                 [obj.author.admin_status.email])
 
@@ -161,47 +159,13 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
         return super().delete_model(request, obj)
 
 
-
 class CountryAdmin(TranslationAdmin):
     search_fields = ['name']
 
 
 class CategoryAdmin(TranslationAdmin):
-
     form = CategoryForm
-
-    mptt_indent_field = "name" 
-    list_display = ('tree_actions', 'indented_title',
-                    'related_researches_count', 'related_researches_cumulative_count')  
-    list_display_links = ('indented_title',)    
-
-    def get_queryset(self, request):    
-        qs = super().get_queryset(request)  
-
-        # Add cumulative product count  
-        qs = Category.objects.add_related_count(    
-                qs, 
-                Research,   
-                'category', 
-                'researches_cumulative_count',  
-                cumulative=True)    
-
-        # Add non cumulative product count  
-        qs = Category.objects.add_related_count(qs, 
-                 Research,  
-                 'category',    
-                 'researches_count',    
-                 cumulative=False)  
-        return qs   
-
-    def related_researches_count(self, instance):   
-        return instance.researches_count    
-    related_researches_count.short_description = 'Исследования в данной категории'  
-
-    def related_researches_cumulative_count(self, instance):    
-        return instance.researches_cumulative_count 
-    related_researches_cumulative_count.short_description = 'Исследования в ветке'  
-    search_fields = ['name']
+    list_display = ('name', 'parent', )
 
 
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):

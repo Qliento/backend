@@ -2,7 +2,7 @@ from itertools import chain
 from rest_framework import serializers
 from research.models import Research
 from .models import Orders, OrderForm, Cart, DemoVersionForm, Statistics, \
-    ShortDescriptions, StatisticsDemo, Check
+    ShortDescriptions, StatisticsDemo, Check, StatisticsBought, StatisticsWatches, StatisticsDemo
 from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
@@ -10,6 +10,8 @@ from rest_framework import request
 from registration.serializers import CustomValidation
 from registration.models import QAdmins
 from research.serializers import Country, Hashtag, CardResearchSerializer
+from django.db.models.functions import Cast, TruncYear, TruncMonth, TruncDay
+from django.db.models import DateTimeField
 
 
 def to_dict(instance):
@@ -22,8 +24,40 @@ def to_dict(instance):
     return data
 
 
+class StatisticsDemoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StatisticsDemo
+        fields = '__all__'
+
+
+class StatisticsBoughtSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StatisticsBought
+        fields = '__all__'
+
+
+class StatisticsWatchesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StatisticsWatches
+        fields = '__all__'
+
+
+class StatisticsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Statistics
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        data_for_stat = super(StatisticsSerializer, self).to_representation(instance)
+        print(self.context)
+        return data_for_stat
+
+
 class AddToCartSerializer(serializers.ModelSerializer):
-    ordered_item = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
+    ordered_item = serializers.PrimaryKeyRelatedField(queryset=Research.objects.filter(status=2))
 
     class Meta:
         model = Cart
@@ -31,15 +65,22 @@ class AddToCartSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         item_added = None
-        add_item_to_cart, created = Orders.objects.get_or_create(buyer=self.context['request'].user)
-        item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
+        add_item_to_cart, created_order = Orders.objects.get_or_create(buyer=self.context['request'].user)
 
-        if not created:
-            raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+        if created_order:
+            item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
+            if not created:
+                raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+            else:
+                item_added.total_of_all = item_added.calculate_total_price
+                item_added.save()
         else:
-            item_added.total_of_all = item_added.calculate_total_price
-            item_added.save()
-
+            item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
+            if not created:
+                raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+            else:
+                item_added.total_of_all = item_added.calculate_total_price
+                item_added.save()
         return item_added
 
 
@@ -47,11 +88,10 @@ class ItemsInCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Orders
-        fields = ['user_cart']
+        fields = ['id']
         depth = 1
 
     def to_representation(self, instance):
-        data = super(ItemsInCartSerializer, self).to_representation(instance)
         instance.total_sum = instance.get_total_from_cart
         instance.save()
 
@@ -90,7 +130,6 @@ class OrdersCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = "__all__"
-        depth = 2
 
 
 class MyOrdersSerializer(serializers.ModelSerializer):
@@ -143,14 +182,6 @@ class ShortDescriptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShortDescriptions
         fields = ['title', 'picture1', 'text1']
-
-
-class StatisticsSerializer(serializers.ModelSerializer):
-    partner_admin = serializers.PrimaryKeyRelatedField(queryset=QAdmins.objects.all())
-
-    class Meta:
-        model = Statistics
-        fields = '__all__'
 
 
 class BoughtByUser(serializers.ModelSerializer):
