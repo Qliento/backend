@@ -331,10 +331,10 @@ class UpdatePassword(serializers.Serializer):
         return data
 
     def validate(self, data):
-        if data['new_password'] != data['password_check']:
-            raise PermissionDenied(detail={"detail": _("Your passwords does not match")})
+        if data['new_password'] != data['password_check'] or len(data['new_password']) < 8:
+            raise PermissionDenied(detail={"detail": _("Your passwords does not match or new password is less than 8 characters")})
+            # password_validation.validate_password(data['new_password'], self.context['request'].user)
 
-        password_validation.validate_password(data['new_password'], self.context['request'].user)
         return data
 
     def save(self, **kwargs):

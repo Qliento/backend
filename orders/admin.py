@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import OrderForm, Orders, Cart, ShortDescriptions, \
-    DemoVersionForm, Statistics, Check, StatisticsDemo
+    DemoVersionForm, Statistics, Check, StatisticsDemo, StatisticsBought, StatisticsWatches
 from modeltranslation.admin import TranslationStackedInline, TabbedDjangoJqueryTranslationAdmin
 
 
@@ -96,3 +96,7 @@ admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
 admin.site.register(Check, CheckAdmin)
+admin.site.register(StatisticsDemo)
+admin.site.register(StatisticsWatches)
+admin.site.register(StatisticsBought)
+

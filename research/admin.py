@@ -133,8 +133,8 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 'К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n'
                                 'Название: "{}" \n'
                                 'Идентификатор: {} \n'
-                                '\n'
-                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
+                                '{}\n'
+                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment),
                                 settings.EMAIL_HOST_USER,
                                 [obj.author.admin_status.email])
 

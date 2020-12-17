@@ -10,6 +10,8 @@ from rest_framework import request
 from registration.serializers import CustomValidation
 from registration.models import QAdmins
 from research.serializers import Country, Hashtag, CardResearchSerializer
+from django.db.models.functions import Cast, TruncYear, TruncMonth, TruncDay
+from django.db.models import DateTimeField
 
 
 def to_dict(instance):
@@ -48,6 +50,11 @@ class StatisticsSerializer(serializers.ModelSerializer):
         model = Statistics
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data_for_stat = super(StatisticsSerializer, self).to_representation(instance)
+        print(self.context)
+        return data_for_stat
+
 
 class AddToCartSerializer(serializers.ModelSerializer):
     ordered_item = serializers.PrimaryKeyRelatedField(queryset=Research.objects.filter(status=2))
@@ -81,11 +88,10 @@ class ItemsInCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Orders
-        fields = ['user_cart_set']
+        fields = ['id']
         depth = 1
 
     def to_representation(self, instance):
-        data = super(ItemsInCartSerializer, self).to_representation(instance)
         instance.total_sum = instance.get_total_from_cart
         instance.save()
 

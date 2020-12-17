@@ -17,7 +17,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 import string
 import hashlib
-
 from django.http import HttpResponseRedirect
 
 
@@ -112,5 +111,10 @@ class StatViewForResearch(RetrieveAPIView):
     serializer_class = StatisticsSerializer
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Statistics.objects.filter(Q(research_to_collect__author=request.user.initial_reference, research_to_collect=self.kwargs['exact_research']))
-        return Response(list(self.queryset.values()), status=status.HTTP_200_OK)
+        print(self.kwargs)
+        self.queryset = Statistics.objects.get(Q(research_to_collect__author=request.user.initial_reference, research_to_collect=self.kwargs['exact_research']))
+        serializer = StatisticsSerializer(data=self.queryset.__dict__, context=self.kwargs)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # return Response(list(self.queryset.values()), status=status.HTTP_200_OK)

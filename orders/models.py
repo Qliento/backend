@@ -21,7 +21,7 @@ class Orders(models.Model):
     @property
     def get_total_from_cart(self):
         try:
-            price = Cart.objects.filter(user_cart_set=self.pk).aggregate(Sum('total_of_all'))
+            price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
             self.total_sum = price.get('total_of_all__sum')
             return self.total_sum
         except:
