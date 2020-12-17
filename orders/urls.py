@@ -16,6 +16,6 @@ urlpatterns = [
 
     path('short-descriptions/', ShortDescriptionView.as_view()),
 
-    path('statistics/<int:exact_research>/<str:date>/', StatViewForResearch.as_view())
+    path('statistics/<int:exact_research>/<int:choice>/', StatViewForResearch.as_view())
 
 ]

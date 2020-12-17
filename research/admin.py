@@ -169,6 +169,7 @@ class CategoryAdmin(TranslationAdmin):
 
 
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
+    list_display = ['id']
     pass
 
 

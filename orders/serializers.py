@@ -9,9 +9,11 @@ from django.db.models import Sum
 from rest_framework import request
 from registration.serializers import CustomValidation
 from registration.models import QAdmins
+from django.db.models import Q
 from research.serializers import Country, Hashtag, CardResearchSerializer
 from django.db.models.functions import Cast, TruncYear, TruncMonth, TruncDay
 from django.db.models import DateTimeField
+from django.utils import timezone
 
 
 def to_dict(instance):
@@ -51,8 +53,16 @@ class StatisticsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
+        option = self.context.get('choice')
+        the_instance_id = list(instance.values('id'))[0]
+        find_stat = Statistics.objects.filter(id=the_instance_id.get('id'))
+        for stat_info in find_stat:
+            demo_num = StatisticsDemo.objects.filter(Q(demos_downloaded=stat_info.research_to_collect.id, date=timezone.now())).aggregate(Sum('count_demo'))
+            # StatisticsWatches.objects.filter(watches_counted=stat_info.id)
+            # StatisticsBought
+            print(demo_num)
         data_for_stat = super(StatisticsSerializer, self).to_representation(instance)
-        print(self.context)
+
         return data_for_stat
 
 

@@ -34,21 +34,21 @@ class OrderCreateView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         get_order_id = 0
         for i in request.data.get('items_ordered'):
-            items_cart = Research.objects.get(id=i)
+            items_cart = Research.objects.get(ordered_items=i)
             instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart)
+            print(instances.values('ordered_item'))
             instances.update(added=True)
-            print(instances)
-            # get_order_id = instances.values('ordered_item')
-            # if instances.values('ordered_item') == get_order_id:
-            #     pass
-            # else:
-            #     raise ValueError({"detail": _("Something went wrong")})
+            get_order_id = instances.values('ordered_item')
+            if instances.values('ordered_item') == get_order_id:
+                pass
+            else:
+                raise ValueError({"detail": _("Something went wrong")})
 
         response = super().create(request, *args, **kwargs)
         alphabet = string.ascii_letters + string.digits
         salt = ''.join(secrets.choice(alphabet) for i in range(16))
 
-        str2hash = "payment.php;{};USD;test;ru;534270;{};vwc90Vew0ZJVxUfa".format(response.data['get_total_from_cart'], salt)
+        str2hash = "payment.php;{};USD;test;ru;534270;{};{};vwc90Vew0ZJVxUfa".format(response.data['get_total_from_cart'], salt, get_order_id)
         result = hashlib.md5(str2hash.encode())
         md5result = result.hexdigest()
 
@@ -111,10 +111,8 @@ class StatViewForResearch(RetrieveAPIView):
     serializer_class = StatisticsSerializer
 
     def get(self, request, *args, **kwargs):
-        print(self.kwargs)
-        self.queryset = Statistics.objects.get(Q(research_to_collect__author=request.user.initial_reference, research_to_collect=self.kwargs['exact_research']))
-        serializer = StatisticsSerializer(data=self.queryset.__dict__, context=self.kwargs)
+        queryset = Statistics.objects.filter(Q(research_to_collect__author=request.user.initial_reference, research_to_collect=self.kwargs['exact_research']))
+        data_itself = list(queryset.values())[0]
+        serializer = StatisticsSerializer(queryset, data=data_itself, context=self.kwargs)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-        # return Response(list(self.queryset.values()), status=status.HTTP_200_OK)
