@@ -59,14 +59,21 @@ class AddToCartSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         item_added = None
         add_item_to_cart, created_order = Orders.objects.get_or_create(buyer=self.context['request'].user)
-        item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
 
-        if not created:
-            raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+        if created_order:
+            item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
+            if not created:
+                raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+            else:
+                item_added.total_of_all = item_added.calculate_total_price
+                item_added.save()
         else:
-            item_added.total_of_all = item_added.calculate_total_price
-            item_added.save()
-
+            item_added, created = Cart.objects.get_or_create(user_cart=add_item_to_cart, **validated_data)
+            if not created:
+                raise CustomValidation(detail={"detail": _("Research is already in your cart")})
+            else:
+                item_added.total_of_all = item_added.calculate_total_price
+                item_added.save()
         return item_added
 
 

@@ -61,7 +61,7 @@ class CartInline(admin.TabularInline):
     model = Cart
     fields = ['ordered_item', 'calculate_total_price', 'added', 'date_added']
     readonly_fields = ['calculate_total_price', 'date_added']
-    extra = 1
+    extra = 0
 
 
 class OrdersAdmin(admin.ModelAdmin):
@@ -70,11 +70,9 @@ class OrdersAdmin(admin.ModelAdmin):
     fields = ['total_sum', 'buyer']
     readonly_fields = ['total_sum']
 
-    def get_queryset(self, request):
-        qs = super(OrdersAdmin, self).get_queryset(request)
-        the_id = list(qs.values('id'))[0]
-        check_price = Cart.objects.filter(user_cart=the_id.get('id'), added=False)
-        print(check_price)
+    def get_object(self, request, object_id, from_field=None):
+        qs = Orders.objects.get(id=object_id)
+        check_price = Cart.objects.filter(user_cart=int(object_id), added=False)
         total_price = 0
         try:
             for i in check_price:
@@ -82,14 +80,13 @@ class OrdersAdmin(admin.ModelAdmin):
                     pass
                 else:
                     total_price += i.calculate_total_price
-
-            if qs.values('total_sum') != total_price:
-                qs.update(total_sum=total_price)
+            if qs.total_sum != total_price:
+                qs.total_sum = total_price
             else:
                 pass
             return qs
         except:
-            pass
+            raise ValueError({"detail": "Something went wrong"})
 
 
 admin.site.register(OrderForm, OrderFormAdmin)

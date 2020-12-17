@@ -21,7 +21,6 @@ class TwitterAuthTokenVerification:
             )
 
             user_profile_info = api.VerifyCredentials(include_email=True)
-            print(user_profile_info.__dict__)
             return user_profile_info.__dict__
 
         except Exception as identifier:
