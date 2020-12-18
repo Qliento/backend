@@ -57,7 +57,7 @@ class StatisticsSerializer(serializers.ModelSerializer):
         option = self.context.get('choice')
         the_instance_id = list(instance.values('id'))[0]
         find_stat = Statistics.objects.filter(id=the_instance_id.get('id'))
-
+        print(datetime.date.today())
         for stat_info in find_stat:
             demo_num = StatisticsDemo.objects.filter(Q(demos_downloaded=stat_info.id,
                                                      date=datetime.date.today())).aggregate(Sum('count_demo'))
