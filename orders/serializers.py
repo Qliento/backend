@@ -8,11 +8,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Sum
 from rest_framework import request
 from registration.serializers import CustomValidation
-from registration.models import QAdmins
 from django.db.models import Q
+from registration.models import QAdmins
 from research.serializers import Country, Hashtag, CardResearchSerializer
 from django.db.models.functions import Cast, TruncYear, TruncMonth, TruncDay
 from django.db.models import DateTimeField
+import  datetime
 from django.utils import timezone
 
 
@@ -56,11 +57,14 @@ class StatisticsSerializer(serializers.ModelSerializer):
         option = self.context.get('choice')
         the_instance_id = list(instance.values('id'))[0]
         find_stat = Statistics.objects.filter(id=the_instance_id.get('id'))
+
         for stat_info in find_stat:
-            demo_num = StatisticsDemo.objects.filter(Q(demos_downloaded=stat_info.research_to_collect.id, date=timezone.now())).aggregate(Sum('count_demo'))
+            demo_num = StatisticsDemo.objects.filter(Q(demos_downloaded=stat_info.id,
+                                                     date=datetime.date.today())).aggregate(Sum('count_demo'))
+
             # StatisticsWatches.objects.filter(watches_counted=stat_info.id)
             # StatisticsBought
-            print(demo_num)
+            print(stat_info.id, StatisticsDemo.objects.filter(demos_downloaded=stat_info.id))
         data_for_stat = super(StatisticsSerializer, self).to_representation(instance)
 
         return data_for_stat
@@ -134,8 +138,8 @@ class DeleteCartedItemSerializer(serializers.ModelSerializer):
 
 
 class OrdersCreateSerializer(serializers.ModelSerializer):
-    get_total_from_cart = serializers.IntegerField(read_only=True)
-    items_ordered = serializers.PrimaryKeyRelatedField(many=True, queryset=Cart.objects.all())
+    get_total_from_cart = serializers.ReadOnlyField()
+    items_ordered = serializers.ReadOnlyField()
 
     class Meta:
         model = Orders

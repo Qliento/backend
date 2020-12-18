@@ -32,29 +32,26 @@ class OrderCreateView(ListCreateAPIView):
     serializer_class = OrdersCreateSerializer
 
     def create(self, request, *args, **kwargs):
-        get_order_id = 0
-        for i in request.data.get('items_ordered'):
-            items_cart = Research.objects.get(ordered_items=i)
-            instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart)
-            print(instances.values('ordered_item'))
-            instances.update(added=True)
-            get_order_id = instances.values('ordered_item')
-            if instances.values('ordered_item') == get_order_id:
-                pass
-            else:
-                raise ValueError({"detail": _("Something went wrong")})
+        get_order_id = Orders.objects.get(buyer=request.user.id)
+        get_total_from_cart = get_order_id.get_total_from_cart
 
-        response = super().create(request, *args, **kwargs)
+        for i in request.data.get('items_ordered'):
+            items_cart = Research.objects.get(id=i)
+            instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart, user_cart=get_order_id.id)
+            instances.update(added=True)
+
+        # response = super().create(request, *args, **kwargs)
         alphabet = string.ascii_letters + string.digits
         salt = ''.join(secrets.choice(alphabet) for i in range(16))
 
-        str2hash = "payment.php;{};USD;test;ru;534270;{};{};vwc90Vew0ZJVxUfa".format(response.data['get_total_from_cart'], salt, get_order_id)
+        str2hash = "payment.php;{};USD;test;ru;534270;{};{};vwc90Vew0ZJVxUfa".format(get_total_from_cart, get_order_id.id, salt)
         result = hashlib.md5(str2hash.encode())
         md5result = result.hexdigest()
 
         return HttpResponseRedirect(
-            redirect_to='https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_order_id={}&pg_salt={}&pg_language=ru&pg_sig'
-                        '={}'.format(response.data['get_total_from_cart'], salt, get_order_id, md5result))
+            redirect_to='https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_language=ru&pg_order_id={}&pg_salt={}&'
+                        'pg_success_url={}&pg_sig'
+                        '={}'.format(get_total_from_cart, get_order_id.id, salt, 'https://qliento.com/', md5result))
 
 
 class MyOrdersView(ListAPIView):

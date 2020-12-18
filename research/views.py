@@ -63,7 +63,7 @@ class UploadResearchView(generics.GenericAPIView):
 
 class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
-    queryset = Research.objects.filter(status = 2)
+    queryset = Research.objects.filter(status=2)
     serializer_class = ResearchSerializer
 
     def retrieve(self, request, *args, **kwargs):
@@ -77,11 +77,11 @@ class ResearchDetail(generics.RetrieveAPIView):
 
 class ResearchOfPartnerDetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated, ]
-    serializer_class = ResearchRetrieveSerializer
+    serializer_class = CardResearchSerializer
 
     def get(self, request, *args, **kwargs):
         data_of_instance = Research.objects.get(id=self.kwargs['pk'], author=request.user.initial_reference)
-        serializer = self.serializer_class(data_of_instance)
+        serializer = self.get_serializer(data_of_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
