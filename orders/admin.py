@@ -2,11 +2,8 @@ from django.contrib import admin
 from .models import OrderForm, Orders, Cart, ShortDescriptions, \
     DemoVersionForm, Statistics, Check, StatisticsDemo, StatisticsBought, StatisticsWatches
 from modeltranslation.admin import TranslationStackedInline, TabbedDjangoJqueryTranslationAdmin
-
-
-# class OrdersAdmin(admin.ModelAdmin):
-#     fields = ['items_ordered', 'date_added', 'completed', 'get_total_from_cart']
-#     readonly_fields = ['date_added', 'get_total_from_cart']
+from social_django.admin import UserSocialAuth, Nonce, Association
+from oauth2_provider.admin import Application, RefreshToken, AccessToken, Grant
 
 
 class ShortDescriptionAdmin(TabbedDjangoJqueryTranslationAdmin):
@@ -21,8 +18,8 @@ class CheckAdmin(admin.ModelAdmin):
 
 class StatisticsAdmin(admin.ModelAdmin):
     list_display = ['research_to_collect', 'get_name_partner']
-    fields = ['research_to_collect', 'bought', 'get_name_partner', 'get_demo_downloaded', 'get_total_watches']
-    readonly_fields = ['get_name_partner', 'demo_downloaded', 'watches', 'get_demo_downloaded', 'get_total_watches']
+    fields = ['research_to_collect', 'get_name_partner', 'get_demo_downloaded', 'get_total_watches', 'get_total_purchases']
+    readonly_fields = ['get_name_partner', 'get_demo_downloaded', 'get_total_watches', 'get_total_purchases']
 
     def get_name_partner(self, obj):
         return obj.get_name_partner
@@ -36,6 +33,10 @@ class StatisticsAdmin(admin.ModelAdmin):
         return obj.get_total_watches
     get_total_watches.short_description = 'Количество просмотров'
 
+    def get_total_purchases(self, obj):
+        return obj.get_total_purchases
+    get_total_watches.short_description = 'Количество покупок'
+
 
 class DemoVersionFormAdmin(admin.ModelAdmin):
     list_display = ['email']
@@ -43,17 +44,6 @@ class DemoVersionFormAdmin(admin.ModelAdmin):
 
 class OrderFormAdmin(admin.ModelAdmin):
     list_display = ['email']
-
-
-# class CartAdmin(admin.ModelAdmin):
-#     list_display = ['id']
-#
-#     fields = ['ordered_item', 'calculate_total_price', 'added', 'date_added']
-#     readonly_fields = ['calculate_total_price', 'date_added', 'added']
-#
-#     def calculate_total_price(self, obj):
-#         return obj.calculate_total_price
-#     calculate_total_price.short_description = 'Сумма'
 
 
 class CartInline(admin.TabularInline):
@@ -91,12 +81,21 @@ class OrdersAdmin(admin.ModelAdmin):
 
 admin.site.register(OrderForm, OrderFormAdmin)
 admin.site.register(Orders, OrdersAdmin)
-admin.site.register(Cart, )
+admin.site.register(Cart)
+
 admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
 admin.site.register(Check, CheckAdmin)
+
 admin.site.register(StatisticsDemo)
 admin.site.register(StatisticsWatches)
 admin.site.register(StatisticsBought)
 
+admin.site.unregister(UserSocialAuth)
+admin.site.unregister(Nonce)
+admin.site.unregister(Association)
+admin.site.unregister(Application)
+admin.site.unregister(RefreshToken)
+admin.site.unregister(AccessToken)
+admin.site.unregister(Grant)

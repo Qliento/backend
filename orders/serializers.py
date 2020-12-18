@@ -5,7 +5,7 @@ from .models import Orders, OrderForm, Cart, DemoVersionForm, Statistics, \
     ShortDescriptions, StatisticsDemo, Check, StatisticsBought, StatisticsWatches, StatisticsDemo
 from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from rest_framework import request
 from registration.serializers import CustomValidation
 from django.db.models import Q
@@ -57,17 +57,58 @@ class StatisticsSerializer(serializers.ModelSerializer):
         option = self.context.get('choice')
         the_instance_id = list(instance.values('id'))[0]
         find_stat = Statistics.objects.filter(id=the_instance_id.get('id'))
-        print(datetime.date.today())
-        for stat_info in find_stat:
-            demo_num = StatisticsDemo.objects.filter(Q(demos_downloaded=stat_info.id,
-                                                     date=datetime.date.today())).aggregate(Sum('count_demo'))
 
-            # StatisticsWatches.objects.filter(watches_counted=stat_info.id)
-            # StatisticsBought
-            print(stat_info.id, StatisticsDemo.objects.filter(demos_downloaded=stat_info.id))
-        data_for_stat = super(StatisticsSerializer, self).to_representation(instance)
+        demo_num = 0
+        watches_num = 0
+        bought_num = 0
 
-        return data_for_stat
+        day = datetime.date.today().day
+        month = datetime.date.today().month
+        year = datetime.date.today().year
+
+        today = '{}-{}-{}'.format(year, month, day+1)
+
+        if self.context.get('choice') == 1:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__day=datetime.date.today().day).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__day=datetime.date.today().day).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__day=datetime.date.today().day).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 2:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__range=['{}-{}-{}'.format(year, month, day-7), today]).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__range=['{}-{}-{}'.format(year, month, day-7), today]).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__range=['{}-{}-{}'.format(year, month, day-7), today]).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 3:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__range=['{}-{}-{}'.format(year, month-1, day), today]).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__range=['{}-{}-{}'.format(year, month-1, day), today]).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__range=['{}-{}-{}'.format(year, month-1, day), today]).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 4:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__range=['{}-{}-{}'.format(year-1, month, day), today]).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__range=['{}-{}-{}'.format(year-1, month, day), today]).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__range=['{}-{}-{}'.format(year-1, month, day), today]).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 5:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id).aggregate(Count('count_purchases'))
+
+        return {"demos_downloaded": demo_num.get('count_demo__count'),
+                "watches": watches_num.get('count_watches__count'),
+                "bought": bought_num.get('count_purchases__count')}
 
 
 class AddToCartSerializer(serializers.ModelSerializer):
@@ -214,9 +255,8 @@ class EmailDemoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         demo_validated = validated_data.pop('desired_research')
-        a = StatisticsDemo.objects.create(count_demo=1)
-        b = Statistics.objects.filter(research_to_collect=demo_validated)
-        b.update(demo_downloaded=a)
+        b = Statistics.objects.get(research_to_collect=demo_validated)
+        a = StatisticsDemo.objects.create(count_demo=1, demo_downloaded=b)
         demo = DemoVersionForm.objects.create(desired_research=demo_validated, **validated_data)
         return demo
 
