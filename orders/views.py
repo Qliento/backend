@@ -11,7 +11,7 @@ from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, DeleteCartedItemSerializer, AddToCartSerializer, \
     EmailDemoSerializer, StatisticsSerializer, ShortDescriptionsSerializer, \
     ItemsInCartSerializer
-from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check
+from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check, StatisticsBought
 from research.models import Research
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
@@ -39,6 +39,8 @@ class OrderCreateView(ListCreateAPIView):
             items_cart = Research.objects.get(id=i)
             instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart, user_cart=get_order_id.id)
             instances.update(added=True)
+            b = Statistics.objects.get(research_to_collect=items_cart.id)
+            a = StatisticsBought.objects.create(count_purchases=1, bought=b)
 
         # response = super().create(request, *args, **kwargs)
         alphabet = string.ascii_letters + string.digits
@@ -49,9 +51,8 @@ class OrderCreateView(ListCreateAPIView):
         md5result = result.hexdigest()
 
         return HttpResponseRedirect(
-            redirect_to='https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_language=ru&pg_order_id={}&pg_salt={}&'
-                        'pg_success_url={}&pg_sig'
-                        '={}'.format(get_total_from_cart, get_order_id.id, salt, 'https://qliento.com/', md5result))
+            redirect_to='https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_language=ru&pg_order_id={}&pg_salt={}'
+                        '&pg_sig={}'.format(get_total_from_cart, get_order_id.id, salt, md5result))
 
 
 class MyOrdersView(ListAPIView):

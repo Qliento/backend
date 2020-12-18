@@ -3,7 +3,7 @@ from registration.models import Users
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, m2m_changed
 from registration.utils import Util
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.core.mail import EmailMessage
 from research.models import Research
 from django.conf import settings
@@ -21,7 +21,7 @@ class Orders(models.Model):
     @property
     def get_total_from_cart(self):
         try:
-            price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
+            price = Cart.objects.filter(user_cart=self.pk, added=False, ordered_item__status=2).aggregate(Sum('total_of_all'))
             self.total_sum = price.get('total_of_all__sum')
             return self.total_sum
         except:
