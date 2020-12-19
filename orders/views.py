@@ -121,10 +121,10 @@ class VerifyPaymentAPI(GenericAPIView):
     permission_classes = [AllowAny, ]
 
     def get_queryset(self):
-        get_needed_cart = Cart.objects.get(id=self.request.GET.get('pg_order_id'))
-        if get_needed_cart:
-            get_needed_cart.pg_payment_id = self.request.GET.get('pg_payment_id')
-            get_needed_cart.save()
+        get_needed_order = Orders.objects.get(id=self.request.GET.get('pg_order_id'))
+        if get_needed_order:
+            get_needed_order.pg_payment_id = self.request.GET.get('pg_payment_id')
+            get_needed_order.save()
         else:
             pass
         return Response('ok')
