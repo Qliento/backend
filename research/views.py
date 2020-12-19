@@ -90,11 +90,11 @@ class UpdateDiscountPrice(generics.RetrieveUpdateAPIView):
     serializer_class = DiscountPriceSerializer
 
     def get(self, request, *args, **kwargs):
-        serializer = self.serializer_class(Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.id))
+        serializer = self.serializer_class(Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.initial_reference.id))
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        the_object = Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.id)
+        the_object = Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.initial_reference.id)
         serializer = self.serializer_class(the_object, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.update(instance=the_object, validated_data=serializer.data)
