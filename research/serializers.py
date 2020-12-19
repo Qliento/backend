@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
 import os
 import json
+from orders.models import Statistics
 from collections import OrderedDict
 
 
@@ -137,6 +138,8 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
         content_data_validated = validated_data.pop('content_data', None)
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
+        Statistics.objects.create(research_to_collect=research)
+
         files_of_research = self.context.get('request').FILES
 
         if content_data_validated is None:

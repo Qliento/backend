@@ -188,14 +188,6 @@ class Statistics(models.Model):
         return count_watched_researches.get('purchases_total')
 
 
-def create_stat_for_qadmin(sender, **kwargs):
-    details_for_stat = kwargs['instance']
-    Statistics.objects.create(research_to_collect=details_for_stat)
-
-
-post_save.connect(create_stat_for_qadmin, sender=Research)
-
-
 class StatisticsDemo(models.Model):
     count_demo = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
