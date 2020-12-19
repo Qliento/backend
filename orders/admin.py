@@ -11,8 +11,8 @@ class ShortDescriptionAdmin(TabbedDjangoJqueryTranslationAdmin):
 
 
 class CheckAdmin(admin.ModelAdmin):
-    fields = ['ordered_researches', 'total_price', 'date', 'client_bought', 'order_id']
-    readonly_fields = ['ordered_researches', 'total_price', 'date', 'client_bought', 'order_id']
+    fields = ['ordered_researches', 'total_price', 'date', 'client_bought', 'order_id', 'pg_payment_id']
+    readonly_fields = ['ordered_researches', 'total_price', 'date', 'client_bought', 'order_id', 'pg_payment_id']
     list_display = ['client_bought', 'date']
 
 
@@ -57,8 +57,8 @@ class CartInline(admin.TabularInline):
 class OrdersAdmin(admin.ModelAdmin):
     inlines = [CartInline]
     list_display = ['buyer']
-    fields = ['total_sum', 'buyer', 'pg_payment_id']
-    readonly_fields = ['total_sum']
+    fields = ['total_sum', 'buyer', 'pg_sig']
+    readonly_fields = ['total_sum', 'pg_sig']
 
     def get_object(self, request, object_id, from_field=None):
         qs = Orders.objects.get(id=object_id)

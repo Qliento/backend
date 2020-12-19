@@ -13,7 +13,7 @@ class Orders(models.Model):
     completed = models.BooleanField(null=True, blank=True, default=False)
     buyer = models.ForeignKey(Users, on_delete=models.CASCADE, null=True, blank=True, related_name="buyer", verbose_name="Покупатель")
     total_sum = models.IntegerField(blank=True, null=True, verbose_name="Общая сумма")
-    pg_payment_id = models.CharField(null=True, blank=True, default=False, verbose_name="ID PAYBOX", max_length=20)
+    pg_sig = models.CharField(null=True, blank=True, default=False, verbose_name="Код верификации", max_length=32)
 
     class Meta:
         verbose_name = _("Корзина клиента")
@@ -70,6 +70,7 @@ class Check(models.Model):
     date = models.DateTimeField(verbose_name="Время покупки")
     client_bought = models.CharField(max_length=100, verbose_name="Почта покупателя")
     order_id = models.CharField(max_length=500, verbose_name="Номер заказа", null=True, blank=True)
+    pg_payment_id = models.CharField(null=True, blank=True, default=False, verbose_name="Код платежа", max_length=20)
 
     class Meta:
         verbose_name = _("Покупки клиентов")
