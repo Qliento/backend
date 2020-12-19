@@ -42,15 +42,30 @@ class OrderCreateView(ListCreateAPIView):
         description = ''
 
         for i in request.data.get('items_ordered'):
+            print(i)
             items_cart = Research.objects.get(id=i)
             instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart, user_cart=get_order_id.id)
             get_name = list(instances.values('ordered_item__name'))[0]['ordered_item__name']
-            description = ' ID: {},'.format(i)
+            description += ' ID: {},'.format(i)
             description += ' Название исследования: {}.'.format(get_name)
 
         str2hash = "payment.php;{};USD;{};ru;534270;{};{};{};vwc90Vew0ZJVxUfa".format(get_total_from_cart, description, get_order_id.id, salt, request.user.email)
         result = hashlib.md5(str2hash.encode())
         md5result = result.hexdigest()
+
+        # zeo = []
+        # # search_id = ['ID:', '230,', 'Название', 'исследования:', '2020', 'name.']
+        # search_id = 'ID:, 2020, Название, исследования:, 230, name.'
+        # for i in search_id.split():
+        #     try:
+        #         s = i.replace(',', '')
+        #         zeo.append(int(s))
+        #     except:
+        #         pass
+        # print(zeo)
+        #
+        # for m in zeo:
+        #     Cart.objects.filter(added=False, user_cart=get_order_id.id, ordered_item__id=m).update(added=True)
 
         get_order_id.pg_sig = md5result
         get_order_id.save()
