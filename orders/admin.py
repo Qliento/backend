@@ -35,7 +35,7 @@ class StatisticsAdmin(admin.ModelAdmin):
 
     def get_total_purchases(self, obj):
         return obj.get_total_purchases
-    get_total_watches.short_description = 'Количество покупок'
+    get_total_purchases.short_description = 'Количество покупок'
 
 
 class DemoVersionFormAdmin(admin.ModelAdmin):
@@ -87,10 +87,6 @@ admin.site.register(DemoVersionForm, DemoVersionFormAdmin)
 admin.site.register(ShortDescriptions, ShortDescriptionAdmin)
 admin.site.register(Statistics, StatisticsAdmin)
 admin.site.register(Check, CheckAdmin)
-
-admin.site.register(StatisticsDemo)
-admin.site.register(StatisticsWatches)
-admin.site.register(StatisticsBought)
 
 admin.site.unregister(UserSocialAuth)
 admin.site.unregister(Nonce)
