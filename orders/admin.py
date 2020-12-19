@@ -57,7 +57,7 @@ class CartInline(admin.TabularInline):
 class OrdersAdmin(admin.ModelAdmin):
     inlines = [CartInline]
     list_display = ['buyer']
-    fields = ['total_sum', 'buyer']
+    fields = ['total_sum', 'buyer', 'pg_payment_id']
     readonly_fields = ['total_sum']
 
     def get_object(self, request, object_id, from_field=None):
