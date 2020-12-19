@@ -136,7 +136,7 @@ class ItemInCartView(ListAPIView):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        self.queryset = Orders.objects.filter(buyer=request.user.id, cart__added=False)
+        self.queryset = Orders.objects.filter(buyer=request.user.id)
         return self.list(request, *args, **kwargs)
 
 

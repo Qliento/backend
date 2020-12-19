@@ -150,7 +150,7 @@ class ItemsInCartSerializer(serializers.ModelSerializer):
         instance.total_sum = instance.get_total_from_cart
         instance.save()
 
-        researches_from_cart = Cart.objects.filter(user_cart=instance.id)
+        researches_from_cart = Cart.objects.filter(user_cart=instance.id, added=False)
         list_of_researches = []
         price_of_total = 0
         nominal_total = researches_from_cart.aggregate(Sum('total_of_all'))
