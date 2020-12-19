@@ -115,7 +115,7 @@ class StatViewForResearch(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 @csrf_exempt
 @permission_classes((AllowAny,))
 def get_paybox_url(request):
