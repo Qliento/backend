@@ -50,9 +50,8 @@ class OrderCreateView(ListCreateAPIView):
         result = hashlib.md5(str2hash.encode())
         md5result = result.hexdigest()
 
-        return HttpResponseRedirect(
-            redirect_to='https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_language=ru&pg_order_id={}&pg_salt={}'
-                        '&pg_sig={}'.format(get_total_from_cart, get_order_id.id, salt, md5result))
+        return {'https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description=test&pg_language=ru&pg_order_id={}&pg_salt={}'
+                        '&pg_sig={}'.format(get_total_from_cart, get_order_id.id, salt, md5result)}
 
 
 class MyOrdersView(ListAPIView):
