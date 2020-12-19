@@ -273,10 +273,6 @@ class OrderFormSerailizer(serializers.ModelSerializer):
         return order
 
 
-class VerifyPayment(serializers.ModelSerializer):
-    'pg_order_id = 10 & pg_payment_id = 401986682 & pg_salt = T1d4wSwresf6uBwR & pg_sig = 6 bdc59bf69bb0200103bb4475a99680a'
-    pg_order_id = serializers.CharField()
-    pg_payment_id = serializers.CharField()
-    pg_salt = serializers.CharField()
-    pg_sig = serializers.CharField()
+'pg_order_id = 10 & pg_payment_id = 401986682 & pg_salt = T1d4wSwresf6uBwR & pg_sig = 6 bdc59bf69bb0200103bb4475a99680a'
+
 

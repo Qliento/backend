@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, DeleteCartedItemSerializer, AddToCartSerializer, \
     EmailDemoSerializer, StatisticsSerializer, ShortDescriptionsSerializer, \
-    ItemsInCartSerializer, VerifyPayment
+    ItemsInCartSerializer
 from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check, StatisticsBought
 from research.models import Research
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -115,19 +115,17 @@ class StatViewForResearch(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class VerifyPaymentAPI(GenericAPIView):
-    serializer_class = None
-    queryset = None
-    permission_classes = [AllowAny, ]
-
-    def get_queryset(self):
-        get_needed_order = Orders.objects.get(id=self.request.GET.get('pg_order_id'))
-        if get_needed_order:
-            get_needed_order.pg_payment_id = self.request.GET.get('pg_payment_id')
-            get_needed_order.save()
-        else:
-            pass
-        return Response('ok')
+@api_view(["GET"])
+@csrf_exempt
+@permission_classes((AllowAny,))
+def get_paybox_url(request):
+    get_needed_order = Orders.objects.get(id=request.GET.get('pg_order_id'))
+    if get_needed_order:
+        get_needed_order.pg_payment_id = request.GET.get('pg_payment_id')
+        get_needed_order.save()
+    else:
+        pass
+    return Response('ok')
 
 
 
