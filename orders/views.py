@@ -42,7 +42,6 @@ class OrderCreateView(ListCreateAPIView):
         description = ''
 
         for i in request.data.get('items_ordered'):
-            print(i)
             items_cart = Research.objects.get(id=i)
             instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart, user_cart=get_order_id.id)
             get_name = list(instances.values('ordered_item__name'))[0]['ordered_item__name']
@@ -94,7 +93,7 @@ def get_paybox_url(request):
                                   settings.EMAIL_HOST_USER,
                                   [get_the_buyer])
 
-        for search_id in request.POST.get('description').split():
+        for search_id in request.POST.get('pg_description').split():
             try:
                 s = search_id.replace(',', '')
                 list_of_ids.append(int(s))
