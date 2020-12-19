@@ -195,6 +195,7 @@ class MyOrdersSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(MyOrdersSerializer, self).to_representation(instance)
+        print(data)
         research_details = []
         get_cleaned_data = dict(data).get('ordered_researches')[0]
 
