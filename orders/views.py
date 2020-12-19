@@ -119,9 +119,9 @@ class StatViewForResearch(RetrieveAPIView):
 @csrf_exempt
 @permission_classes((AllowAny,))
 def get_paybox_url(request):
-    get_needed_order = Orders.objects.get(id=request.GET.get('pg_order_id'))
+    get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'))
     if get_needed_order:
-        get_needed_order.pg_payment_id = request.GET.get('pg_payment_id')
+        get_needed_order.pg_payment_id = request.POST.get('pg_payment_id')
         get_needed_order.save()
     else:
         pass
