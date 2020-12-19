@@ -76,7 +76,7 @@ class CardResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
-                  'hashtag', 'date', 'country', 'author', 'content_data')
+                  'hashtag', 'date', 'country', 'author', 'content_data', 'description')
 
 
 class AdminCardResearchSerializer(serializers.ModelSerializer):
@@ -88,7 +88,7 @@ class AdminCardResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo', 'status',
-                  'hashtag', 'date', 'country', 'author', 'content_data')
+                  'hashtag', 'date', 'country', 'author', 'content_data', 'description')
 
 
 class ResearchFilePathSerializer(serializers.ModelSerializer):
