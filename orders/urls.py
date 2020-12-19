@@ -12,7 +12,7 @@ urlpatterns = [
     path('cart/', ItemInCartView.as_view()),
     path('delete-from-cart/<int:pk>/', ItemCartDeleteView.as_view()),
 
-    path('verify-check/', VerifyPaymentAPI.as_view()),
+    path('verify-check/', get_paybox_url),
 
     path('send-demo/', SendDemoView.as_view()),
 
