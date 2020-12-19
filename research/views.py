@@ -97,7 +97,7 @@ class UpdateDiscountPrice(generics.RetrieveUpdateAPIView):
         the_object = Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.initial_reference.id)
         serializer = self.serializer_class(the_object, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.update(instance=the_object, validated_data=serializer.data)
+        serializer.save()
         email_body = 'Доброго времени суток, Qliento! \n' + \
                      'Партнер: {}, отправил вам запрос на одобрение скидочной цены своего исследования. \n' \
                      'Название исследования: "{}". \n' \
