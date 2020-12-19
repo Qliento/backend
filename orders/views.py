@@ -87,12 +87,14 @@ def get_paybox_url(request):
                 pass
 
         for i in list_of_ids:
-
-            Cart.objects.filter(added=False, user_cart=get_needed_order.id, ordered_item__id=i).update(added=True)
-            files = Research.objects.filter(id=i).values('research_data')
-            for each_file in files:
-                data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
-                send_files.attach_file('static/files/{}'.format(str(data_file)))
+            try:
+                Cart.objects.filter(added=False, user_cart=get_needed_order.id, ordered_item__id=i).update(added=True)
+                files = Research.objects.filter(id=i).values('research_data')
+                for each_file in files:
+                    data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
+                    send_files.attach_file('static/files/{}'.format(str(data_file)))
+            except:
+                pass
 
         b = Statistics.objects.get(research_to_collect=request.POST.get('pg_order_id'))
         a = StatisticsBought.objects.create(count_purchases=1, bought=b)
