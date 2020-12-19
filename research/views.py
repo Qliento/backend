@@ -64,7 +64,7 @@ class UploadResearchView(generics.GenericAPIView):
 class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
     queryset = Research.objects.filter(status=2)
-    serializer_class = ResearchSerializer
+    serializer_class = CardResearchSerializer
 
     def retrieve(self, request, *args, **kwargs):
         b = Statistics.objects.get(research_to_collect=self.kwargs['pk'])
@@ -77,7 +77,7 @@ class ResearchDetail(generics.RetrieveAPIView):
 
 class ResearchOfPartnerDetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated, ]
-    serializer_class = CardResearchSerializer
+    serializer_class = AdminCardResearchSerializer
 
     def get(self, request, *args, **kwargs):
         data_of_instance = Research.objects.get(id=self.kwargs['pk'], author=request.user.initial_reference)

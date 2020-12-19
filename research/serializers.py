@@ -79,6 +79,18 @@ class CardResearchSerializer(serializers.ModelSerializer):
                   'hashtag', 'date', 'country', 'author', 'content_data')
 
 
+class AdminCardResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(read_only=True, many=True)
+    country = CountrySerializer(read_only=True, many=True)
+    author = AuthorSerializer()
+    content_data = ContentDataInfo(read_only=True, many=True)
+
+    class Meta:
+        model = Research
+        fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo', 'status',
+                  'hashtag', 'date', 'country', 'author', 'content_data')
+
+
 class ResearchFilePathSerializer(serializers.ModelSerializer):
 
     class Meta:
