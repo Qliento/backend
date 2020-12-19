@@ -12,6 +12,8 @@ urlpatterns = [
     path('cart/', ItemInCartView.as_view()),
     path('delete-from-cart/<int:pk>/', ItemCartDeleteView.as_view()),
 
+    path('verify-check/', VerifyPaymentAPI.as_view()),
+
     path('send-demo/', SendDemoView.as_view()),
 
     path('short-descriptions/', ShortDescriptionView.as_view()),

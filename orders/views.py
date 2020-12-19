@@ -5,12 +5,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, ListAPIView, RetrieveDestroyAPIView, RetrieveAPIView, GenericAPIView
 from rest_framework.response import Response
 from .serializers import OrderFormSerailizer, OrdersCreateSerializer, \
     MyOrdersSerializer, DeleteCartedItemSerializer, AddToCartSerializer, \
     EmailDemoSerializer, StatisticsSerializer, ShortDescriptionsSerializer, \
-    ItemsInCartSerializer
+    ItemsInCartSerializer, VerifyPayment
 from .models import OrderForm, Orders, Cart, ShortDescriptions, DemoVersionForm, Statistics, Check, StatisticsBought
 from research.models import Research
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -113,3 +113,21 @@ class StatViewForResearch(RetrieveAPIView):
         serializer = StatisticsSerializer(queryset, data=data_itself, context=self.kwargs)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class VerifyPaymentAPI(GenericAPIView):
+    serializer_class = None
+    queryset = None
+    permission_classes = [AllowAny, ]
+
+    def get_queryset(self):
+        get_needed_cart = Cart.objects.get(id=self.request.GET.get('pg_order_id'))
+        if get_needed_cart:
+            get_needed_cart.pg_payment_id = self.request.GET.get('pg_payment_id')
+            get_needed_cart.save()
+        else:
+            pass
+        return Response('ok')
+
+
+

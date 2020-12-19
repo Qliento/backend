@@ -37,6 +37,7 @@ class Cart(models.Model):
     added = models.BooleanField(null=True, blank=True, default=False, verbose_name="Куплено")
     date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
     user_cart = models.ForeignKey(Orders, on_delete=models.CASCADE, default=1, blank=True, null=True, verbose_name="Корзина")
+    pg_payment_id = models.CharField(null=True, blank=True, default=False, verbose_name="ID PAYBOX", max_length=20)
 
     def __str__(self):
         return '{}'.format(self.ordered_item)
