@@ -35,12 +35,12 @@ class OrderCreateView(ListCreateAPIView):
         get_order_id = Orders.objects.get(buyer=request.user.id)
         get_total_from_cart = get_order_id.get_total_from_cart
 
-        for i in request.data.get('items_ordered'):
-            items_cart = Research.objects.get(id=i)
-            instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart, user_cart=get_order_id.id)
-            instances.update(added=True)
-            b = Statistics.objects.get(research_to_collect=items_cart.id)
-            a = StatisticsBought.objects.create(count_purchases=1, bought=b)
+        # for i in request.data.get('items_ordered'):
+        #     items_cart = Research.objects.get(id=i)
+        #     instances = Cart.objects.filter(user_cart__buyer=request.user.id, ordered_item=items_cart, user_cart=get_order_id.id)
+        #     instances.update(added=True)
+        #     b = Statistics.objects.get(research_to_collect=items_cart.id)
+        #     a = StatisticsBought.objects.create(count_purchases=1, bought=b)
 
         # response = super().create(request, *args, **kwargs)
         alphabet = string.ascii_letters + string.digits
