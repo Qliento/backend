@@ -67,11 +67,23 @@ class ContentDataInfo(serializers.ModelSerializer):
         fields = ['content', 'page']
 
 
+class SimilarResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(read_only=True, many=True)
+    country = CountrySerializer(read_only=True, many=True)
+    author = AuthorSerializer()
+
+    class Meta:
+        model = Research
+        fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
+                  'hashtag', 'date', 'country', 'author')
+
+
 class CardResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(read_only=True, many=True)
     country = CountrySerializer(read_only=True, many=True)
     author = AuthorSerializer()
     content_data = ContentDataInfo(read_only=True, many=True)
+    similars = SimilarResearchSerializer(many=True, read_only=True)
 
     class Meta:
         model = Research
