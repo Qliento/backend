@@ -76,7 +76,7 @@ class CardResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
-                  'hashtag', 'date', 'country', 'author', 'content_data', 'description')
+                  'hashtag', 'date', 'country', 'author', 'content_data', 'description', 'similars')
 
 
 class AdminCardResearchSerializer(serializers.ModelSerializer):
