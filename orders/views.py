@@ -75,7 +75,8 @@ class OrderCreateView(ListCreateAPIView):
 @csrf_exempt
 @permission_classes((AllowAny,))
 def get_paybox_url(request):
-    get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'), pg_sig=request.POST.get('pg_param1'))
+    # get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'), pg_sig=request.POST.get('pg_param1'))
+    get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'))
     get_the_buyer = request.POST.get('pg_user_contact_email')
     list_of_ids = []
 
