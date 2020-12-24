@@ -83,7 +83,7 @@ class CardResearchSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True, many=True)
     author = AuthorSerializer()
     content_data = ContentDataInfo(read_only=True, many=True)
-    similars = SimilarResearchSerializer(many=True, read_only=True)
+    similars = SimilarResearchSerializer(source = 'similar_researches', many=True, read_only=True)
 
     class Meta:
         model = Research

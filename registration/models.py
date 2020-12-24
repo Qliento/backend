@@ -91,7 +91,7 @@ class QAdmins(models.Model):
         verbose_name_plural = _('Партнёры')
 
     def __str__(self):
-        return self.admin_status.name
+        return self.admin_status.email
 
 
 class UsersConsentQliento(models.Model):
