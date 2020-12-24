@@ -38,6 +38,7 @@ class OrderCreateView(ListCreateAPIView):
 
         alphabet = string.ascii_letters + string.digits
         salt = ''.join(secrets.choice(alphabet) for i in range(16))
+        param1 = ''.join(secrets.choice(alphabet) for i in range(16))
 
         description = ''
 
@@ -48,7 +49,7 @@ class OrderCreateView(ListCreateAPIView):
             description += ' ID: {},'.format(i)
             description += ' Название исследования: {}.'.format(get_name)
 
-        str2hash = "payment.php;{};USD;{};ru;534270;{};{};{};vwc90Vew0ZJVxUfa".format(get_total_from_cart, description, get_order_id.id, salt, request.user.email)
+        str2hash = "payment.php;{};USD;{};ru;534270;{};{};{};{};vwc90Vew0ZJVxUfa".format(get_total_from_cart, description, get_order_id.id, param1, salt, request.user.email)
         result = hashlib.md5(str2hash.encode())
         md5result = result.hexdigest()
 
@@ -60,50 +61,21 @@ class OrderCreateView(ListCreateAPIView):
                 zeo.append(int(s))
             except:
                 pass
-        # print(zeo)
-        # send_files = EmailMessage('Файлы исследования',
-        #                           'Доброго времени суток, пользователь. '
-        #                           'Вам были отправлены файлы исследования. \n'
-        #                           'Спасибо за покупку,\n'
-        #                           'С уважением, команда Qliento',
-        #                           settings.EMAIL_HOST_USER,
-        #                           [''])
-        #
-        # for i in zeo:
-        #     try:
-        #         # Cart.objects.filter(added=False, user_cart=187, ordered_item__id=i).update(added=True)
-        #         files = Research.objects.filter(id=i).values('research_data')
-        #         for each_file in files:
-        #             # data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
-        #             data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
-        #             print(data_file)
-        #
-        #             send_files.attach_file('static/files/{}'.format(str(data_file)))
-        #     except:
-        #         pass
 
-        # b = Statistics.objects.get(research_to_collect=request.POST.get('pg_order_id'))
-        # a = StatisticsBought.objects.create(count_purchases=1, bought=b)
-
-        # send_files.send()
-
-        # for m in zeo:
-        #     Cart.objects.filter(added=False, user_cart=get_order_id.id, ordered_item__id=m).update(added=True)
-
-        get_order_id.pg_sig = salt
+        get_order_id.pg_sig = param1
         get_order_id.save()
 
         return Response('https://api.paybox.money/payment.php?pg_merchant_id=534270&pg_amount={}&pg_currency=USD&pg_description={}&'
-                        'pg_language=ru&pg_order_id={}&pg_salt={}&pg_user_contact_email={}'
+                        'pg_language=ru&pg_order_id={}&pg_param1={}&pg_salt={}&pg_user_contact_email={}'
                         '&pg_sig={}'.format(get_total_from_cart, description,
-                                            get_order_id.id, salt, request.user.email, md5result))
+                                            get_order_id.id, param1, salt, request.user.email, md5result))
 
 
 @api_view(["POST"])
 @csrf_exempt
 @permission_classes((AllowAny,))
 def get_paybox_url(request):
-    get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'), pg_sig=request.POST.get('pg_salt'))
+    get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'), pg_sig=request.POST.get('pg_param1'))
     get_the_buyer = request.POST.get('pg_user_contact_email')
     list_of_ids = []
 
