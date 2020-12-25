@@ -66,13 +66,13 @@ class UploadResearchView(generics.GenericAPIView):
 
 class ResearchDetail(generics.RetrieveAPIView):
     permission_classes = [AllowAny, ]
-    queryset = Research.objects.filter(status = 2)
-    serializer_class = ResearchSerializer
+    queryset = Research.objects.filter(status=2)
+    serializer_class = CardResearchSerializer
 
     def retrieve(self, request, *args, **kwargs):
-        a = StatisticsWatches.objects.create(count_watches=1)
-        b = Statistics.objects.filter(research_to_collect=self.kwargs['pk'])
-        b.update(watches=a)
+        b = Statistics.objects.get(research_to_collect=self.kwargs['pk'])
+        a = StatisticsWatches.objects.create(count_watches=1, watches=b)
+
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -80,11 +80,11 @@ class ResearchDetail(generics.RetrieveAPIView):
 
 class ResearchOfPartnerDetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated, ]
-    serializer_class = ResearchRetrieveSerializer
+    serializer_class = AdminCardResearchSerializer
 
     def get(self, request, *args, **kwargs):
         data_of_instance = Research.objects.get(id=self.kwargs['pk'], author=request.user.initial_reference)
-        serializer = self.serializer_class(data_of_instance)
+        serializer = self.get_serializer(data_of_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -93,11 +93,11 @@ class UpdateDiscountPrice(generics.RetrieveUpdateAPIView):
     serializer_class = DiscountPriceSerializer
 
     def get(self, request, *args, **kwargs):
-        serializer = self.serializer_class(Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.id))
+        serializer = self.serializer_class(Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.initial_reference.id))
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        the_object = Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.id)
+        the_object = Research.objects.get(status=4, id=self.kwargs['pk'], author_id=self.request.user.initial_reference.id)
         serializer = self.serializer_class(the_object, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()

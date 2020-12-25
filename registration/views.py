@@ -115,7 +115,7 @@ class VerifyEmail(views.APIView):
             if not user.is_active:
                 user.is_active = True
                 user.save()
-            return HttpResponseRedirect(redirect_to="http://qliento-project.surge.sh")
+            return HttpResponseRedirect(redirect_to="https://qliento.com")
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
@@ -332,9 +332,8 @@ class DownloadDemoView(GenericAPIView):
             self.queryset = Research.objects.filter(id=self.kwargs['pk'], status=2)
             file_itself = self.queryset.values('demo')
             path_of_file = list(file_itself)[0].get('demo')
-            a = StatisticsDemo.objects.create(count_demo=1)
-            b = Statistics.objects.filter(research_to_collect=self.kwargs['pk'])
-            b.update(demo_downloaded=a)
+            b = Statistics.objects.get(research_to_collect=self.kwargs['pk'])
+            a = StatisticsDemo.objects.create(count_demo=1, demo_downloaded=b)
             return FileResponse(open('static/files/{}'.format(path_of_file), 'rb'))
 
         except IndexError:

@@ -5,13 +5,16 @@ from .models import Orders, OrderForm, Cart, DemoVersionForm, Statistics, \
     ShortDescriptions, StatisticsDemo, Check, StatisticsBought, StatisticsWatches, StatisticsDemo
 from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from rest_framework import request
 from registration.serializers import CustomValidation
+from django.db.models import Q
 from registration.models import QAdmins
 from research.serializers import Country, Hashtag, CardResearchSerializer
 from django.db.models.functions import Cast, TruncYear, TruncMonth, TruncDay
 from django.db.models import DateTimeField
+import  datetime
+from django.utils import timezone
 
 
 def to_dict(instance):
@@ -51,9 +54,61 @@ class StatisticsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
-        data_for_stat = super(StatisticsSerializer, self).to_representation(instance)
-        print(self.context)
-        return data_for_stat
+        option = self.context.get('choice')
+        the_instance_id = list(instance.values('id'))[0]
+        find_stat = Statistics.objects.filter(id=the_instance_id.get('id'))
+
+        demo_num = 0
+        watches_num = 0
+        bought_num = 0
+
+        day = datetime.date.today().day
+        month = datetime.date.today().month
+        year = datetime.date.today().year
+
+        today = '{}-{}-{}'.format(year, month, day+1)
+
+        if self.context.get('choice') == 1:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__day=datetime.date.today().day).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__day=datetime.date.today().day).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__day=datetime.date.today().day).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 2:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__range=['{}-{}-{}'.format(year, month, day-7), today]).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__range=['{}-{}-{}'.format(year, month, day-7), today]).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__range=['{}-{}-{}'.format(year, month, day-7), today]).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 3:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__range=['{}-{}-{}'.format(year, month-1, day), today]).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__range=['{}-{}-{}'.format(year, month-1, day), today]).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__range=['{}-{}-{}'.format(year, month-1, day), today]).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 4:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id,
+                                                         date__range=['{}-{}-{}'.format(year-1, month, day), today]).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id,
+                                                               date__range=['{}-{}-{}'.format(year-1, month, day), today]).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id,
+                                                             date__range=['{}-{}-{}'.format(year-1, month, day), today]).aggregate(Count('count_purchases'))
+        if self.context.get('choice') == 5:
+            for stat_info in find_stat:
+                demo_num = StatisticsDemo.objects.filter(demo_downloaded=stat_info.id).aggregate(Count('count_demo'))
+                watches_num = StatisticsWatches.objects.filter(watches=stat_info.id).aggregate(Count('count_watches'))
+                bought_num = StatisticsBought.objects.filter(bought=stat_info.id).aggregate(Count('count_purchases'))
+
+        return {"demos_downloaded": demo_num.get('count_demo__count'),
+                "watches": watches_num.get('count_watches__count'),
+                "bought": bought_num.get('count_purchases__count')}
 
 
 class AddToCartSerializer(serializers.ModelSerializer):
@@ -95,7 +150,7 @@ class ItemsInCartSerializer(serializers.ModelSerializer):
         instance.total_sum = instance.get_total_from_cart
         instance.save()
 
-        researches_from_cart = Cart.objects.filter(user_cart=instance.id)
+        researches_from_cart = Cart.objects.filter(user_cart=instance.id, added=False)
         list_of_researches = []
         price_of_total = 0
         nominal_total = researches_from_cart.aggregate(Sum('total_of_all'))
@@ -124,8 +179,8 @@ class DeleteCartedItemSerializer(serializers.ModelSerializer):
 
 
 class OrdersCreateSerializer(serializers.ModelSerializer):
-    get_total_from_cart = serializers.IntegerField(read_only=True)
-    items_ordered = serializers.PrimaryKeyRelatedField(many=True, queryset=Cart.objects.all())
+    get_total_from_cart = serializers.ReadOnlyField()
+    items_ordered = serializers.ReadOnlyField()
 
     class Meta:
         model = Orders
@@ -140,6 +195,7 @@ class MyOrdersSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(MyOrdersSerializer, self).to_representation(instance)
+        print(data)
         research_details = []
         get_cleaned_data = dict(data).get('ordered_researches')[0]
 
@@ -200,9 +256,8 @@ class EmailDemoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         demo_validated = validated_data.pop('desired_research')
-        a = StatisticsDemo.objects.create(count_demo=1)
-        b = Statistics.objects.filter(research_to_collect=demo_validated)
-        b.update(demo_downloaded=a)
+        b = Statistics.objects.get(research_to_collect=demo_validated)
+        a = StatisticsDemo.objects.create(count_demo=1, demo_downloaded=b)
         demo = DemoVersionForm.objects.create(desired_research=demo_validated, **validated_data)
         return demo
 
@@ -216,3 +271,8 @@ class OrderFormSerailizer(serializers.ModelSerializer):
     def create(self, validated_data):
         order = OrderForm.objects.create(**validated_data)
         return order
+
+
+'pg_order_id = 10 & pg_payment_id = 401986682 & pg_salt = T1d4wSwresf6uBwR & pg_sig = 6 bdc59bf69bb0200103bb4475a99680a'
+
+

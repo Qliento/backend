@@ -13,6 +13,8 @@ from django.conf import settings
 from mptt.admin import DraggableMPTTAdmin
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 from django.forms import TextInput, Textarea
+from orders.models import Statistics
+from registration.models import Users
 
 
 class CategoryForm(forms.ModelForm):
@@ -71,7 +73,24 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                   'style': 'height: 5em;'})},
     }
 
+    def _response_post_save(self, request, obj):
+
+        try:
+            super_user_email = obj.author
+            get_user_detail = Users.objects.filter(email=super_user_email.admin_status.email)
+
+            for one_su in get_user_detail:
+                if one_su.is_superuser:
+                    r = Statistics.objects.create(research_to_collect=obj)
+                else:
+                    pass
+        except:
+            pass
+
+        return super()._response_post_save(request, obj)
+
     def response_change(self, request, obj):
+
         if "_approve" in request.POST:
             get_some_status_2 = Status.objects.get(id=2)
             obj.status = get_some_status_2
@@ -203,6 +222,7 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslationAdmin):
 
 
 class StatusAdmin(TabbedDjangoJqueryTranslationAdmin):
+    list_display = ['id']
     pass
 
 

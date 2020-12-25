@@ -12,10 +12,12 @@ urlpatterns = [
     path('cart/', ItemInCartView.as_view()),
     path('delete-from-cart/<int:pk>/', ItemCartDeleteView.as_view()),
 
+    path('verify-check/', get_paybox_url),
+
     path('send-demo/', SendDemoView.as_view()),
 
     path('short-descriptions/', ShortDescriptionView.as_view()),
 
-    path('statistics/<int:exact_research>/<str:date>/', StatViewForResearch.as_view())
+    path('statistics/<int:exact_research>/<int:choice>/', StatViewForResearch.as_view())
 
 ]

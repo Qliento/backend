@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
 import os
 import json
+from orders.models import Statistics
 from collections import OrderedDict
 
 
@@ -59,7 +60,14 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('logo', 'about_me')
 
 
-class CardResearchSerializer(serializers.ModelSerializer):
+class ContentDataInfo(serializers.ModelSerializer):
+
+    class Meta:
+        model = ResearchContent
+        fields = ['content', 'page']
+
+
+class SimilarResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(read_only=True, many=True)
     country = CountrySerializer(read_only=True, many=True)
     author = AuthorSerializer()
@@ -70,18 +78,36 @@ class CardResearchSerializer(serializers.ModelSerializer):
                   'hashtag', 'date', 'country', 'author')
 
 
+class CardResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(read_only=True, many=True)
+    country = CountrySerializer(read_only=True, many=True)
+    author = AuthorSerializer()
+    content_data = ContentDataInfo(read_only=True, many=True)
+    similars = SimilarResearchSerializer(source = 'similar_researches', many=True, read_only=True)
+
+    class Meta:
+        model = Research
+        fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
+                  'hashtag', 'date', 'country', 'author', 'content_data', 'description', 'similars')
+
+
+class AdminCardResearchSerializer(serializers.ModelSerializer):
+    hashtag = HashtagSerializer(read_only=True, many=True)
+    country = CountrySerializer(read_only=True, many=True)
+    author = AuthorSerializer()
+    content_data = ContentDataInfo(read_only=True, many=True)
+
+    class Meta:
+        model = Research
+        fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo', 'status',
+                  'hashtag', 'date', 'country', 'author', 'content_data', 'description')
+
+
 class ResearchFilePathSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResearchFiles
         fields = ['id', 'name']
-
-
-class ContentDataInfo(serializers.ModelSerializer):
-
-    class Meta:
-        model = ResearchContent
-        fields = ['content', 'page']
 
 
 class ResearchSerializer(serializers.ModelSerializer):
@@ -136,6 +162,8 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
         content_data_validated = validated_data.pop('content_data', None)
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
+        Statistics.objects.create(research_to_collect=research)
+
         files_of_research = self.context.get('request').FILES
 
         if content_data_validated is None:
@@ -200,27 +228,3 @@ class DiscountPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Research
         fields = ['new_price']
-
-
-class ResearchRetrieveSerializer(serializers.ModelSerializer):
-    name_ = serializers.ReadOnlyField(source='get_name')
-    description_ = serializers.ReadOnlyField(source='get_description')
-    about_author = serializers.ReadOnlyField(source='author.about_me')
-
-    def get_name(self):
-        return _(self.name)
-
-    def get_description(self):
-        return _(self.name)
-
-    class Meta:
-        model = Research
-        read_only_fields = [
-            'name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-            'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'similars', 'author',
-            'date', 'status', 'hashtag', 'similars', 'category', 'content_data']
-
-        fields = ['name_', 'name', 'description', 'image', 'date', 'pages', 'old_price', 'new_price',
-                  'description_', 'hashtag', 'category', 'demo', 'country', 'status', 'similars', 'author',
-                  'date', 'status', 'hashtag', 'similars', 'category', 'about_author', 'content_data']
-        depth = 1
