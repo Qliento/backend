@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import *
 from django.forms import TextInput, Textarea
 from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin,TabbedDjangoJqueryTranslationAdmin
-
-
+from django import forms
 # Register your models here.
+
 
 class PostForm(forms.ModelForm):
     research = forms.ModelChoiceField(queryset=Research.objects.filter(status = 2), label = "Исследования", required=False)

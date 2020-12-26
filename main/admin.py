@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin
 from django.forms import TextInput, Textarea
+from django import forms
 
 # Register your models here.
 
