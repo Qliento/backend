@@ -6,11 +6,15 @@ from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin,Tabb
 
 # Register your models here.
 
+class PostForm(forms.ModelForm):
+    research = forms.ModelChoiceField(queryset=Research.objects.filter(status = 2), label = "Исследования", required=False)
+
 class ImagePostAdmin(admin.TabularInline):
     model = ImagePost
 
 
 class PostAdmin(TabbedTranslationAdmin):
+    form = PostForm
     inlines = [ImagePostAdmin, ]
     formfield_overrides = {
         models.CharField: {'widget': Textarea(

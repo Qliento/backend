@@ -26,7 +26,7 @@ class Post(models.Model):
 		verbose_name_plural = _('Блог')
 
 class ImagePost(models.Model):
-	url = models.ImageField(null = True, blank = True, upload_to='images')
+	url = ResizedImageField(size=[350, 245],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name='images')
 
 	class Meta:
@@ -35,7 +35,7 @@ class ImagePost(models.Model):
 
 
 class ImageInfo(models.Model):
-	url = models.ImageField(null = True, blank = True, upload_to='images')
+	url = ResizedImageField(size=[350, 245],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	info = models.ForeignKey(Info, on_delete = models.CASCADE, related_name = 'images')
 	class Meta:
 		verbose_name = _('Изображение для окна о нас')

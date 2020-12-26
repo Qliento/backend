@@ -5,6 +5,8 @@ from django.forms import TextInput, Textarea
 
 # Register your models here.
 
+class MainPageForm(forms.ModelForm):
+    category = forms.ModelMultipleChoiceField(queryset=Category.objects.filter(parent=None), label = "Категория", required=False)
 
 class ContactAdmin(admin.TabularInline):
 
@@ -25,8 +27,10 @@ class MobAppAdmin(TabbedTranslationAdmin):
                            }
     pass
 
+class MainPageAdmin(admin.ModelAdmin):
+	form = MainPageForm
 
-admin.site.register(MainPage)
+admin.site.register(MainPage, MainPageAdmin)
 admin.site.register(MobApp, MobAppAdmin)
 admin.site.register(ContactInfo, ContactInfoAdmin)
 admin.site.register(SocialNetworks)

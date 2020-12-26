@@ -18,10 +18,13 @@ from drf_multiple_model.views import ObjectMultipleModelAPIView
 class FiltersAPIView(ObjectMultipleModelAPIView):
     permission_classes = (AllowAny,)
     pagination_class = None
+    
+    authors_query = QAdmins.objects.all()
+    authors_query = authors_query.annotate(count = Count("creator")).filter(count__gt=0)
     querylist = [
         {'queryset': Category.objects.filter(parent = None), 'serializer_class': CategorySubCategory},
         {'queryset': Country.objects.all(), 'serializer_class': CountrySerializer},
-        {'queryset': QAdmins.objects.all(), 'serializer_class': AuthorSerializer}
+        {'queryset': authors_query, 'serializer_class': AuthorSerializer}
     ]
 
 
