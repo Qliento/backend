@@ -18,6 +18,7 @@ import secrets
 import string
 import hashlib
 from qliento import settings
+import datetime
 from django.core.mail import EmailMessage
 
 
@@ -75,7 +76,6 @@ class OrderCreateView(ListCreateAPIView):
 @csrf_exempt
 @permission_classes((AllowAny,))
 def get_paybox_url(request):
-    # get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'), pg_sig=request.POST.get('pg_param1'))
     get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'))
     get_the_buyer = request.POST.get('pg_user_contact_email')
     list_of_ids = []
@@ -90,6 +90,13 @@ def get_paybox_url(request):
                                   settings.EMAIL_HOST_USER,
                                   [get_the_buyer])
 
+        check_created = Check.objects.create(total_price=request.POST.get('pg_amount'),
+                                             date=datetime.datetime.now(),
+                                             client_bought=get_the_buyer,
+                                             order_id=request.POST.get('pg_order_id'),
+                                             pg_payment_id=request.POST.get('pg_payment_id')
+                                             )
+
         for search_id in request.POST.get('pg_description').split():
             try:
                 s = search_id.replace(',', '')
@@ -99,6 +106,8 @@ def get_paybox_url(request):
 
         for i in list_of_ids:
             try:
+                check_created.ordered_researches.add(Research.objects.get(id=i))
+                check_created.save()
                 Cart.objects.filter(added=False, user_cart=get_needed_order.id, ordered_item__id=i).update(added=True)
                 files = Research.objects.filter(id=i).values('research_data')
                 for each_file in files:
