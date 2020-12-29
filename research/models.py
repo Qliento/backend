@@ -79,7 +79,7 @@ class Research(models.Model):
 	country = models.ManyToManyField(Country, verbose_name = _('Страна'), null = True)
 	status = models.ForeignKey(Status, on_delete=models.CASCADE, default='1', verbose_name = _('Статус'))
 	similars = models.ManyToManyField('self', verbose_name = _('Похожие исследования'), null = True, blank = True)
-	author = models.ForeignKey(QAdmins, on_delete=models.CASCADE, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
+	author = models.ForeignKey(QAdmins, on_delete=models.SET_NULL, related_name='creator', null=True, blank=True, verbose_name='Автор/Партнёр')
 	demo = models.FileField(null=True, blank=True, upload_to='demos', max_length=500, verbose_name=_('Демоверсия'), validators=[validate_file_extension])
 	comment = models.TextField(null=True, blank=True, default='', verbose_name = _('Комментарий'))
 
