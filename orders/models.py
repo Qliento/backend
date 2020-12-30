@@ -3,7 +3,7 @@ from registration.models import Users
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, m2m_changed
 from registration.utils import Util
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.core.mail import EmailMessage
 from research.models import Research
 from django.conf import settings
@@ -13,6 +13,7 @@ class Orders(models.Model):
     completed = models.BooleanField(null=True, blank=True, default=False)
     buyer = models.ForeignKey(Users, on_delete=models.CASCADE, null=True, blank=True, related_name="buyer", verbose_name="Покупатель")
     total_sum = models.IntegerField(blank=True, null=True, verbose_name="Общая сумма")
+    pg_sig = models.CharField(null=True, blank=True, default=False, verbose_name="Код верификации", max_length=32)
 
     class Meta:
         verbose_name = _("Корзина клиента")
@@ -21,7 +22,7 @@ class Orders(models.Model):
     @property
     def get_total_from_cart(self):
         try:
-            price = Cart.objects.filter(user_cart=self.pk).aggregate(Sum('total_of_all'))
+            price = Cart.objects.filter(user_cart=self.pk, added=False, ordered_item__status=2).aggregate(Sum('total_of_all'))
             self.total_sum = price.get('total_of_all__sum')
             return self.total_sum
         except:
@@ -69,6 +70,7 @@ class Check(models.Model):
     date = models.DateTimeField(verbose_name="Время покупки")
     client_bought = models.CharField(max_length=100, verbose_name="Почта покупателя")
     order_id = models.CharField(max_length=500, verbose_name="Номер заказа", null=True, blank=True)
+    pg_payment_id = models.CharField(null=True, blank=True, default=False, verbose_name="Код платежа", max_length=20)
 
     class Meta:
         verbose_name = _("Покупки клиентов")
@@ -161,29 +163,8 @@ class ShortDescriptions(models.Model):
         verbose_name_plural = _('Заказать исследования')
 
 
-class StatisticsDemo(models.Model):
-    count_demo = models.IntegerField()
-    date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.count_demo)
-
-
-class StatisticsWatches(models.Model):
-    count_watches = models.IntegerField()
-    date = models.DateTimeField(auto_now_add=True)
-
-
-class StatisticsBought(models.Model):
-    count_purchases = models.IntegerField()
-    date = models.DateTimeField(auto_now_add=True)
-
-
 class Statistics(models.Model):
     research_to_collect = models.ForeignKey(Research, on_delete=models.CASCADE, related_name='research_of_admin', verbose_name="Исследование", default=1)
-    demo_downloaded = models.ForeignKey(StatisticsDemo, null=True, blank=True, on_delete=models.CASCADE, related_name='demos_downloaded', verbose_name="Количество скачанных демо-версий")
-    watches = models.ForeignKey(StatisticsWatches, null=True, blank=True, on_delete=models.CASCADE, related_name='watches_counted', verbose_name="Количество просмотров")
-    bought = models.ForeignKey(StatisticsBought, null=True, blank=True, on_delete=models.CASCADE, related_name='bought_researches', verbose_name="Количество скачиваний")
 
     class Meta:
         verbose_name = _("Статистика")
@@ -195,18 +176,36 @@ class Statistics(models.Model):
 
     @property
     def get_demo_downloaded(self):
-        count_demos = Research.objects.filter(research_of_admin=self.pk).aggregate(demo_total=Sum('research_of_admin__demo_downloaded'))
+        count_demos = Research.objects.filter(research_of_admin=self.pk).aggregate(demo_total=Count('research_of_admin__demos_downloaded'))
         return count_demos.get('demo_total')
 
     @property
     def get_total_watches(self):
-        count_watched_researches = Research.objects.filter(research_of_admin=self.pk).aggregate(watches_total=Sum('research_of_admin__watches'))
+        count_watched_researches = Research.objects.filter(research_of_admin=self.pk).aggregate(watches_total=Count('research_of_admin__watches_counted'))
         return count_watched_researches.get('watches_total')
 
+    @property
+    def get_total_purchases(self):
+        count_watched_researches = Research.objects.filter(research_of_admin=self.pk).aggregate(purchases_total=Count('research_of_admin__bought_researches'))
+        return count_watched_researches.get('purchases_total')
 
-def create_stat_for_qadmin(sender, **kwargs):
-    details_for_stat = kwargs['instance']
-    Statistics.objects.create(research_to_collect=details_for_stat)
+
+class StatisticsDemo(models.Model):
+    count_demo = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+    demo_downloaded = models.ForeignKey(Statistics, null=True, blank=True, on_delete=models.CASCADE, related_name='demos_downloaded', verbose_name="Количество скачанных демо-версий")
+
+    def __str__(self):
+        return str(self.count_demo)
 
 
-post_save.connect(create_stat_for_qadmin, sender=Research)
+class StatisticsWatches(models.Model):
+    count_watches = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+    watches = models.ForeignKey(Statistics, null=True, blank=True, on_delete=models.CASCADE, related_name='watches_counted', verbose_name="Количество просмотров")
+
+
+class StatisticsBought(models.Model):
+    count_purchases = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+    bought = models.ForeignKey(Statistics, null=True, blank=True, on_delete=models.CASCADE, related_name='bought_researches', verbose_name="Количество скачиваний")
