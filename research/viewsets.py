@@ -34,17 +34,9 @@ class ResearchViewSet(viewsets.ModelViewSet):
     filterset_class = ResearchFilter
 
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = super().get_queryset()
         category = self.request.query_params.get('category', None)
-
-        try:
-            category_name_only = Category.objects.get(name=category)
-            return queryset.filter(Q(category__parent=category_name_only) | Q(category=category_name_only)).order_by('-id')
-
-        except ObjectDoesNotExist:
-
-            if category:
-                return Research.objects.filter(id=0)
-
-            else:
-                return Research.objects.filter(status=2).order_by('-id')
+        if category is None:
+            return queryset
+        else:
+            return queryset.filter(status = 2, category__parent__name=category).order_by('-id')

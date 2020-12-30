@@ -56,8 +56,11 @@ class ResearchFileAdmin(admin.TabularInline):
 class ResearchContentInline(CompactInline):
     model = ResearchContent
 
+class ResearchForm(forms.ModelForm):
+    category = forms.ModelChoiceField(queryset=Category.objects.exclude(parent=None), label = "Категория", required=False)
 
 class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
+    form = ResearchForm
     inlines = [ResearchFileAdmin, ResearchContentInline]
     change_form_template = "admin/acceptordeny.html"
     autocomplete_fields = ['hashtag', 'country']
