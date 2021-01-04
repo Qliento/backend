@@ -1,6 +1,5 @@
+from django.http import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
-import hashlib
-from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
@@ -17,9 +16,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 import string
 import hashlib
+import os
+import zipfile
 from qliento import settings
 import datetime
 from django.core.mail import EmailMessage
+from io import StringIO
+from rest_framework.parsers import MultiPartParser
 
 
 class OrderFormCreateView(CreateAPIView):
@@ -186,4 +189,31 @@ class StatViewForResearch(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class DownloadFileView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = None
+    parser_classes = [MultiPartParser]
+    queryset = None
 
+    def get(self, request, *args, **kwargs):
+        zip_file_name = 'files.zip'
+        response = HttpResponse(content_type='application/zip')
+        zipped_files = zipfile.ZipFile(response, 'w')
+
+        try:
+            research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
+
+            for i in research_from_check.ordered_researches.all():
+                exact_files = ResearchFiles.objects.filter(research=i)
+
+                for exact_file in exact_files:
+                    zipped_files.write('static/files/{}'.format(str(exact_file.name)))
+
+            zipped_files.close()
+
+            response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
+            return response
+
+        except IndexError:
+            content = {'message': 'Данное исследование не имеет файлов'}
+            return Response(content, status=400)
