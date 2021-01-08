@@ -96,7 +96,7 @@ class Research(models.Model):
 
 	@property
 	def clean_image_path(self):
-		return 'https://back.qliento.com/files/{}'.format(self.image)
+		return 'https://back.qliento.com/static/files/{}'.format(self.image)
 
 	class Meta:
 		verbose_name = _('Исследование')
