@@ -5,6 +5,7 @@ from registration.models import QAdmins
 from django.db.models import Count
 from .validators import validate_file_extension
 from django_resized import ResizedImageField
+
 # Create your models here.
 
 
@@ -92,6 +93,10 @@ class Research(models.Model):
 
 	def __str__(self):
 		return self.name or 'None'
+
+	@property
+	def clean_image_path(self):
+		return 'https://back.qliento.com/files/{}'.format(self.image)
 
 	class Meta:
 		verbose_name = _('Исследование')
