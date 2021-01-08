@@ -80,7 +80,9 @@ class SimilarResearchSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(SimilarResearchSerializer, self).to_representation(instance)
         data.pop('image')
+        data.pop('demo')
         data['image'] = instance.clean_image_path
+        data['demo'] = instance.clean_demo_path
         return data
 
 
@@ -99,7 +101,9 @@ class CardResearchSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(CardResearchSerializer, self).to_representation(instance)
         data.pop('image')
+        data.pop('demo')
         data['image'] = instance.clean_image_path
+        data['demo'] = instance.clean_demo_path
         return data
 
 
@@ -150,7 +154,9 @@ class ResearchSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(ResearchSerializer, self).to_representation(instance)
         data.pop('image')
+        data.pop('demo')
         data['image'] = instance.clean_image_path
+        data['demo'] = instance.clean_demo_path
         return data
 
 
