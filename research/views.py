@@ -20,7 +20,7 @@ class FiltersAPIView(ObjectMultipleModelAPIView):
     pagination_class = None
     
     authors_query = QAdmins.objects.all()
-    authors_query = authors_query.annotate(count = Count("creator")).filter(count__gt=0)
+    authors_query = authors_query.annotate(count = Count("creator")).filter(count__gt=0, status = 2)
     querylist = [
         {'queryset': Category.objects.filter(parent = None), 'serializer_class': CategorySubCategory},
         {'queryset': Country.objects.all(), 'serializer_class': CountrySerializer},
