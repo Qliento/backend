@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 from django import forms
+from modeltranslation.admin import TranslationStackedInline
 from jet.admin import CompactInline
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 # Register your models here.
@@ -55,7 +56,7 @@ class ResearchFileAdmin(admin.TabularInline):
     model = ResearchFiles
 
 
-class ResearchContentInline(CompactInline):
+class ResearchContentInline(TranslationStackedInline):
     model = ResearchContent
 
 class ResearchForm(forms.ModelForm):

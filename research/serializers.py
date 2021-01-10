@@ -77,6 +77,14 @@ class SimilarResearchSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
                   'hashtag', 'date', 'country', 'author')
 
+    def to_representation(self, instance):
+        data = super(SimilarResearchSerializer, self).to_representation(instance)
+        data.pop('image')
+        data.pop('demo')
+        data['image'] = instance.clean_image_path
+        data['demo'] = instance.clean_demo_path
+        return data
+
 
 class CardResearchSerializer(serializers.ModelSerializer):
     hashtag = HashtagSerializer(read_only=True, many=True)
@@ -89,6 +97,14 @@ class CardResearchSerializer(serializers.ModelSerializer):
         model = Research
         fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo',
                   'hashtag', 'date', 'country', 'author', 'content_data', 'description', 'similars')
+
+    def to_representation(self, instance):
+        data = super(CardResearchSerializer, self).to_representation(instance)
+        data.pop('image')
+        data.pop('demo')
+        data['image'] = instance.clean_image_path
+        data['demo'] = instance.clean_demo_path
+        return data
 
 
 class AdminCardResearchSerializer(serializers.ModelSerializer):
@@ -134,6 +150,14 @@ class ResearchSerializer(serializers.ModelSerializer):
                   )
         read_only_fields = ('date', 'status', 'similars', 'new_price')
         depth = 1
+
+    def to_representation(self, instance):
+        data = super(ResearchSerializer, self).to_representation(instance)
+        data.pop('image')
+        data.pop('demo')
+        data['image'] = instance.clean_image_path
+        data['demo'] = instance.clean_demo_path
+        return data
 
 
 class ResearchUploadSerializer(serializers.ModelSerializer):

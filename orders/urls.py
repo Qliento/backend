@@ -15,6 +15,7 @@ urlpatterns = [
     path('verify-check/', get_paybox_url),
 
     path('send-demo/', SendDemoView.as_view()),
+    path('download/<int:id>/', DownloadFileView.as_view()),
 
     path('short-descriptions/', ShortDescriptionView.as_view()),
 
