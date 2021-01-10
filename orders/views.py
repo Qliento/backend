@@ -1,6 +1,5 @@
+from django.http import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
-import hashlib
-from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
@@ -17,8 +16,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 import string
 import hashlib
+import os
+import zipfile
 from qliento import settings
+import datetime
 from django.core.mail import EmailMessage
+from io import StringIO
+from rest_framework.parsers import MultiPartParser
 
 
 class OrderFormCreateView(CreateAPIView):
@@ -75,7 +79,6 @@ class OrderCreateView(ListCreateAPIView):
 @csrf_exempt
 @permission_classes((AllowAny,))
 def get_paybox_url(request):
-    # get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'), pg_sig=request.POST.get('pg_param1'))
     get_needed_order = Orders.objects.get(id=request.POST.get('pg_order_id'))
     get_the_buyer = request.POST.get('pg_user_contact_email')
     list_of_ids = []
@@ -90,6 +93,13 @@ def get_paybox_url(request):
                                   settings.EMAIL_HOST_USER,
                                   [get_the_buyer])
 
+        check_created = Check.objects.create(total_price=request.POST.get('pg_amount'),
+                                             date=datetime.datetime.now(),
+                                             client_bought=get_the_buyer,
+                                             order_id=request.POST.get('pg_order_id'),
+                                             pg_payment_id=request.POST.get('pg_payment_id')
+                                             )
+
         for search_id in request.POST.get('pg_description').split():
             try:
                 s = search_id.replace(',', '')
@@ -99,6 +109,8 @@ def get_paybox_url(request):
 
         for i in list_of_ids:
             try:
+                check_created.ordered_researches.add(Research.objects.get(id=i))
+                check_created.save()
                 Cart.objects.filter(added=False, user_cart=get_needed_order.id, ordered_item__id=i).update(added=True)
                 files = Research.objects.filter(id=i).values('research_data')
                 for each_file in files:
@@ -177,4 +189,31 @@ class StatViewForResearch(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class DownloadFileView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = None
+    parser_classes = [MultiPartParser]
+    queryset = None
 
+    def get(self, request, *args, **kwargs):
+        zip_file_name = 'files.zip'
+        response = HttpResponse(content_type='application/zip')
+        zipped_files = zipfile.ZipFile(response, 'w')
+
+        try:
+            research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
+
+            for i in research_from_check.ordered_researches.all():
+                exact_files = ResearchFiles.objects.filter(research=i)
+
+                for exact_file in exact_files:
+                    zipped_files.write('static/files/{}'.format(str(exact_file.name)))
+
+            zipped_files.close()
+
+            response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
+            return response
+
+        except IndexError:
+            content = {'message': 'Данное исследование не имеет файлов'}
+            return Response(content, status=400)

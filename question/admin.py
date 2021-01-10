@@ -2,11 +2,13 @@ from django.contrib import admin
 from .models import *
 from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 from django.forms import TextInput, Textarea
+from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin, TranslationTabularInline
+
 
 # Register your models here.
 
 
-class PartnershipAdmin(admin.TabularInline):
+class PartnershipAdmin(TranslationTabularInline):
     model = Partnership
 
 
