@@ -212,6 +212,12 @@ class BoughtByUser(serializers.ModelSerializer):
         model = Research
         fields = ['image', 'name', 'description', 'pages', 'hashtag', 'country', 'new_price', 'id']
 
+    def to_representation(self, instance):
+        data = super(BoughtByUser, self).to_representation(instance)
+        data.pop('image')
+        data['image'] = instance.clean_image_path
+        return data
+
 
 class EmailDemoSerializer(serializers.ModelSerializer):
     desired_research = serializers.PrimaryKeyRelatedField(queryset=Research.objects.all())
