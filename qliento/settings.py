@@ -233,6 +233,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/files')
 PREFIX_DEFAULT_LOCALE = ''
 
 EMAIL_HOST = config('EMAIL_HOST')
+api_key = config('api_key')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
