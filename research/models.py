@@ -89,7 +89,7 @@ class Research(models.Model):
 		similars = Research.objects.filter(id=self.id)
 		for hashtag in hashtags.hashtag.all():
 			similars = similars | Research.objects.filter(hashtag = hashtag, status=2).exclude(id=self.id)
-		return similars.exclude(id = self.id)
+		return similars.exclude(id = self.id).distinct()
 
 	def __str__(self):
 		return self.name or 'None'

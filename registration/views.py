@@ -140,11 +140,10 @@ class ClientsRegistration(GenericAPIView):
         relative_link = reverse('email-verify')
         abs_url = 'http://' + current_site + relative_link + "?token=" + str(token)
 
-        send_mail('Активация аккаунта',
-                  'Доброго времени суток, пользователь. Пройдите по этой ссылке ниже в течение 24 часов, чтобы войти на сайт. Ваша ссылка для активации: %s' % abs_url,
-                  settings.EMAIL_HOST_USER,
-                  [str(client_as_user)],
-                  fail_silently=False)
+        email_body = 'Добрый день, пользователь.' + ' Пройдите по этой ссылке ниже в течение 24 часов, чтобы войти на сайт. Ваша ссылка для активации: \n' + abs_url
+
+        data = {'email_body': email_body, 'to_email': str(client_as_user), 'email_subject': 'Verify your email'}
+        Util.send_email(data)
 
         return Response(user_data, status=status.HTTP_201_CREATED)
 
@@ -259,14 +258,12 @@ def send_email(request):
             old_password.set_password(password)
             old_password.save()
 
-            send_mail('Временный пароль',
-                      'Доброго времени суток, пользователь. '
-                      'Используйте этот пароль ниже, чтобы войти на сайт и поменять на новый. '
-                      'Ваш временный пароль: %s' % password,
+            email_body = 'Доброго времени суток, пользователь. \n' \
+                         'Используйте этот пароль ниже, чтобы войти на сайт и поменять на новый. \n' \
+                         'Ваш временный пароль: %s' % password
 
-                      settings.EMAIL_HOST_USER,
-                      [value],
-                      fail_silently=False)
+            data = {'email_body': email_body, 'to_email': str(value), 'email_subject': 'Verify your email'}
+            Util.send_email(data)
 
             if old_password:
                 content = {'detail': 'Инструкция была отправлена на почту'}

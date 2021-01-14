@@ -16,12 +16,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 import string
 import hashlib
-import os
+from registration.utils import Util
 import zipfile
 from qliento import settings
 import datetime
 from django.core.mail import EmailMessage
 from io import StringIO
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from rest_framework.parsers import MultiPartParser
 
 
@@ -85,13 +87,18 @@ def get_paybox_url(request):
 
     if get_needed_order:
 
-        send_files = EmailMessage('Файлы исследования',
-                                  'Доброго времени суток, пользователь. '
-                                  'Вам были отправлены файлы исследования. \n'
-                                  'Спасибо за покупку,\n'
-                                  'С уважением, команда Qliento',
-                                  settings.EMAIL_HOST_USER,
-                                  [get_the_buyer])
+        email_body = 'Файлы исследования' + \
+                     'Доброго времени суток, пользователь. ' + \
+                     'Вам были отправлены файлы исследования. \n' + \
+                     'Спасибо за покупку,\n' + \
+                     'С уважением, команда Qliento',
+
+        send_files = Mail(
+            from_email='qlientoinfo@gmail.com',
+            to_emails=[get_the_buyer],
+            subject='Файлы исследования',
+            html_content=email_body,
+        )
 
         check_created = Check.objects.create(total_price=request.POST.get('pg_amount'),
                                              date=datetime.datetime.now(),
@@ -115,13 +122,18 @@ def get_paybox_url(request):
                 files = Research.objects.filter(id=i).values('research_data')
                 for each_file in files:
                     data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
-                    send_files.attach_file('static/files/{}'.format(str(data_file)))
+                    send_files.attachment('static/files/{}'.format(str(data_file)))
                     b = Statistics.objects.get(research_to_collect=i)
                     a = StatisticsBought.objects.create(count_purchases=1, bought=b)
             except:
                 pass
 
-        send_files.send()
+        try:
+            sg = SendGridAPIClient(settings.api_key)
+            sg.send(send_files)
+
+        except Exception as e:
+            pass
 
     else:
         pass
