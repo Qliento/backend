@@ -184,7 +184,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        content_data_validated = validated_data.pop('content_data', None)
+        content_data_validated = validated_data.pop('content_data', ' ')
         research = Research.objects.create(author=self.context['request'].user.initial_reference, **validated_data)
         Statistics.objects.create(research_to_collect=research)
 
