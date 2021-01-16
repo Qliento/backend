@@ -103,29 +103,29 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
             obj.status = get_some_status_2
             obj.save()
 
-            mail = EmailMessage(' Ваше исследование было одобрено',
-                                'Доброго времени суток, {}. \n'
-                                'Поздравляем! По вашему запросу, ваше исследование, детали которого описаны ниже, было одобрено.\n'
-                                'Название: "{}" \n'
-                                'Идентификатор: {} \n'
-                                '\n'
-                                'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id),
-                                settings.EMAIL_HOST_USER,
-                                [obj.author.admin_status.email])
-            mail.send()
+            email_body = ' Ваше исследование было одобрено \
+                                Доброго времени суток, {}. \n \
+                                Поздравляем! По вашему запросу, ваше исследование, детали которого описаны ниже, было одобрено.\n \
+                                Название: "{}" \n \
+                                Идентификатор: {} \n \
+                                \n \
+                                С уважением, команда Qliento'.format(obj.author, obj.name, obj.id)
+
+            data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Время добавить скидочную цену!'}
+            Util.send_email(data)
 
         if "_discount" in request.POST:
             get_some_status_4 = Status.objects.get(id=4)
             obj.status = get_some_status_4
             obj.save()
-            email_body = 'Доброго времени суток, {}. \n' + \
-                         'Мы рассмотрели вашу заявку и рады сообщить, что осталось совсем немного!\n' + \
-                         'Осталось добавить скидочную цену в личном кабинете, после чего мы его рассмотрим его и обновим статус вашего исследования. \n' + \
-                         'Название: "{}" \n' + \
-                         'Идентификатор: {} \n' + \
-                         '\n' + \
-                         '{}\n' + \
-                         'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment)
+            email_body = 'Доброго времени суток, {}. \n \
+                         Мы рассмотрели вашу заявку и рады сообщить, что осталось совсем немного!\n \
+                         Осталось добавить скидочную цену в личном кабинете, после чего мы его рассмотрим его и обновим статус вашего исследования. \n \
+                         Название: "{}" \n \
+                         Идентификатор: {} \n \
+                         \n \
+                         {}\n \
+                         С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment)
 
             data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Время добавить скидочную цену!'}
             Util.send_email(data)
@@ -135,14 +135,14 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
             obj.status = get_some_status_4
             obj.save()
 
-            email_body = 'Доброго времени суток, {}. \n' + \
-                         'К сожалению, ваша скидочная цена {} - не одобрена.\n' + \
-                         'Вы можете отправить повторный запрос на установление скидочной цены исследования в личном кабинете. \n' + \
-                         'Название: "{}" \n' + \
-                         'Идентификатор: {} \n' + \
-                         '\n' + \
-                         '{}\n' + \
-                         'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment)
+            email_body = 'Доброго времени суток, {}. \n \
+                         К сожалению, ваша скидочная цена {} - не одобрена.\n \
+                         Вы можете отправить повторный запрос на установление скидочной цены исследования в личном кабинете. \n \
+                         Название: "{}" \n \
+                         Идентификатор: {} \n \
+                         \n \
+                         {}\n \
+                         С уважением, команда Qliento'.format(obj.author, obj.new_price, obj.name, obj.id, obj.comment)
 
             data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Поправка скидочной цены'}
             Util.send_email(data)
@@ -154,13 +154,13 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
             obj.status = get_some_status_3
             obj.save()
 
-            email_body = ' Ваше исследование было отклонено' + \
-                         'Доброго времени суток, {}. \n' + \
-                         'К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n' + \
-                         'Название: "{}" \n' + \
-                         'Идентификатор: {} \n' + \
-                         '{}\n' + \
-                         'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment)
+            email_body = 'Ваше исследование было отклонено \
+                         Доброго времени суток, {}. \n \
+                         К сожалению, ваше исследование, детали которого описаны ниже, было отклонено.\n \
+                         Название: "{}" \n \
+                         Идентификатор: {} \n \
+                         {}\n \
+                         С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment)
 
             data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Поправка скидочной цены'}
             Util.send_email(data)
@@ -169,12 +169,12 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
 
     def delete_model(self, request, obj):
 
-        email_body = ' Ваше исследование было удалено' + \
-                     'Доброго времени суток, {}. \n' + \
-                     'К сожалению, ваше исследование, детали которого описаны ниже, было удалено.\n' + \
-                     'Название: "{}" \n' + \
-                     'Идентификатор: {} \n' + \
-                     '\n' + \
+        email_body = ' Ваше исследование было удалено' \
+                     'Доброго времени суток, {}. \n' \
+                     'К сожалению, ваше исследование, детали которого описаны ниже, было удалено.\n' \
+                     'Название: "{}" \n' \
+                     'Идентификатор: {} \n' \
+                     '\n' \
                      'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id)
 
         data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Поправка скидочной цены'}

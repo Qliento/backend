@@ -3,6 +3,7 @@ from .models import *
 from itertools import chain
 from research.models import Research
 from django.contrib.auth.models import Group
+from modeltranslation.admin import TranslationAdmin, TabbedDjangoJqueryTranslationAdmin
 
 from orders.models import Orders
 # Register your models here.
@@ -77,8 +78,14 @@ class UsersAdmin(admin.ModelAdmin):
         model = Users
 
 
+class UserConsentAdmin(TabbedDjangoJqueryTranslationAdmin):
+
+    class Meta:
+        model = UsersConsentQliento
+
+
 admin.site.register(Users, UsersAdmin)
 admin.site.register(QAdmins, QAdminsAdmin)
 admin.site.register(Clients, ClientsAdmin)
-admin.site.register(UsersConsentQliento)
+admin.site.register(UsersConsentQliento, UserConsentAdmin)
 admin.site.unregister(Group)

@@ -122,7 +122,7 @@ def get_paybox_url(request):
                 files = Research.objects.filter(id=i).values('research_data')
                 for each_file in files:
                     data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
-                    send_files.attachment('static/files/{}'.format(str(data_file)))
+                    send_files.add_attachment('static/files/{}'.format(str(data_file)))
                     b = Statistics.objects.get(research_to_collect=i)
                     a = StatisticsBought.objects.create(count_purchases=1, bought=b)
             except:
