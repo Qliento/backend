@@ -374,7 +374,7 @@ class UserConsentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UsersConsentQliento
-        fields = '__all__'
+        fields = ['text']
 
 
 class SocialSerializer(serializers.Serializer):
