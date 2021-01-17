@@ -25,7 +25,10 @@ from io import StringIO
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from rest_framework.parsers import MultiPartParser
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponseRedirect
+import jwt
+from registration.models import Users
+from rest_framework.exceptions import AuthenticationFailed
 
 
 class OrderFormCreateView(CreateAPIView):
@@ -202,33 +205,56 @@ class StatViewForResearch(RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class DownloadFileView(GenericAPIView):
-    permission_classes = (IsAuthenticated,)
+class DownloadZipView(GenericAPIView):
+    permission_classes = (AllowAny,)
     serializer_class = None
     parser_classes = [MultiPartParser]
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        zip_file_name = 'files.zip'
-        # response = HttpResponse(content_type='application/zip')
-        response = HttpResponse(content_type='application/force-download')
-
-        zipped_files = zipfile.ZipFile(response, 'w')
+        token = self.kwargs.get('token')
 
         try:
-            research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
+            payload = jwt.decode(token, settings.SECRET_KEY)
+            user = Users.objects.get(id=payload['user_id'])
+            if user is None:
+                raise AuthenticationFailed
+            else:
+                zip_file_name = 'files.zip'
+                response = HttpResponse(content_type='application/x-zip-compressed')
+                zipped_files = zipfile.ZipFile(response, 'w')
 
-            for i in research_from_check.ordered_researches.all():
-                exact_files = ResearchFiles.objects.filter(research=i)
+                try:
+                    research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
+                    # research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought='sar.ormukov@gmail.com')
 
-                for exact_file in exact_files:
-                    zipped_files.write('static/files/{}'.format(str(exact_file.name)))
+                    for i in research_from_check.ordered_researches.all():
+                        exact_files = ResearchFiles.objects.filter(research=i)
 
-            zipped_files.close()
+                        for exact_file in exact_files:
+                            zipped_files.write('static/files/{}'.format(str(exact_file.name)))
 
-            response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
-            return response
+                    zipped_files.close()
+                    response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
 
-        except IndexError:
-            content = {'message': 'Данное исследование не имеет файлов'}
-            return Response(content, status=400)
+                    return response
+
+                except IndexError:
+                    content = {'message': 'Данное исследование не имеет файлов'}
+                    return Response(content, status=400)
+
+        except:
+            pass
+
+
+class DownloadFileView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    # permission_classes = (AllowAny,)
+    serializer_class = None
+    parser_classes = [MultiPartParser]
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        token = request.headers.get('Authorization')[7:]
+        return HttpResponseRedirect(redirect_to='https://back.qliento.com/purchases/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
+

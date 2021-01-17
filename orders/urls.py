@@ -16,6 +16,7 @@ urlpatterns = [
 
     path('send-demo/', SendDemoView.as_view()),
     path('download/<int:id>/', DownloadFileView.as_view()),
+    path('zipped/<int:id>/<str:token>/', DownloadZipView.as_view()),
 
     path('short-descriptions/', ShortDescriptionView.as_view()),
 

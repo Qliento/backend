@@ -69,7 +69,7 @@ class Country(models.Model):
 
 class Research(models.Model):
 	name = models.CharField(max_length = 1000, verbose_name = _('Название'), null = True, blank = True,)
-	image = ResizedImageField(size=[540, 419],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
+	image = ResizedImageField(size=[540, 419],  crop=['middle', 'center'], quality = 100, max_length=500, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	date = models.DateField(auto_now_add = True, verbose_name = _('Дата публикации'))
 	pages = models.IntegerField(verbose_name = _('Количество страниц'))
 	old_price = models.IntegerField(verbose_name = _('Старая цена'))
