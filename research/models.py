@@ -46,7 +46,7 @@ class Status(models.Model):
 
 
 class Hashtag(models.Model):
-	name = models.CharField(max_length = 255, unique=True, verbose_name = _('Ключевое слово'))
+	name = models.CharField(max_length = 255, verbose_name = _('Ключевое слово'))
 
 	def __str__(self):
 		return self.name
