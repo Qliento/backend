@@ -210,7 +210,9 @@ class DownloadFileView(GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         zip_file_name = 'files.zip'
-        response = HttpResponse(content_type='application/zip')
+        # response = HttpResponse(content_type='application/zip')
+        response = HttpResponse(content_type='application/force-download')
+
         zipped_files = zipfile.ZipFile(response, 'w')
 
         try:
@@ -223,11 +225,9 @@ class DownloadFileView(GenericAPIView):
                     zipped_files.write('static/files/{}'.format(str(exact_file.name)))
 
             zipped_files.close()
-            print(response)
 
             response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
-            return FileResponse(response)
-            # return response
+            return response
 
         except IndexError:
             content = {'message': 'Данное исследование не имеет файлов'}
