@@ -25,6 +25,7 @@ from io import StringIO
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from rest_framework.parsers import MultiPartParser
+from django.http import FileResponse
 
 
 class OrderFormCreateView(CreateAPIView):
@@ -222,9 +223,11 @@ class DownloadFileView(GenericAPIView):
                     zipped_files.write('static/files/{}'.format(str(exact_file.name)))
 
             zipped_files.close()
+            print(response)
 
             response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
-            return response
+            return FileResponse(response)
+            # return response
 
         except IndexError:
             content = {'message': 'Данное исследование не имеет файлов'}
