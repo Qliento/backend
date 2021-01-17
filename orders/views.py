@@ -225,8 +225,8 @@ class DownloadZipView(GenericAPIView):
                 zipped_files = zipfile.ZipFile(response, 'w')
 
                 try:
-                    research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
-                    # research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought='sar.ormukov@gmail.com')
+                    # research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
+                    research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=user.email)
 
                     for i in research_from_check.ordered_researches.all():
                         exact_files = ResearchFiles.objects.filter(research=i)
@@ -256,5 +256,5 @@ class DownloadFileView(GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         token = request.headers.get('Authorization')[7:]
-        return HttpResponseRedirect(redirect_to='https://back.qliento.com/purchases/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
+        return HttpResponseRedirect(redirect_to='https://back.qliento.com/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
 
