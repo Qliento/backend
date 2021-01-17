@@ -105,21 +105,24 @@ class CardResearchSerializer(serializers.ModelSerializer):
         data = super(CardResearchSerializer, self).to_representation(instance)
         data.pop('image')
         data.pop('demo')
-        # data.pop('content_data')
 
         data['image'] = instance.clean_image_path
         data['demo'] = instance.clean_demo_path
+        try:
+            data.pop('content_data')
+            header = self.context.get('request').headers.get('Accept-Language')
+            empty_content_data = []
+            contents = ResearchContent.objects.filter(content_data=instance.id)
 
-        header = self.context.get('request').headers.get('Accept-Language')
-        empty_content_data = []
-        contents = ResearchContent.objects.filter(content_data=instance.id)
+            for i in contents:
+                empty_content_data.append({'content': getattr(i, 'content'+'_{}'.format(header)),
+                                           'page': getattr(i, 'page'+'_{}'.format(header))})
 
-        for i in contents:
-            empty_content_data.append({'content': getattr(i, 'content'+'_{}'.format(header)),
-                                       'page': getattr(i, 'page'+'_{}'.format(header))})
+            data['content_data'] = empty_content_data
+            return data
 
-        data['content_data'] = empty_content_data
-        return data
+        except AttributeError:
+            return data
 
 
 class AdminCardResearchSerializer(serializers.ModelSerializer):
