@@ -72,7 +72,6 @@ class ResearchDetail(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         b = Statistics.objects.get(research_to_collect=self.kwargs['pk'])
         a = StatisticsWatches.objects.create(count_watches=1, watches=b)
-
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
