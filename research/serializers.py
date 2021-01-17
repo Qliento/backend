@@ -6,6 +6,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import os
 import json
 from orders.models import Statistics
+import secrets
+import string
+
 from collections import OrderedDict
 
 
@@ -35,7 +38,7 @@ class CategoryCountSerializer(serializers.ModelSerializer):
     count = serializers.IntegerField(source='get_recursive_product_count')
     
     class Meta:    
-        model = Category 
+        model = Category
         fields = ('id', 'name', 'count',)
 
 
@@ -216,7 +219,10 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Неподдерживаемый тип данных")
 
             else:
-                a = ResearchFiles.objects.create(research=research, name=file)
+                alphabet = string.ascii_letters + string.digits
+                salt = ''.join(secrets.choice(alphabet) for i in range(16))
+                salt += file.name
+                a = ResearchFiles.objects.create(research=research, name=salt)
 
         hashtag_name = self.context.get('request').POST.get('hashtag', 'None')
 
