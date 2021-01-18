@@ -111,7 +111,7 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                                 \n \
                                 С уважением, команда Qliento'.format(obj.author, obj.name, obj.id)
 
-            data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Время добавить скидочную цену!'}
+            data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Ваше исследование было одобрено!'}
             Util.send_email(data)
 
         if "_discount" in request.POST:
@@ -162,7 +162,7 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                          {}\n \
                          С уважением, команда Qliento'.format(obj.author, obj.name, obj.id, obj.comment)
 
-            data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Поправка скидочной цены'}
+            data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Ваше исследование было отклонено'}
             Util.send_email(data)
 
         return super().response_change(request, obj)
@@ -177,7 +177,7 @@ class ResearchAdmin(TabbedDjangoJqueryTranslationAdmin):
                      '\n' \
                      'С уважением, команда Qliento'.format(obj.author, obj.name, obj.id)
 
-        data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Поправка скидочной цены'}
+        data = {'email_body': email_body, 'to_email': str(obj.author.admin_status.email), 'email_subject': 'Ваше исследование было удалено'}
         Util.send_email(data)
 
         return super().delete_model(request, obj)

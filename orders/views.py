@@ -23,9 +23,10 @@ import datetime
 from django.core.mail import EmailMessage
 from io import StringIO
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import (Mail, Attachment, FileContent, FileName, FileType, Disposition)
 from rest_framework.parsers import MultiPartParser
 from django.http import FileResponse, HttpResponseRedirect
+import base64
 import jwt
 from registration.models import Users
 from rest_framework.exceptions import AuthenticationFailed
@@ -91,11 +92,11 @@ def get_paybox_url(request):
 
     if get_needed_order:
 
-        email_body = 'Файлы исследования' + \
+        email_body = \
                      'Доброго времени суток, пользователь. ' + \
                      'Вам были отправлены файлы исследования. \n' + \
                      'Спасибо за покупку,\n' + \
-                     'С уважением, команда Qliento',
+                     'С уважением, команда Qliento'
 
         send_files = Mail(
             from_email='qlientoinfo@gmail.com',
@@ -125,8 +126,23 @@ def get_paybox_url(request):
                 Cart.objects.filter(added=False, user_cart=get_needed_order.id, ordered_item__id=i).update(added=True)
                 files = Research.objects.filter(id=i).values('research_data')
                 for each_file in files:
+
                     data_file = ResearchFiles.objects.get(id=each_file.get('research_data'))
-                    send_files.add_attachment('static/files/{}'.format(str(data_file)))
+
+                    with open('static/files/{}'.format(str(data_file)), 'rb') as f:
+                        data = f.read()
+                        f.close()
+
+                    encoded_file = base64.b64encode(data).decode()
+
+                    attachedFile = Attachment(
+                        FileContent(encoded_file),
+                        FileName(str(data_file)),
+                        Disposition('attachment')
+                    )
+
+                    send_files.add_attachment = attachedFile
+
                     b = Statistics.objects.get(research_to_collect=i)
                     a = StatisticsBought.objects.create(count_purchases=1, bought=b)
             except:
@@ -225,7 +241,6 @@ class DownloadZipView(GenericAPIView):
                 zipped_files = zipfile.ZipFile(response, 'w')
 
                 try:
-                    # research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=request.user.email)
                     research_from_check = Check.objects.get(ordered_researches=self.kwargs.get('id'), client_bought=user.email)
 
                     for i in research_from_check.ordered_researches.all():
@@ -249,14 +264,11 @@ class DownloadZipView(GenericAPIView):
 
 class DownloadFileView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    # permission_classes = (AllowAny,)
     serializer_class = None
     parser_classes = [MultiPartParser]
     queryset = None
 
     def get(self, request, *args, **kwargs):
         token = request.headers.get('Authorization')[7:]
-        # return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
-        # return HttpResponseRedirect(redirect_to='https://back.qliento.com/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
         return Response('https://back.qliento.com/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
 

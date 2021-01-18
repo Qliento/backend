@@ -114,11 +114,29 @@ class CardResearchSerializer(serializers.ModelSerializer):
             empty_content_data = []
             contents = ResearchContent.objects.filter(content_data=instance.id)
 
-            for i in contents:
-                empty_content_data.append({'content': getattr(i, 'content'+'_{}'.format(header)),
-                                           'page': getattr(i, 'page'+'_{}'.format(header))})
+            s = None
 
-            data['content_data'] = empty_content_data
+            for i in contents:
+
+                the_value = getattr(i, 'content'+'_{}'.format(header))
+                s = the_value
+
+                if s is None:
+                    continue
+                elif s is not None:
+                    s = the_value
+                    empty_content_data.append({'content': getattr(i, 'content' + '_{}'.format(header)),
+                                               'page': getattr(i, 'page' + '_{}'.format(header))})
+
+            if s is None:
+                data['content_data'] = []
+
+            elif s is not None:
+                data['content_data'] = empty_content_data
+
+            else:
+                data['content_data'] = 'Error'
+
             return data
 
         except AttributeError:
@@ -145,12 +163,28 @@ class AdminCardResearchSerializer(serializers.ModelSerializer):
             empty_content_data = []
             contents = ResearchContent.objects.filter(content_data=instance.id)
 
-            for i in contents:
-                empty_content_data.append({'content': getattr(i, 'content'+'_{}'.format(header)),
-                                           'page': getattr(i, 'page'+'_{}'.format(header))})
+            s = None
 
-            data['content_data'] = empty_content_data
-            return data
+            for i in contents:
+
+                the_value = getattr(i, 'content' + '_{}'.format(header))
+                s = the_value
+
+                if s is None:
+                    continue
+                elif s is not None:
+                    s = the_value
+                    empty_content_data.append({'content': getattr(i, 'content' + '_{}'.format(header)),
+                                               'page': getattr(i, 'page' + '_{}'.format(header))})
+
+            if s is None:
+                data['content_data'] = []
+
+            elif s is not None:
+                data['content_data'] = empty_content_data
+
+            else:
+                data['content_data'] = 'Error'
 
         except AttributeError:
             return data
