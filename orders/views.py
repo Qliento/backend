@@ -256,5 +256,7 @@ class DownloadFileView(GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         token = request.headers.get('Authorization')[7:]
-        return HttpResponseRedirect(redirect_to='https://back.qliento.com/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
+        # return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
+        # return HttpResponseRedirect(redirect_to='https://back.qliento.com/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
+        return Response('https://back.qliento.com/purchase/zipped/{}/{}/'.format(self.kwargs.get('id'), token))
 
