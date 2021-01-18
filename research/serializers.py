@@ -119,11 +119,10 @@ class CardResearchSerializer(serializers.ModelSerializer):
             for i in contents:
 
                 the_value = getattr(i, 'content'+'_{}'.format(header))
-                s = the_value
 
-                if s is None:
+                if the_value is None:
                     continue
-                elif s is not None:
+                elif the_value is not None:
                     s = the_value
                     empty_content_data.append({'content': getattr(i, 'content' + '_{}'.format(header)),
                                                'page': getattr(i, 'page' + '_{}'.format(header))})
@@ -168,11 +167,10 @@ class AdminCardResearchSerializer(serializers.ModelSerializer):
             for i in contents:
 
                 the_value = getattr(i, 'content' + '_{}'.format(header))
-                s = the_value
 
-                if s is None:
+                if the_value is None:
                     continue
-                elif s is not None:
+                elif the_value is not None:
                     s = the_value
                     empty_content_data.append({'content': getattr(i, 'content' + '_{}'.format(header)),
                                                'page': getattr(i, 'page' + '_{}'.format(header))})
