@@ -136,6 +136,25 @@ class AdminCardResearchSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "image", "old_price", "pages", 'new_price', 'demo', 'status',
                   'hashtag', 'date', 'country', 'author', 'content_data', 'description')
 
+    def to_representation(self, instance):
+        data = super(AdminCardResearchSerializer, self).to_representation(instance)
+
+        try:
+            data.pop('content_data')
+            header = self.context.get('request').headers.get('Accept-Language')
+            empty_content_data = []
+            contents = ResearchContent.objects.filter(content_data=instance.id)
+
+            for i in contents:
+                empty_content_data.append({'content': getattr(i, 'content'+'_{}'.format(header)),
+                                           'page': getattr(i, 'page'+'_{}'.format(header))})
+
+            data['content_data'] = empty_content_data
+            return data
+
+        except AttributeError:
+            return data
+
 
 class ResearchFilePathSerializer(serializers.ModelSerializer):
 
