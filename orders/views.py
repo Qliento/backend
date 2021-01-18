@@ -141,7 +141,7 @@ def get_paybox_url(request):
                         Disposition('attachment')
                     )
 
-                    send_files.attachment = attachedFile
+                    send_files.add_attachment(attachedFile)
 
                     b = Statistics.objects.get(research_to_collect=i)
                     a = StatisticsBought.objects.create(count_purchases=1, bought=b)
