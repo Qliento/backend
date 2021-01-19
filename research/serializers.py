@@ -184,6 +184,8 @@ class AdminCardResearchSerializer(serializers.ModelSerializer):
             else:
                 data['content_data'] = 'Error'
 
+            return data
+
         except AttributeError:
             return data
 
