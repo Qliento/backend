@@ -35,7 +35,7 @@ class ImagePost(models.Model):
 
 
 class ImageInfo(models.Model):
-	url = ResizedImageField(size=[350, 245],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
+	url = ResizedImageField(size=[680, 450],  crop=['middle', 'center'], quality = 100, null = True, blank = True, verbose_name = _('Изображение'), upload_to='images', force_format='JPEG')
 	info = models.ForeignKey(Info, on_delete = models.CASCADE, related_name = 'images')
 	class Meta:
 		verbose_name = _('Изображение для окна о нас')
