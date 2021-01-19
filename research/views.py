@@ -9,6 +9,7 @@ from registration.models import QAdmins
 from orders.models import Statistics, StatisticsWatches
 from registration.utils import Util
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.db.models import Q
 
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -20,7 +21,8 @@ class FiltersAPIView(ObjectMultipleModelAPIView):
     pagination_class = None
     
     authors_query = QAdmins.objects.all()
-    # authors_query = authors_query.annotate(count = Count("creator")).filter(count__gt=0, status = 2)
+
+    authors_query = authors_query.annotate(count = Count("creator", filter=Q(creator__status=2))).filter(count__gt=0)
     querylist = [
         {'queryset': Category.objects.filter(parent = None), 'serializer_class': CategorySubCategory},
         {'queryset': Country.objects.all(), 'serializer_class': CountrySerializer},
