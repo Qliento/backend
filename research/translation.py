@@ -14,12 +14,12 @@ class StatusTranslationOptions(TranslationOptions):
 
 @register(Hashtag)
 class HashtagTranslationOptions(TranslationOptions):
-    fields = ('name',)
+    fields = ()
 
 
 @register(Country)
 class CountryTranslationOptions(TranslationOptions):
-    fields = ('name', )
+    fields = ()
 
 
 @register(Research)

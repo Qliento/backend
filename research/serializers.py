@@ -289,6 +289,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
                     created = Hashtag.objects.get(name=i.replace(',', ''))
                     get_id_if_yes = created.id
                     add_if_yes = research.hashtag.add(get_id_if_yes)
+
                 except ObjectDoesNotExist:
                     hashtag = research.hashtag.create(name=i.replace(',', ''))
 
@@ -306,7 +307,7 @@ class ResearchUploadSerializer(serializers.ModelSerializer):
                     add_id_if_country_exists = created.id
                     add_if_true = research.country.add(add_id_if_country_exists)
                 except ObjectDoesNotExist:
-                    state = research.country.get_or_create(name=country.replace(',', ''))
+                    state = research.country.create(name=country.replace(',', ''))
 
         else:
             raise serializers.ValidationError({'detail': _("Countries can not contain digits.")})
