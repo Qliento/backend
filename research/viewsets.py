@@ -38,5 +38,9 @@ class ResearchViewSet(viewsets.ModelViewSet):
         category = self.request.query_params.get('category', None)
         if category is None:
             return queryset
-        else:
+        elif category == "":
+            return queryset
+        elif category :
             return queryset.filter(status = 2, category__parent__name=category).order_by('-id')
+        
+            
