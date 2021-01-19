@@ -64,14 +64,43 @@ class OrderCreateView(ListCreateAPIView):
         result = hashlib.md5(str2hash.encode())
         md5result = result.hexdigest()
 
-        zeo = []
-        search_id = 'ID:, 2020, Название, исследования:, 230, name.'
-        for i in search_id.split():
-            try:
-                s = i.replace(',', '')
-                zeo.append(int(s))
-            except:
-                pass
+        # zeo = []
+        # search_id = 'ID:, 2020, Название, исследования:, 230, name.'
+        # for i in search_id.split():
+        #     try:
+        #         s = i.replace(',', '')
+        #         zeo.append(int(s))
+        #     except:
+        #         pass
+        # email_body = \
+        #     'Доброго времени суток, пользователь. ' + \
+        #     'Вам были отправлены файлы исследования. \n' + \
+        #     'Спасибо за покупку,\n' + \
+        #     'С уважением, команда Qliento'
+        #
+        # send_files = Mail(
+        #     from_email='qlientoinfo@gmail.com',
+        #     to_emails=['sanjar.ormukov@gmail.com'],
+        #     subject='Файлы исследования',
+        #     html_content=email_body,
+        # )
+        #
+        # data_file = ResearchFiles.objects.get(research=230)
+        #
+        # with open('static/files/{}'.format(str(data_file)), 'rb') as f:
+        #     data = f.read()
+        #     f.close()
+        #
+        # encoded_file = base64.b64encode(data).decode()
+        #
+        # attachedFile = Attachment(
+        #     FileContent(encoded_file),
+        #     FileName(str(data_file))
+        # )
+        #
+        # send_files.attachment = attachedFile
+        # sg = SendGridAPIClient(settings.api_key)
+        # sg.send(send_files)
 
         get_order_id.pg_sig = param1
         get_order_id.save()
@@ -137,8 +166,7 @@ def get_paybox_url(request):
 
                     attachedFile = Attachment(
                         FileContent(encoded_file),
-                        FileName(str(data_file)),
-                        Disposition('attachment')
+                        FileName(str(data_file))
                     )
 
                     send_files.attachment = attachedFile
