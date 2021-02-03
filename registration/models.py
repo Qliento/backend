@@ -45,7 +45,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Имя")
     surname = models.CharField(max_length=120, default='ФИО', null=False, blank=False, verbose_name=" Фамилия")
     email = models.EmailField(max_length=120, unique=True, verbose_name="Электронная почта")
-    phone_number = models.CharField(default=0000, verbose_name='Номер телефона', max_length=20)
+    phone_number = models.CharField(default='', verbose_name='Номер телефона', max_length=20)
     provider = models.CharField(default='email', max_length=20, blank=True, null=True, verbose_name='Способ регистрации')
     REQUIRED_FIELDS = ['password']
     USERNAME_FIELD = 'email'
